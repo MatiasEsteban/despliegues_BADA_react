@@ -21,52 +21,57 @@
 }
 
 /* === VARIANTES DE BOTONES === */
-.btn-success { 
+.btn-success {
     background: #1668dc;
-    color: white; 
+    color: white;
 }
-.btn-success:hover { 
+
+.btn-success:hover {
     background: #3277d6;
 
     border: 1px solid #3277d6;
 }
 
-.btn-primary { 
+.btn-primary {
     background: #1668dc;
-    color: white; 
-}
-.btn-primary:hover { 
-    background: #2c5282; 
+    color: white;
 }
 
-.btn-secondary { 
-    background: var(--bg-secondary); 
-    color: var(--text-secondary); 
+.btn-primary:hover {
+    background: #2c5282;
+}
+
+.btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
     border: 1px solid var(--border-color);
 }
-.btn-secondary:hover { 
-    background: transparent; 
+
+.btn-secondary:hover {
+    background: transparent;
     color: #1668dc;
     border: 1px solid #1668dc;
 }
 
-.btn-purple { 
+.btn-purple {
     background: #1668dc;
-    color: white; 
+    color: white;
 }
-.btn-purple:hover { 
+
+.btn-purple:hover {
     background: #3277d6;
 
     border: 1px solid #3277d6;
 }
 
-.btn-info { 
+.btn-info {
     background: var(--bg-primary);
     color: var(--text-primary);
-    border: 1px solid whitesmoke; 
+    border: 1px solid whitesmoke;
 }
-.btn-info:hover { 
-    background: transparent; 
+
+.btn-info:hover {
+    background: transparent;
     color: #1668dc;
     border: 1px solid #1668dc;
 }
@@ -77,6 +82,7 @@
     padding: 0.5rem;
     border: 1px solid #f56565;
 }
+
 .btn-danger:hover {
     color: white;
     background: #f56565;
@@ -126,8 +132,8 @@
     border-radius: 6px;
 }
 
-.btn-search-toggle:hover { 
-    background: transparent; 
+.btn-search-toggle:hover {
+    background: transparent;
     color: #1668dc;
     border: 1px solid #1668dc;
 }
@@ -416,8 +422,9 @@
     position: absolute;
     top: 1rem;
     left: 1rem;
-    background: rgba(59, 130, 246, 0.9); /* 👈 Azul sólido en lugar de transparente */
-    border: 2px solid rgba(255, 255, 255, 0.9);
+    background: rgba(59, 130, 246, 0.9);
+    /* 👈 Azul sólido en lugar de transparente */
+    border: 1px solid rgba(255, 255, 255, 0.9);
     border-radius: 50%;
     width: 36px;
     height: 36px;
@@ -428,17 +435,23 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 0;
     z-index: 10;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4); /* 👈 Sombra azul */
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+    /* 👈 Sombra azul */
 }
 
 .btn-version-info:hover {
-    background: rgba(37, 99, 235, 1); /* 👈 Azul más oscuro al hover */
+    background: rgba(37, 99, 235, 1);
+    /* 👈 Azul más oscuro al hover */
     border-color: white;
-    transform: scale(1.15) rotate(-8deg); /* 👈 Rotación diferente */
+    transform: scale(1.15) rotate(-8deg);
+    /* 👈 Rotación diferente */
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6);
 }
 
 .btn-version-info svg {
-    stroke: white;
-    stroke-width: 2.5; /* 👈 Líneas más gruesas */
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
 }

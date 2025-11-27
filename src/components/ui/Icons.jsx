@@ -11,13 +11,14 @@ export const Icons = {
     // -------------------
 
     Info: (props) => (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4" />
-            <path d="M12 8h.01" />
+        <svg {...props} xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
+            <title xmlns="">info-outlined-thick-long</title>
+            {/* Se ha modificado el comando 'v' (línea vertical) en la segunda parte del trazado.
+    Originalmente era 'v280', ahora es 'v380', añadiendo 100 unidades de longitud hacia abajo.
+  */}
+            <path fill="#ffffff" d="M512 114a110 110 0 1 1 0 220a110 110 0 0 1 0-220m-110 396a110 110 0 0 1 220 0v380a110 110 0 0 1-220 0z" />
         </svg>
     ),
-
     // Navegación
     ArrowLeft: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>,
     ChevronLeft: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}><polyline points="15 18 9 12 15 6"></polyline></svg>,
