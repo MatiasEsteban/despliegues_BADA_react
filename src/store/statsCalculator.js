@@ -32,3 +32,74 @@ export function generateStats(versions) {
 
     return stats;
 }
+
+/**
+ * Calcula estadísticas detalladas para una versión específica.
+ * @param {Object} version - El objeto de la versión.
+ * @returns {Object} Estadísticas detalladas (progreso, estados, dificultad, versiones bada).
+ */
+export function calculateVersionStats(version) {
+    if (!version || !version.cdus) return null;
+
+    const stats = {
+        totalProgress: 0,
+        validCdus: 0,
+        statusCounts: {
+            'En Desarrollo': 0,
+            'Pendiente de Certificacion': 0,
+            'Certificado OK': 0,
+            'En Produccion': 0
+        },
+        difficultyCounts: {
+            'Baja': 0,
+            'Media': 0,
+            'Alta': 0
+        },
+        badaVersionCounts: {
+            'V1': 0,
+            'V2': 0
+        }
+    };
+
+    version.cdus.forEach(cdu => {
+        // 1. Progreso Global
+        if (cdu.pasos && cdu.pasos.length > 0) {
+            const completed = cdu.pasos.filter(p => p.completado).length;
+            const percent = (completed / cdu.pasos.length) * 100;
+            stats.totalProgress += percent;
+            stats.validCdus++;
+
+            // 2. Dificultad y Versión Bada (basado en pasos)
+            cdu.pasos.forEach(paso => {
+                // Dificultad
+                const diff = paso.dificultad || 'Baja';
+                if (stats.difficultyCounts[diff] !== undefined) {
+                    stats.difficultyCounts[diff]++;
+                } else {
+                    // Fallback para valores no esperados, o normalizar
+                    stats.difficultyCounts['Baja']++;
+                }
+
+                // Versión Bada
+                const ver = paso.version || 'V1';
+                if (stats.badaVersionCounts[ver] !== undefined) {
+                    stats.badaVersionCounts[ver]++;
+                } else {
+                    stats.badaVersionCounts['V1']++;
+                }
+            });
+        }
+
+        // 3. Estado del CDU
+        const status = cdu.estado || 'En Desarrollo';
+        if (stats.statusCounts[status] !== undefined) {
+            stats.statusCounts[status]++;
+        } else {
+            stats.statusCounts['En Desarrollo']++;
+        }
+    });
+
+    stats.finalProgress = stats.validCdus > 0 ? Math.round(stats.totalProgress / stats.validCdus) : 0;
+
+    return stats;
+}
