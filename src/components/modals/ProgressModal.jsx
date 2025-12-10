@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { calculateVersionStats } from '../../store/statsCalculator';
@@ -7,6 +7,7 @@ export default function ProgressModal({ isOpen, onClose, version }) {
     if (!version) return null;
 
     const stats = useMemo(() => calculateVersionStats(version), [version]);
+    const [expandedChart, setExpandedChart] = useState(null);
 
     if (!stats) return null;
 
@@ -79,6 +80,7 @@ export default function ProgressModal({ isOpen, onClose, version }) {
             title={`Progreso V${version.numero}`}
             type="info"
             showIcon={false}
+            className={`modal-progress ${expandedChart ? 'modal-expanded' : ''}`}
             actions={<Button onClick={onClose}>Cerrar</Button>}
         >
             <div className="modal-progress-content" style={{ display: 'grid', gap: '2rem' }}>
@@ -104,17 +106,83 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                 <div className="charts-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
 
                     {/* 2. ESTADOS CDUS */}
-                    <div className="chart-card">
-                        <h4 className="chart-subtitle">Estados CDUs</h4>
-                        <div className="pie-chart-container" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                            <div className="pie-chart" style={{
-                                width: '80px',
-                                height: '80px',
-                                borderRadius: '50%',
-                                background: statusGradient,
+                    <div
+                        className={`chart-card ${expandedChart === 'status' ? 'expanded' : ''}`}
+                        onClick={() => setExpandedChart(expandedChart === 'status' ? null : 'status')}
+                        style={{
+                            cursor: 'pointer',
+                            gridColumn: expandedChart === 'status' ? '1 / -1' : 'auto',
+                            transition: 'all 0.3s ease'
+                        }}
+                    >
+                        <h4 className="chart-subtitle">Estados CDUs {expandedChart === 'status' && '(Click para contraer)'}</h4>
+
+                        <div className="chart-content-wrapper" style={{
+                            display: 'flex',
+                            flexDirection: expandedChart === 'status' ? 'row' : 'column',
+                            gap: '2rem',
+                            alignItems: expandedChart === 'status' ? 'flex-start' : 'initial'
+                        }}>
+                            {/* Gráfico */}
+                            <div className="pie-chart-container" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '1rem',
                                 flexShrink: 0
-                            }}></div>
-                            <RenderLegend data={statusCounts} colors={statusColors} />
+                            }}>
+                                <div className="pie-chart" style={{
+                                    width: expandedChart === 'status' ? '120px' : '80px',
+                                    height: expandedChart === 'status' ? '120px' : '80px',
+                                    borderRadius: '50%',
+                                    background: statusGradient,
+                                    flexShrink: 0,
+                                    transition: 'all 0.3s ease'
+                                }}></div>
+                                <RenderLegend data={statusCounts} colors={statusColors} />
+                            </div>
+
+                            {/* Detalles (Solo visible si está expandido) */}
+                            {expandedChart === 'status' && (
+                                <div className="chart-details" style={{
+                                    flex: 1,
+                                    columnCount: 'auto',
+                                    columnWidth: '300px',
+                                    columnGap: '2rem',
+                                    columnFill: 'auto',
+                                    height: '70vh',
+                                    overflowX: 'auto',
+                                    borderLeft: '1px solid var(--border-color)',
+                                    paddingLeft: '2rem',
+                                    animation: 'fadeIn 0.3s ease'
+                                }}>
+                                    {Object.entries(stats.cdusByStatus).map(([status, titles]) => {
+                                        if (titles.length === 0) return null;
+                                        return (
+                                            <div key={status} className="status-column" style={{ breakInside: 'avoid', marginBottom: '1.5rem' }}>
+                                                <h5 style={{
+                                                    color: statusColors[status],
+                                                    marginBottom: '0.5rem',
+                                                    fontSize: '1rem',
+                                                    borderBottom: `2px solid ${statusColors[status]}`
+                                                }}>
+                                                    {status} ({titles.length})
+                                                </h5>
+                                                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                                    {titles.map((title, idx) => (
+                                                        <li key={idx} style={{
+                                                            fontSize: '0.9rem',
+                                                            marginBottom: '0.35rem',
+                                                            color: 'var(--text-secondary)'
+                                                        }}>
+                                                            • {title}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -158,6 +226,10 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                 .legend-item { display: flex; alignItems: center; gap: 0.5rem; font-size: 0.8rem; margin-bottom: 0.25rem; }
                 .legend-color { width: 10px; height: 10px; border-radius: 2px; }
                 .legend-label { color: var(--text-primary); }
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
             `}</style>
         </Modal>
     );

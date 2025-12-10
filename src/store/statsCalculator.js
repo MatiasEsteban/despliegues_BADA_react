@@ -50,6 +50,12 @@ export function calculateVersionStats(version) {
             'Certificado OK': 0,
             'En Produccion': 0
         },
+        cdusByStatus: {
+            'En Desarrollo': [],
+            'Pendiente de Certificacion': [],
+            'Certificado OK': [],
+            'En Produccion': []
+        },
         difficultyCounts: {
             'Baja': 0,
             'Media': 0,
@@ -94,8 +100,14 @@ export function calculateVersionStats(version) {
         const status = cdu.estado || 'En Desarrollo';
         if (stats.statusCounts[status] !== undefined) {
             stats.statusCounts[status]++;
+            if (stats.cdusByStatus[status]) {
+                stats.cdusByStatus[status].push(cdu.nombreCDU);
+            }
         } else {
             stats.statusCounts['En Desarrollo']++;
+            if (stats.cdusByStatus['En Desarrollo']) {
+                stats.cdusByStatus['En Desarrollo'].push(cdu.nombreCDU);
+            }
         }
     });
 
