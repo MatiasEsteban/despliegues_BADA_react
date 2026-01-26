@@ -236,6 +236,49 @@ export const useDataStore = create((set, get) => ({
         get()._scheduleSave();
     },
 
+    evolveCDU: async (versionId, cduUuid, newCduData) => {
+        const versions = get().versions;
+        const versionIndex = versions.findIndex(v => v.id === versionId);
+        if (versionIndex === -1) return;
+
+        const version = { ...versions[versionIndex] };
+        const cduIndex = version.cdus.findIndex(c => c.uuid === cduUuid);
+        if (cduIndex === -1) return;
+
+        const currentCdu = version.cdus[cduIndex];
+
+        // Crear snapshot para historial
+        const historyEntry = {
+            ...currentCdu,
+            fechaArchivado: new Date().toISOString(),
+            razonCambio: 'Evolución a nueva versión'
+        };
+        // Limpiamos historial recursivo si existiera para no anidar infinitamente
+        delete historyEntry.historial;
+
+        // Actualizamos CDU
+        const updatedCdu = {
+            ...newCduData,
+            historial: [...(currentCdu.historial || []), historyEntry]
+        };
+
+        const newCdus = [...version.cdus];
+        newCdus[cduIndex] = updatedCdu;
+
+        version.cdus = newCdus;
+        const newVersions = [...versions];
+        newVersions[versionIndex] = version;
+
+        set({ versions: newVersions });
+
+        // Si es la versión activa, actualizamos activeCDUs
+        if (get().selectedVersionId === versionId) {
+            set({ activeCDUs: newCdus });
+        }
+
+        get()._scheduleSave();
+    },
+
     hasVersionChanges: (currentVersionData) => {
         const original = get().originalVersionState;
         if (!original) return false;

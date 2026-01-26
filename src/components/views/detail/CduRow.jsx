@@ -6,7 +6,7 @@ import BadaGraph from './BadaGraph';
 import { Icons } from '../../ui/Icons';
 import { StatusBadge } from '../../ui/Badge';
 
-export default function CduRow({ cdu, onUpdate, onDelete }) {
+export default function CduRow({ cdu, onUpdate, onDelete, onEvolve, onViewHistory }) {
 
     // Helper para actualizar un campo específico del CDU
     const handleChange = (field, value) => {
@@ -35,7 +35,7 @@ export default function CduRow({ cdu, onUpdate, onDelete }) {
                         onChange={(e) => handleChange('nombreCDU', e.target.value)}
                         placeholder="Nombre CDU"
                     />
-                    <button className="btn-historial" title="Ver historial" onClick={() => alert('Historial pendiente')}>
+                    <button className="btn-historial" title="Ver historial" onClick={onViewHistory}>
                         <Icons.Info className="icon-small" />
                     </button>
                 </div>
@@ -123,9 +123,19 @@ export default function CduRow({ cdu, onUpdate, onDelete }) {
 
             {/* 9. ACCIONES */}
             <td style={{ textAlign: 'center' }}>
-                <button className="btn btn-danger btn-eliminar" onClick={onDelete}>
-                    <Icons.Trash className="icon" />
-                </button>
+                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                    <button
+                        className="btn btn-primary"
+                        onClick={onEvolve}
+                        title="Evolucionar CDU (Nueva Fase)"
+                        style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}
+                    >
+                        <Icons.Edit className="icon" /> Evol.
+                    </button>
+                    <button className="btn btn-danger btn-eliminar" onClick={onDelete} title="Eliminar CDU">
+                        <Icons.Trash className="icon" />
+                    </button>
+                </div>
             </td>
         </tr>
     );

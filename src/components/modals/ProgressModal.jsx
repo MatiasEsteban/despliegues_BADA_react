@@ -202,17 +202,99 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                     </div>
 
                     {/* 4. VERSION BADA */}
-                    <div className="chart-card">
-                        <h4 className="chart-subtitle">Versión Bada (Pasos)</h4>
-                        <div className="pie-chart-container" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                            <div className="pie-chart" style={{
-                                width: '80px',
-                                height: '80px',
-                                borderRadius: '50%',
-                                background: badaGradient,
+                    <div
+                        className={`chart-card ${expandedChart === 'bada' ? 'expanded' : ''}`}
+                        onClick={() => setExpandedChart(expandedChart === 'bada' ? null : 'bada')}
+                        style={{
+                            cursor: 'pointer',
+                            gridColumn: expandedChart === 'bada' ? '1 / -1' : 'auto',
+                            transition: 'all 0.3s ease'
+                        }}
+                    >
+                        <h4 className="chart-subtitle">Versión Bada (Pasos) {expandedChart === 'bada' && '(Click para contraer)'}</h4>
+
+                        <div className="chart-content-wrapper" style={{
+                            display: 'flex',
+                            flexDirection: expandedChart === 'bada' ? 'row' : 'column',
+                            gap: '2rem',
+                            alignItems: expandedChart === 'bada' ? 'flex-start' : 'initial'
+                        }}>
+                            <div className="pie-chart-container" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '1rem',
                                 flexShrink: 0
-                            }}></div>
-                            <RenderLegend data={badaVersionCounts} colors={badaColors} />
+                            }}>
+                                <div className="pie-chart" style={{
+                                    width: expandedChart === 'bada' ? '120px' : '80px',
+                                    height: expandedChart === 'bada' ? '120px' : '80px',
+                                    borderRadius: '50%',
+                                    background: badaGradient,
+                                    flexShrink: 0,
+                                    transition: 'all 0.3s ease'
+                                }}></div>
+                                <RenderLegend data={badaVersionCounts} colors={badaColors} />
+                            </div>
+
+                            {/* Detalles BADA */}
+                            {expandedChart === 'bada' && (
+                                <div className="chart-details" style={{
+                                    flex: 1,
+                                    columnCount: 'auto',
+                                    columnWidth: '300px',
+                                    columnGap: '2rem',
+                                    columnFill: 'auto',
+                                    height: '70vh',
+                                    overflowX: 'auto',
+                                    borderLeft: '1px solid var(--border-color)',
+                                    paddingLeft: '2rem',
+                                    animation: 'fadeIn 0.3s ease'
+                                }}>
+                                    {/* Calcular CDUs por versión dominante on-the-fly */}
+                                    {(() => {
+                                        const cdusByBada = { 'V1': [], 'V2': [] };
+                                        version.cdus.forEach(cdu => {
+                                            if (!cdu.pasos || cdu.pasos.length === 0) return;
+                                            const counts = { 'V1': 0, 'V2': 0 };
+                                            cdu.pasos.forEach(p => {
+                                                const v = p.version || 'V1';
+                                                counts[v] = (counts[v] || 0) + 1;
+                                            });
+                                            const dom = counts['V2'] > counts['V1'] ? 'V2' : 'V1'; // Simple majority
+                                            // OJO: La logica de grafico era por PASOS global, aqui agrupamos CDUs por dominante. 
+                                            // Es una visualizacion distinta pero util.
+                                            if (cdusByBada[dom]) cdusByBada[dom].push(cdu.nombreCDU);
+                                        });
+
+                                        return Object.entries(cdusByBada).map(([ver, titles]) => {
+                                            if (titles.length === 0) return null;
+                                            return (
+                                                <div key={ver} className="status-column" style={{ breakInside: 'avoid', marginBottom: '1.5rem' }}>
+                                                    <h5 style={{
+                                                        color: badaColors[ver],
+                                                        marginBottom: '0.5rem',
+                                                        fontSize: '1rem',
+                                                        borderBottom: `2px solid ${badaColors[ver]}`
+                                                    }}>
+                                                        Dominante {ver} ({titles.length})
+                                                    </h5>
+                                                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                                        {titles.map((title, idx) => (
+                                                            <li key={idx} style={{
+                                                                fontSize: '0.9rem',
+                                                                marginBottom: '0.35rem',
+                                                                color: 'var(--text-secondary)'
+                                                            }}>
+                                                                • {title}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            );
+                                        });
+                                    })()}
+                                </div>
+                            )}
                         </div>
                     </div>
 

@@ -34,13 +34,38 @@ export class ExcelExporter {
                         const respStr = (cdu.responsables || []).map(r => `${r.nombre} (${r.rol})`).join(' || ');
                         const obsStr = (cdu.observaciones || []).map(o => typeof o === 'string' ? o : o.texto).join(' || ');
 
+                        // Calcular Versión Dominante
+                        let badaVersionStr = 'N/A';
+                        if (cdu.pasos && cdu.pasos.length > 0) {
+                            const counts = {};
+                            cdu.pasos.forEach(p => {
+                                const v = p.version || 'V1';
+                                counts[v] = (counts[v] || 0) + 1;
+                            });
+
+                            // Encontrar mayor
+                            let maxV = null;
+                            let maxCount = 0;
+                            Object.entries(counts).forEach(([v, count]) => {
+                                if (count > maxCount) {
+                                    maxCount = count;
+                                    maxV = v;
+                                }
+                            });
+
+                            if (maxV) {
+                                const percent = Math.round((maxCount / cdu.pasos.length) * 100);
+                                badaVersionStr = `${percent}% ${maxV}`;
+                            }
+                        }
+
                         datosExcel.push({
                             ...versionData,
                             'UUID': cdu.uuid,
                             'Nombre CDU': cdu.nombreCDU,
                             'Descripción CDU': cdu.descripcionCDU,
                             'Estado': cdu.estado,
-                            'Versión BADA': cdu.versionBADA,
+                            'Versión BADA': badaVersionStr,
                             'Version de Miró': cdu.versionMiro,
                             'Responsables': respStr,
                             'Observaciones CDU': obsStr,

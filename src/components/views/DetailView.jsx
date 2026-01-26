@@ -5,13 +5,15 @@ import { useDataStore } from '../../store/dataStore';
 import { useModal } from '../../context/ModalContext';
 import DetailHeader from './detail/DetailHeader';
 import CduRow from './detail/CduRow';
+import EvolutionModal from '../modals/EvolutionModal'; // Importar Modal
+import CduHistoryModal from '../modals/CduHistoryModal'; // Importar Modal Historial
 import { Button } from '../ui/Button';
 import { Icons } from '../ui/Icons';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 
 export default function DetailView() {
-    const { selectedVersionId, versions, updateCurrentVersion } = useDataStore();
+    const { selectedVersionId, versions, updateCurrentVersion, evolveCDU } = useDataStore();
     const { confirm } = useModal();
 
     // Estados para filtros
@@ -20,6 +22,11 @@ export default function DetailView() {
 
     // NUEVO: Estado para colapsar/expandir el buscador
     const [showFilters, setShowFilters] = useState(false);
+
+    // NUEVO: Estado para Modal de Evolución
+    const [evolutionCdu, setEvolutionCdu] = useState(null);
+    // NUEVO: Estado para Modal de Historial
+    const [historyCdu, setHistoryCdu] = useState(null);
 
     // Obtener la versión actualizada directamente del store
     const version = versions.find(v => v.id === selectedVersionId);
@@ -52,6 +59,22 @@ export default function DetailView() {
             const newCdus = activeCDUs.filter(c => c.id !== cduId);
             updateCurrentVersion({ ...version, cdus: newCdus });
         }
+    };
+
+    // Handler para abrir modal
+    const handleEvolveClick = (cdu) => {
+        setEvolutionCdu(cdu);
+    };
+
+    // Handler para confirmar evolución (llamado desde modal)
+    const handleConfirmEvolution = (cduUuid, newCduData) => {
+        evolveCDU(selectedVersionId, cduUuid, newCduData);
+        setEvolutionCdu(null);
+    };
+
+    // Handler para ver historial
+    const handleViewHistory = (cdu) => {
+        setHistoryCdu(cdu);
     };
 
     const handleAddCdu = () => {
@@ -168,6 +191,8 @@ export default function DetailView() {
                                         cdu={cdu}
                                         onUpdate={handleUpdateCdu}
                                         onDelete={() => handleDeleteCdu(cdu.id)}
+                                        onEvolve={() => handleEvolveClick(cdu)}
+                                        onViewHistory={() => handleViewHistory(cdu)}
                                     />
                                 ))
                             )}
@@ -181,6 +206,19 @@ export default function DetailView() {
                     </Button>
                 </div>
             </div>
+
+            <EvolutionModal
+                isOpen={!!evolutionCdu}
+                onClose={() => setEvolutionCdu(null)}
+                cdu={evolutionCdu}
+                onConfirm={handleConfirmEvolution}
+            />
+
+            <CduHistoryModal
+                isOpen={!!historyCdu}
+                onClose={() => setHistoryCdu(null)}
+                cdu={historyCdu}
+            />
         </div>
     );
 }
