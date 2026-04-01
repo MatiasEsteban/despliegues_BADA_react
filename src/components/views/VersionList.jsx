@@ -9,7 +9,7 @@ export default function VersionList() {
     const { filteredVersions, selectVersion, getVersionEnProduccionId, addNewEmptyVersion, duplicateVersion, versions } = useDataStore();
 
     // Estado local de UI
-    const [displayMode, setDisplayMode] = useState('grid'); // 'grid' | 'list'
+    const [displayMode, setDisplayMode] = useState('list'); // 'grid' | 'list'
     const [visibleCount, setVisibleCount] = useState(10); // Para "Cargar Más" en Grid
     const [currentPage, setCurrentPage] = useState(1); // Para paginación en Lista
     const itemsPerPage = 10;
