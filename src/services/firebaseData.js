@@ -95,24 +95,42 @@ export function subscribeToAppState(callback) {
  */
 export async function saveAppState(fullState) {
     try {
-        const batch = writeBatch(db);
+        let batches = [];
+        let currentBatch = writeBatch(db);
         let operationsCount = 0;
+        let totalOperationsCount = 0;
+
+        const commitCurrentBatch = () => {
+            batches.push(currentBatch.commit());
+            currentBatch = writeBatch(db);
+            operationsCount = 0;
+        };
+
+        const incrementAndCheck = () => {
+            operationsCount++;
+            totalOperationsCount++;
+            if (operationsCount >= 490) { // Límite de 500 por lote
+                commitCurrentBatch();
+            }
+        };
 
         // 1. Guardar Metadata
-        batch.set(METADATA_DOC_REF, {
+        currentBatch.set(METADATA_DOC_REF, {
             versionEnProduccionId: fullState.versionEnProduccionId || null,
             timestamp: new Date().toISOString()
         });
-        operationsCount++;
+        incrementAndCheck();
 
         // 2. Determinar versiones eliminadas para borrarlas de la subcolección
         const currentVersionIds = fullState.versions.map(v => String(v.id));
         const deletedIds = Object.keys(cachedVersions).filter(id => !currentVersionIds.includes(id));
         
+        let localCacheUpdate = {}; // Para actualizar localmente la caché si tiene éxito
+        
         for (const id of deletedIds) {
-            batch.delete(doc(db, 'versions', id));
-            delete cachedVersions[id];
-            operationsCount++;
+            currentBatch.delete(doc(db, 'versions', id));
+            incrementAndCheck();
+            localCacheUpdate[id] = null; // null significa borrado
         }
 
         // 3. Guardar versiones nuevas o modificadas
@@ -123,16 +141,28 @@ export async function saveAppState(fullState) {
             // Solo enviar a Firebase si es distinta a lo que tenemos en caché
             if (cachedVersions[idDoc] !== stringifiedV) {
                 const docRef = doc(db, 'versions', idDoc);
-                batch.set(docRef, v);
-                cachedVersions[idDoc] = stringifiedV;
-                operationsCount++;
+                currentBatch.set(docRef, v);
+                incrementAndCheck();
+                localCacheUpdate[idDoc] = stringifiedV;
             }
         }
 
-        // Si solo se modificó Metadata (y ninguna versión), operationsCount es 1.
         if (operationsCount > 0) {
-            await batch.commit();
-            console.log(`💾 Estado guardado exitosamente (${operationsCount - 1} versiones afectadas).`);
+            batches.push(currentBatch.commit());
+        }
+
+        if (batches.length > 0) {
+            await Promise.all(batches);
+            console.log(`💾 Estado guardado exitosamente (${totalOperationsCount} operaciones).`);
+            
+            // Actualizar caché solo si todo salió bien
+            for (const [id, value] of Object.entries(localCacheUpdate)) {
+                if (value === null) {
+                    delete cachedVersions[id];
+                } else {
+                    cachedVersions[id] = value;
+                }
+            }
         }
     } catch (error) {
         console.error("❌ Error al guardar estado:", error);
