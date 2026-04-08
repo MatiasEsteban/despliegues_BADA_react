@@ -14,6 +14,7 @@ const VERSIONS_COL_REF = collection(db, 'versions');
 
 // Cache para evitar sobreescribir documentos en Firebase si no han cambiado en memoria
 let cachedVersions = {};
+let cachedVersionEnProduccionId = undefined;
 
 /**
  * Se suscribe a:
@@ -52,6 +53,7 @@ export function subscribeToAppState(callback) {
     const unsubMetadata = onSnapshot(METADATA_DOC_REF, (docSnap) => {
         if (docSnap.exists()) {
             metadata = docSnap.data();
+            cachedVersionEnProduccionId = metadata.versionEnProduccionId;
         }
         isMetadataLoaded = true;
         emitIfReady();
@@ -114,18 +116,22 @@ export async function saveAppState(fullState) {
             }
         };
 
-        // 1. Guardar Metadata
-        currentBatch.set(METADATA_DOC_REF, {
-            versionEnProduccionId: fullState.versionEnProduccionId || null,
-            timestamp: new Date().toISOString()
-        });
-        incrementAndCheck();
+        let localCacheUpdate = {}; // Para actualizar localmente la caché si tiene éxito
+        let updateMetadataCache = false;
+
+        // 1. Guardar Metadata SOLO si cambió la version en producción
+        if (fullState.versionEnProduccionId !== cachedVersionEnProduccionId) {
+            currentBatch.set(METADATA_DOC_REF, {
+                versionEnProduccionId: fullState.versionEnProduccionId || null,
+                timestamp: new Date().toISOString()
+            });
+            incrementAndCheck();
+            updateMetadataCache = true;
+        }
 
         // 2. Determinar versiones eliminadas para borrarlas de la subcolección
         const currentVersionIds = fullState.versions.map(v => String(v.id));
         const deletedIds = Object.keys(cachedVersions).filter(id => !currentVersionIds.includes(id));
-        
-        let localCacheUpdate = {}; // Para actualizar localmente la caché si tiene éxito
         
         for (const id of deletedIds) {
             currentBatch.delete(doc(db, 'versions', id));
@@ -156,6 +162,10 @@ export async function saveAppState(fullState) {
             console.log(`💾 Estado guardado exitosamente (${totalOperationsCount} operaciones).`);
             
             // Actualizar caché solo si todo salió bien
+            if (updateMetadataCache) {
+                cachedVersionEnProduccionId = fullState.versionEnProduccionId;
+            }
+
             for (const [id, value] of Object.entries(localCacheUpdate)) {
                 if (value === null) {
                     delete cachedVersions[id];
