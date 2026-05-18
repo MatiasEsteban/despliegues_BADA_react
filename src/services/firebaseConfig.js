@@ -1,6 +1,6 @@
 // src/services/firebaseConfig.js
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
@@ -16,6 +16,8 @@ const firebaseConfig = {
 // Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 
-// Exporta la instancia de Firestore y Auth
-export const db = getFirestore(app);
+// Exporta la instancia de Firestore forzando long polling para evitar errores JD de WebSocket
+export const db = initializeFirestore(app, {
+    experimentalForceLongPolling: true
+});
 export const auth = getAuth(app);

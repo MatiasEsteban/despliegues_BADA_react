@@ -103,7 +103,36 @@ export const useDataStore = create((set, get) => ({
     getVersionEnProduccionId: () => get().versionEnProduccionId,
 
     setVersionEnProduccion: (versionId) => {
-        set({ versionEnProduccionId: versionId });
+        const versions = get().versions;
+        let newVersions = [...versions];
+        
+        if (versionId) {
+            const index = newVersions.findIndex(v => v.id === versionId);
+            if (index !== -1) {
+                const currentDate = new Date().toISOString().split('T')[0];
+                const currentTime = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                newVersions[index] = {
+                    ...newVersions[index],
+                    fechaDespliegue: currentDate,
+                    horaDespliegue: currentTime
+                };
+            }
+        }
+
+        set({ 
+            versionEnProduccionId: versionId,
+            versions: newVersions,
+            filteredVersions: get()._applyFilter(newVersions, get().filterText)
+        });
+
+        // Actualizar originalVersionState si la versión actual es la que está abierta
+        if (versionId && get().selectedVersionId === versionId) {
+            const updatedVersion = newVersions.find(v => v.id === versionId);
+            if (updatedVersion) {
+                set({ originalVersionState: JSON.parse(JSON.stringify(updatedVersion)) });
+            }
+        }
+
         get()._scheduleSave();
     },
 
@@ -157,7 +186,8 @@ export const useDataStore = create((set, get) => ({
             fechaCreacion: currentDate,
             horaCreacion: currentTime,
             fuente: `V${sourceVersion.numero}`,
-            cdus: clonedCdus
+            cdus: clonedCdus,
+            comentarios: { mejoras: [], salidas: [], cambiosCaliente: [], observaciones: [] }
         };
 
         const newVersions = [...versions, newVersion];
@@ -195,10 +225,31 @@ export const useDataStore = create((set, get) => ({
     _applyFilter: (versions, text) => {
         if (!text) return versions;
         const lowerText = text.toLowerCase();
-        return versions.filter(v =>
-            (v.numero && v.numero.toString().toLowerCase().includes(lowerText)) ||
-            (v.fuente && v.fuente.toLowerCase().includes(lowerText))
-        );
+        return versions.filter(v => {
+            const matchNumero = v.numero && v.numero.toString().toLowerCase().includes(lowerText);
+            const matchFuente = v.fuente && v.fuente.toLowerCase().includes(lowerText);
+            
+            let matchCDU = false;
+            if (v.cdus && v.cdus.length > 0) {
+                matchCDU = v.cdus.some(c => 
+                    (c.nombreCDU && c.nombreCDU.toLowerCase().includes(lowerText)) || 
+                    (c.descripcionCDU && c.descripcionCDU.toLowerCase().includes(lowerText))
+                );
+            }
+
+            let matchComentarios = false;
+            if (v.comentarios) {
+                const allComments = [
+                    ...(v.comentarios.mejoras || []),
+                    ...(v.comentarios.salidas || []),
+                    ...(v.comentarios.cambiosCaliente || []),
+                    ...(v.comentarios.observaciones || [])
+                ];
+                matchComentarios = allComments.some(c => c && c.toLowerCase().includes(lowerText));
+            }
+
+            return matchNumero || matchFuente || matchCDU || matchComentarios;
+        });
     },
 
     setViewMode: (mode) => set({ viewMode: mode }),
