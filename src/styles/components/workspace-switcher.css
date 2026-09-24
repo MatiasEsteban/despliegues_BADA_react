@@ -1,0 +1,294 @@
+/* ============================================
+   WORKSPACE SWITCHER — Dropdown header top-left
+   ============================================ */
+
+.ws-switcher {
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* TRIGGER button */
+.ws-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 8px 12px;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.15s;
+    min-width: 0;
+    max-width: 220px;
+    white-space: nowrap;
+}
+
+.ws-trigger:hover {
+    border-color: var(--accent-hover);
+    background: var(--bg-primary);
+}
+
+.ws-trigger-icon {
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.ws-trigger-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+}
+
+.ws-trigger-chevron {
+    width: 14px;
+    height: 14px;
+    color: var(--text-secondary);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+/* DROPDOWN */
+.ws-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 200;
+    width: 240px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px var(--shadow), 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    animation: wsDropdownIn 0.15s ease;
+}
+
+@keyframes wsDropdownIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.ws-dropdown-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    padding: 10px 14px 6px;
+    opacity: 0.7;
+}
+
+/* LISTA de workspaces */
+.ws-list {
+    list-style: none;
+    padding: 4px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ws-item-wrap {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    border-radius: 8px;
+    transition: background 0.12s;
+}
+
+.ws-item-wrap:hover .ws-item-delete {
+    opacity: 1;
+}
+
+.ws-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-align: left;
+    transition: background 0.12s;
+    min-width: 0;
+}
+
+.ws-item:hover {
+    background: var(--bg-secondary);
+}
+
+.ws-item--active {
+    background: var(--bg-secondary);
+    font-weight: 600;
+}
+
+.ws-item-check {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--estado-produccion-color);
+    flex-shrink: 0;
+}
+
+.ws-item-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ws-item-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+/* Botón eliminar (visible solo en hover del item) */
+.ws-item-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    margin-right: 4px;
+}
+
+.ws-item-delete:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    opacity: 1;
+}
+
+/* FOOTER del dropdown */
+.ws-dropdown-footer {
+    padding: 6px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 2px;
+}
+
+.ws-new-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.82rem;
+    text-align: left;
+    transition: all 0.15s;
+}
+
+.ws-new-btn:hover {
+    border-color: var(--accent-hover);
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+}
+
+/* INPUT de nuevo workspace */
+.ws-new-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-hover);
+    border-radius: 8px;
+    padding: 4px 6px;
+}
+
+.ws-new-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 0.83rem;
+    outline: none;
+    font-family: inherit;
+    min-width: 0;
+}
+
+.ws-new-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.5;
+}
+
+.ws-new-confirm {
+    background: var(--accent-hover);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+}
+
+.ws-new-confirm:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.ws-new-cancel {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+}
+
+.ws-new-cancel:hover { opacity: 1; }
+
+/* Ajuste del header para el nuevo layout */
+.header-title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.header-title-block h1 {
+    margin: 0;
+}
+
+.header-title-block p {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}

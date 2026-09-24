@@ -27,7 +27,11 @@
 @import './components/modals/modal-historial.css';
 @import './components/modals/modal-login.css';
 @import './components/modals/modal-progress.css'; /* NUEVO */
+@import './components/modals/modal-full-summary.css';
 
 /* === OTROS === */
 @import './components/view-toggle.css';
 @import './components/list-view.css';
+@import './components/changelog.css';
+@import './components/workspace-switcher.css';
+

@@ -4,8 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 export class ExcelImporter {
     static async importExcel(file) {
         try {
-            const json = await this.readExcelFile(file);
-            const processedData = this.processExcelData(json);
+            const workbook = await this.readWorkbook(file);
+            const processedData = this.processWorkbook(workbook);
             return processedData;
         } catch (error) {
             console.error('Error en ExcelImporter:', error);
@@ -13,27 +13,17 @@ export class ExcelImporter {
         }
     }
 
-    static readExcelFile(file) {
+    /**
+     * Lee el workbook completo del archivo Excel.
+     */
+    static readWorkbook(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const sheetName = 'Detalle Despliegues';
-                    let wsDetalle = workbook.Sheets[sheetName];
-
-                    // Búsqueda fallback si no encuentra la hoja exacta
-                    if (!wsDetalle) {
-                        const possibleSheet = Object.keys(workbook.Sheets).find(name => name.toLowerCase().includes('detalle'));
-                        if (possibleSheet) {
-                            wsDetalle = workbook.Sheets[possibleSheet];
-                        } else {
-                            throw new Error(`No se encontró la hoja '${sheetName}'.`);
-                        }
-                    }
-                    const json = XLSX.utils.sheet_to_json(wsDetalle, { defval: "" });
-                    resolve(json);
+                    resolve(workbook);
                 } catch (error) { reject(new Error('No se pudo leer el archivo Excel. Verifique el formato.')); }
             };
             reader.onerror = () => reject(new Error('Error de lectura de archivo.'));
@@ -41,49 +31,118 @@ export class ExcelImporter {
         });
     }
 
-    static processExcelData(json) {
+    /**
+     * Procesa el workbook completo: lee Changelog (comentarios/meta) y CDUs Detalle (CDUs).
+     * Combina ambos datasets para generar el estado completo.
+     */
+    static processWorkbook(workbook) {
+        const sheetNames = Object.keys(workbook.Sheets);
+
+        // --- 1) Leer hoja de Changelog (comentarios y metadata de versión) ---
+        const changelogSheet = this.findSheet(workbook, ['Changelog']);
+        const changelogRows  = changelogSheet
+            ? XLSX.utils.sheet_to_json(changelogSheet, { defval: '' })
+            : [];
+
+        // --- 2) Leer hoja de CDUs Detalle ---
+        const detalleSheet = this.findSheet(workbook, ['Detalle Despliegues', 'CDUs Detalle']);
+        const detalleRows  = detalleSheet
+            ? XLSX.utils.sheet_to_json(detalleSheet, { defval: '' })
+            : [];
+
+        // Si no hay ninguna de las dos hojas, error
+        if (changelogRows.length === 0 && detalleRows.length === 0) {
+            const available = sheetNames.join(', ');
+            throw new Error(`No se encontraron hojas válidas. Hojas disponibles: ${available}`);
+        }
+
+        // --- 3) Construir versiones desde Changelog (comentarios + meta) ---
         const versionesMap = new Map();
         let versionEnProduccionId = null;
-        let nextTempVersionId = Date.now(); // Usamos timestamp para IDs seguros al importar
+        let nextTempVersionId = Date.now();
 
-        json.forEach((row) => {
-            const versionNumero = String(row['Versión'] || '').trim();
-            if (!versionNumero) return;
+        for (const row of changelogRows) {
+            const versionNumero = this.cleanVersionNumber(row['Versión'] || '');
+            if (!versionNumero) continue;
 
-            let version = versionesMap.get(versionNumero);
+            const tempId = nextTempVersionId++;
+            const fechaCreacionParsed = this.parseExcelDate(row['Fecha Creación']);
+            const fechaDespliegueParsed = this.parseExcelDate(row['Fecha Despliegue']);
+            const today = new Date().toISOString().split('T')[0];
 
-            if (!version) {
-                const tempId = nextTempVersionId++; // ID numérico temporal
-                const fechaCreacionParsed = this.parseExcelDate(row['Fecha Creación']);
-                const fechaDespliegueParsed = this.parseExcelDate(row['Fecha Despliegue']);
-                const today = new Date().toISOString().split('T')[0];
+            const version = {
+                id: tempId,
+                numero: versionNumero,
+                titulo: String(row['Título'] || row['Titulo'] || '').trim(),
+                fechaCreacion: fechaCreacionParsed || '',
+                horaCreacion: this.parseExcelTime(row['Hora Creación']) || '',
+                fuente: String(row['Fuente'] || 'Importada').trim(),
+                fechaDespliegue: fechaDespliegueParsed || '',
+                horaDespliegue: this.parseExcelTime(row['Hora Despliegue'] || row['Hora']) || '',
+                comentarios: {
+                    mejoras:         this.parseExcelStringToArray(row['Mejoras/Bugfixes']),
+                    salidas:         this.parseExcelStringToArray(row['Salidas a Producción']),
+                    cambiosCaliente: this.parseExcelStringToArray(row['Cambios en Caliente']),
+                    observaciones:   this.parseExcelStringToArray(row['Observaciones'] || row['Observaciones Versión']),
+                },
+                cdus: [],
+            };
 
-                version = {
-                    id: tempId,
-                    numero: versionNumero,
-                    fechaCreacion: fechaCreacionParsed || today,
-                    horaCreacion: this.parseExcelTime(row['Hora Creación']) || '00:00',
-                    fuente: String(row['Fuente'] || 'Importada').trim(),
-                    fechaDespliegue: fechaDespliegueParsed || today,
-                    horaDespliegue: this.parseExcelTime(row['Hora']) || '',
-                    comentarios: {
-                        mejoras: this.parseExcelStringToArray(row['Mejoras/Bugfixes']),
-                        salidas: this.parseExcelStringToArray(row['Salidas a Producción']),
-                        cambiosCaliente: this.parseExcelStringToArray(row['Cambios en Caliente']),
-                        observaciones: this.parseExcelStringToArray(row['Observaciones Versión'])
-                    },
-                    cdus: []
-                };
-                versionesMap.set(versionNumero, version);
-            }
-
-            // Detectar producción
             if (String(row['En Producción']).toUpperCase().trim() === 'SÍ') {
                 versionEnProduccionId = version.id;
             }
 
+            versionesMap.set(versionNumero, version);
+        }
+
+        // --- 4) Agregar CDUs desde hoja de detalle ---
+        for (const row of detalleRows) {
+            const versionNumero = this.cleanVersionNumber(row['Versión'] || '');
+            if (!versionNumero) continue;
+
+            // Si la versión no existe aún (no había hoja Changelog), crearla
+            if (!versionesMap.has(versionNumero)) {
+                const tempId = nextTempVersionId++;
+                const fechaCreacionParsed = this.parseExcelDate(row['Fecha Creación']);
+                const fechaDespliegueParsed = this.parseExcelDate(row['Fecha Despliegue']);
+                const today = new Date().toISOString().split('T')[0];
+
+                const version = {
+                    id: tempId,
+                    numero: versionNumero,
+                    titulo: '',
+                    fechaCreacion: fechaCreacionParsed || '',
+                    horaCreacion: this.parseExcelTime(row['Hora Creación']) || '',
+                    fuente: String(row['Fuente'] || 'Importada').trim(),
+                    fechaDespliegue: fechaDespliegueParsed || '',
+                    horaDespliegue: this.parseExcelTime(row['Hora Despliegue'] || row['Hora']) || '',
+                    comentarios: {
+                        mejoras:         this.parseExcelStringToArray(row['Mejoras/Bugfixes']),
+                        salidas:         this.parseExcelStringToArray(row['Salidas a Producción']),
+                        cambiosCaliente: this.parseExcelStringToArray(row['Cambios en Caliente']),
+                        observaciones:   this.parseExcelStringToArray(row['Observaciones'] || row['Observaciones Versión']),
+                    },
+                    cdus: [],
+                };
+
+                if (String(row['En Producción']).toUpperCase().trim() === 'SÍ') {
+                    versionEnProduccionId = version.id;
+                }
+
+                versionesMap.set(versionNumero, version);
+            }
+
+            // Detectar producción también desde la hoja de detalle
+            if (!versionEnProduccionId && String(row['En Producción']).toUpperCase().trim() === 'SÍ') {
+                const v = versionesMap.get(versionNumero);
+                if (v) versionEnProduccionId = v.id;
+            }
+
+            // Agregar CDU si no es placeholder
             const nombreCDU = String(row['Nombre CDU'] || '').trim();
             if (nombreCDU && nombreCDU !== '(Sin CDUs)') {
+                const version = versionesMap.get(versionNumero);
+
                 // Parseo de responsables
                 const responsablesTexto = String(row['Responsables'] || '');
                 const responsables = responsablesTexto.split('||').map(r => r.trim()).filter(Boolean).map(r => {
@@ -92,25 +151,52 @@ export class ExcelImporter {
                 }).filter(r => r.nombre);
 
                 version.cdus.push({
-                    id: uuidv4(), // UUID único para el CDU importado
-                    uuid: row['UUID'] || uuidv4(),
+                    id: uuidv4(),
+                    uuid: row['UUID CDU'] || row['UUID'] || uuidv4(),
                     nombreCDU: nombreCDU,
                     descripcionCDU: String(row['Descripción CDU'] || '').trim(),
                     estado: this.normalizarEstado(String(row['Estado'] || 'En Desarrollo')),
                     versionBADA: String(row['Versión BADA'] || 'V1').trim(),
-                    versionMiro: String(row['Version de Miró'] || '').trim(),
+                    versionMiro: String(row['Versión Miró'] || row['Version de Miró'] || '').trim(),
                     responsables: responsables,
                     observaciones: String(row['Observaciones CDU'] || '').split('||').map(o => o.trim()).filter(Boolean),
-                    historial: [], // Reiniciamos historial al importar
-                    pasos: [] // Excel no tiene pasos detallados
+                    historial: [],
+                    pasos: [],
                 });
             }
-        });
+        }
 
         return {
             versiones: Array.from(versionesMap.values()),
-            versionEnProduccionId: versionEnProduccionId
+            versionEnProduccionId: versionEnProduccionId,
         };
+    }
+
+    /**
+     * Busca una hoja del workbook por nombre exacto o parcial (fallback).
+     */
+    static findSheet(workbook, names) {
+        // Primero buscar por nombre exacto
+        for (const name of names) {
+            if (workbook.Sheets[name]) return workbook.Sheets[name];
+        }
+        // Fallback: buscar por coincidencia parcial (case-insensitive)
+        for (const name of names) {
+            const lower = name.toLowerCase();
+            const found = Object.keys(workbook.Sheets).find(s => s.toLowerCase().includes(lower));
+            if (found) return workbook.Sheets[found];
+        }
+        return null;
+    }
+
+    /**
+     * Limpia el número de versión (quita "V" prefix si existe).
+     */
+    static cleanVersionNumber(raw) {
+        const trimmed = String(raw || '').trim();
+        if (!trimmed) return '';
+        // Quitar prefix "V" o "v" si lo tiene
+        return trimmed.replace(/^[Vv]/, '');
     }
 
     static normalizarEstado(estado) {

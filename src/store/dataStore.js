@@ -4,12 +4,54 @@ import { subscribeToAppState, saveAppState } from '../services/firebaseData';
 import { generateStats } from './statsCalculator';
 import { Debouncer } from '../utils/debouncer';
 
+// El debouncer necesita saber el workspaceId en el momento de guardar
 const debouncedSave = Debouncer.debounce((state) => {
-    saveAppState({
+    saveAppState(state.workspaceId, {
         versions: state.versions,
-        versionEnProduccionId: state.versionEnProduccionId
+        versionEnProduccionId: state.versionEnProduccionId,
     });
 }, 1500);
+
+// --- HELPERS DE NORMALIZACIÓN ---
+
+export const normalizeCommentEntry = (entry) => {
+    if (typeof entry === 'string') return { id: Date.now() + Math.random(), texto: entry, autor: '', cdu: '' };
+    if (entry && typeof entry === 'object' && entry.texto !== undefined) {
+        return {
+            autor: '',
+            cdu: entry.cdu || entry.cduNombre || '',
+            ...entry,
+            cdu: entry.cdu || entry.cduNombre || '',
+        };
+    }
+    return { id: Date.now() + Math.random(), texto: String(entry || ''), autor: '', cdu: '' };
+};
+
+export const normalizeCDUChangeEntry = (entry) => {
+    if (typeof entry === 'string') return { id: Date.now() + Math.random(), cduNombre: '', texto: entry, autor: '' };
+    if (entry && typeof entry === 'object') {
+        return {
+            id: entry.id || Date.now() + Math.random(),
+            cduNombre: entry.cduNombre || '',
+            texto: entry.texto || '',
+            autor: entry.autor || '',
+        };
+    }
+    return { id: Date.now() + Math.random(), cduNombre: '', texto: String(entry || ''), autor: '' };
+};
+
+export const normalizeComments = (comentarios) => {
+    if (!comentarios) return { mejoras: [], salidas: [], cambiosCaliente: [], observaciones: [], cambiosCDU: [] };
+    return {
+        mejoras: (comentarios.mejoras || []).map(normalizeCommentEntry),
+        salidas: (comentarios.salidas || []).map(normalizeCommentEntry),
+        cambiosCaliente: (comentarios.cambiosCaliente || []).map(normalizeCommentEntry),
+        observaciones: (comentarios.observaciones || []).map(normalizeCommentEntry),
+        cambiosCDU: (comentarios.cambiosCDU || []).map(normalizeCDUChangeEntry),
+    };
+};
+
+const EMPTY_COMENTARIOS = { mejoras: [], salidas: [], cambiosCaliente: [], observaciones: [], cambiosCDU: [] };
 
 const initialState = {
     versions: [],
@@ -20,77 +62,75 @@ const initialState = {
     versionEnProduccionId: null,
     loading: false,
     error: null,
-    viewMode: 'list',
+    viewMode: 'changelog',
     filterText: '',
     unsubscribe: null,
     originalVersionState: null,
     isSaving: false,
+    workspaceId: 'ventas-b2c', // se actualiza en initialize()
 };
 
 export const useDataStore = create((set, get) => ({
     ...initialState,
 
-    initialize: () => {
-        set({ loading: true, error: null });
+    /** Inicializa la suscripción al workspace indicado */
+    initialize: (workspaceId) => {
+        // Limpiar suscripción anterior
+        const prev = get().unsubscribe;
+        if (prev) prev();
 
-        const currentUnsubscribe = get().unsubscribe;
-        if (currentUnsubscribe) currentUnsubscribe();
+        set({ loading: true, error: null, workspaceId });
 
-        const newUnsubscribe = subscribeToAppState((data) => {
+        const newUnsubscribe = subscribeToAppState(workspaceId, (data) => {
             const { versions, versionEnProduccionId } = data;
-
             const stats = generateStats(versions);
-            const currentFilterText = get().filterText;
-            const filtered = get()._applyFilter(versions, currentFilterText);
+            const filtered = get()._applyFilter(versions, get().filterText);
 
             set({
-                versions: versions,
-                versionEnProduccionId: versionEnProduccionId,
+                versions,
+                versionEnProduccionId,
                 versionStats: stats,
                 filteredVersions: filtered,
                 loading: false,
+                error: null,
             });
 
             const selectedId = get().selectedVersionId;
-            if (selectedId) {
-                get().selectVersion(selectedId, versions);
-            }
+            if (selectedId) get().selectVersion(selectedId, versions);
+        }, (err) => {
+            // Si Firestore rechaza por permisos, dejar de spinear
+            console.error('Error en suscripción Firebase:', err);
+            set({ loading: false, error: 'Sin acceso a Firebase. Verificá las reglas de Firestore.' });
         });
 
-        set({ unsubscribe: newUnsubscribe, loading: false });
+        set({ unsubscribe: newUnsubscribe });
         return newUnsubscribe;
     },
 
     clearStore: () => {
-        const currentUnsubscribe = get().unsubscribe;
-        if (currentUnsubscribe) currentUnsubscribe();
-        set(initialState);
+        const prev = get().unsubscribe;
+        if (prev) prev();
+        set({ ...initialState });
     },
 
     _scheduleSave: () => {
-        const state = get();
         set({ isSaving: true });
-        debouncedSave(state);
-        setTimeout(() => { set({ isSaving: false }); }, 2000);
+        debouncedSave(get());
+        setTimeout(() => set({ isSaving: false }), 2000);
     },
 
-    // --- IMPORT DATA (NUEVO) ---
     importData: async (newVersions, newProdId) => {
         set({ loading: true });
         try {
-            // Actualizamos estado local inmediatamente
             set({
                 versions: newVersions,
                 versionEnProduccionId: newProdId,
-                filteredVersions: get()._applyFilter(newVersions, get().filterText)
+                filteredVersions: get()._applyFilter(newVersions, get().filterText),
             });
-
-            // Guardado INMEDIATO y completo en Firebase (bypass del debounce)
-            await saveAppState({
+            await saveAppState(get().workspaceId, {
                 versions: newVersions,
-                versionEnProduccionId: newProdId
+                versionEnProduccionId: newProdId,
             });
-
             set({ loading: false });
             return true;
         } catch (e) {
@@ -102,37 +142,28 @@ export const useDataStore = create((set, get) => ({
 
     getVersionEnProduccionId: () => get().versionEnProduccionId,
 
+    // Auto-registra fecha y hora de despliegue cuando se marca como producción
     setVersionEnProduccion: (versionId) => {
         const versions = get().versions;
-        let newVersions = [...versions];
-        
+        let newVersions = versions;
+
         if (versionId) {
-            const index = newVersions.findIndex(v => v.id === versionId);
-            if (index !== -1) {
-                const currentDate = new Date().toISOString().split('T')[0];
-                const currentTime = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-                newVersions[index] = {
-                    ...newVersions[index],
-                    fechaDespliegue: currentDate,
-                    horaDespliegue: currentTime
-                };
-            }
+            const now = new Date();
+            const fechaHoy = now.toISOString().split('T')[0];
+            const horaAhora = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+            newVersions = versions.map(v =>
+                v.id === versionId
+                    ? { ...v, fechaDespliegue: fechaHoy, horaDespliegue: horaAhora }
+                    : v
+            );
         }
 
-        set({ 
-            versionEnProduccionId: versionId,
+        set({
             versions: newVersions,
-            filteredVersions: get()._applyFilter(newVersions, get().filterText)
+            versionEnProduccionId: versionId,
+            filteredVersions: get()._applyFilter(newVersions, get().filterText),
         });
-
-        // Actualizar originalVersionState si la versión actual es la que está abierta
-        if (versionId && get().selectedVersionId === versionId) {
-            const updatedVersion = newVersions.find(v => v.id === versionId);
-            if (updatedVersion) {
-                set({ originalVersionState: JSON.parse(JSON.stringify(updatedVersion)) });
-            }
-        }
-
         get()._scheduleSave();
     },
 
@@ -141,24 +172,22 @@ export const useDataStore = create((set, get) => ({
         const safeId = Date.now();
         const maxNum = versions.reduce((max, v) => Math.max(max, parseFloat(v.numero) || 0), 0);
         const nextNum = (maxNum + 1).toString();
-        const currentDate = new Date().toISOString().split('T')[0];
-        const currentTime = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
         const newVersion = {
             id: safeId,
             numero: nextNum,
-            fechaCreacion: currentDate,
-            horaCreacion: currentTime,
+            fechaCreacion: '',
+            horaCreacion: '',
             fuente: 'Nueva',
-            fechaDespliegue: currentDate,
+            fechaDespliegue: '',
             horaDespliegue: '',
             cdus: [],
-            comentarios: { mejoras: [], salidas: [], cambiosCaliente: [], observaciones: [] }
+            comentarios: { ...EMPTY_COMENTARIOS },
+            titulo: '',
         };
 
         const newVersions = [...versions, newVersion];
-        set({ versions: newVersions });
-        set({ filteredVersions: get()._applyFilter(newVersions, get().filterText) });
+        set({ versions: newVersions, filteredVersions: get()._applyFilter(newVersions, get().filterText) });
         get()._scheduleSave();
     },
 
@@ -170,85 +199,76 @@ export const useDataStore = create((set, get) => ({
         const safeId = Date.now();
         const maxNum = versions.reduce((max, v) => Math.max(max, parseFloat(v.numero) || 0), 0);
         const nextNum = (maxNum + 1).toString();
-        const currentDate = new Date().toISOString().split('T')[0];
-        const currentTime = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
         const clonedCdus = (sourceVersion.cdus || []).map(cdu => ({
             ...cdu,
             uuid: uuidv4(),
-            historial: []
+            historial: [],
+            cambios: [],
         }));
 
         const newVersion = {
             ...sourceVersion,
             id: safeId,
             numero: nextNum,
-            fechaCreacion: currentDate,
-            horaCreacion: currentTime,
+            fechaCreacion: '',
+            horaCreacion: '',
             fuente: `V${sourceVersion.numero}`,
+            fechaDespliegue: '',
+            horaDespliegue: '',
             cdus: clonedCdus,
-            comentarios: { mejoras: [], salidas: [], cambiosCaliente: [], observaciones: [] }
+            comentarios: { ...EMPTY_COMENTARIOS },
+            titulo: '',
         };
 
         const newVersions = [...versions, newVersion];
-        set({ versions: newVersions });
-        set({ filteredVersions: get()._applyFilter(newVersions, get().filterText) });
+        set({ versions: newVersions, filteredVersions: get()._applyFilter(newVersions, get().filterText) });
         get()._scheduleSave();
     },
 
     deleteVersion: async (versionId) => {
-        const currentVersions = get().versions;
-        const newVersions = currentVersions.filter(v => v.id !== versionId);
-
+        const newVersions = get().versions.filter(v => v.id !== versionId);
         let newProdId = get().versionEnProduccionId;
         if (newProdId === versionId) newProdId = null;
 
-        set({
-            versions: newVersions,
-            versionEnProduccionId: newProdId
-        });
-
-        if (get().selectedVersionId === versionId) {
-            get().deselectVersion();
-        }
-
+        set({ versions: newVersions, versionEnProduccionId: newProdId });
+        if (get().selectedVersionId === versionId) get().deselectVersion();
         set({ filteredVersions: get()._applyFilter(newVersions, get().filterText) });
         get()._scheduleSave();
     },
 
     setFilter: (text) => {
-        const versions = get().versions;
-        const filtered = get()._applyFilter(versions, text);
+        const filtered = get()._applyFilter(get().versions, text);
         set({ filterText: text, filteredVersions: filtered });
     },
 
+    // Búsqueda profunda: número, fuente, título y contenido de entradas del changelog
     _applyFilter: (versions, text) => {
         if (!text) return versions;
         const lowerText = text.toLowerCase();
+
         return versions.filter(v => {
-            const matchNumero = v.numero && v.numero.toString().toLowerCase().includes(lowerText);
-            const matchFuente = v.fuente && v.fuente.toLowerCase().includes(lowerText);
-            
-            let matchCDU = false;
-            if (v.cdus && v.cdus.length > 0) {
-                matchCDU = v.cdus.some(c => 
-                    (c.nombreCDU && c.nombreCDU.toLowerCase().includes(lowerText)) || 
-                    (c.descripcionCDU && c.descripcionCDU.toLowerCase().includes(lowerText))
-                );
-            }
+            if (v.numero?.toString().toLowerCase().includes(lowerText)) return true;
+            if (v.fuente?.toLowerCase().includes(lowerText)) return true;
+            if (v.titulo?.toLowerCase().includes(lowerText)) return true;
 
-            let matchComentarios = false;
-            if (v.comentarios) {
-                const allComments = [
-                    ...(v.comentarios.mejoras || []),
-                    ...(v.comentarios.salidas || []),
-                    ...(v.comentarios.cambiosCaliente || []),
-                    ...(v.comentarios.observaciones || [])
-                ];
-                matchComentarios = allComments.some(c => c && c.toLowerCase().includes(lowerText));
+            const c = v.comentarios || {};
+            const stdCats = ['mejoras', 'salidas', 'cambiosCaliente', 'observaciones'];
+            for (const cat of stdCats) {
+                for (const entry of (c[cat] || [])) {
+                    const txt = typeof entry === 'string' ? entry : (entry?.texto || '');
+                    if (txt.toLowerCase().includes(lowerText)) return true;
+                    if (entry?.autor?.toLowerCase().includes(lowerText)) return true;
+                    if (entry?.cdu?.toLowerCase().includes(lowerText)) return true;
+                }
             }
-
-            return matchNumero || matchFuente || matchCDU || matchComentarios;
+            for (const entry of (c.cambiosCDU || [])) {
+                const txt = typeof entry === 'string' ? entry : (entry?.texto || '');
+                if (txt.toLowerCase().includes(lowerText)) return true;
+                if (entry?.cduNombre?.toLowerCase().includes(lowerText)) return true;
+                if (entry?.cdu?.toLowerCase().includes(lowerText)) return true;
+            }
+            return false;
         });
     },
 
@@ -257,17 +277,16 @@ export const useDataStore = create((set, get) => ({
     selectVersion: (versionId, allVersions = get().versions) => {
         const selectedVersion = allVersions.find(v => v.id === versionId);
         if (!selectedVersion) return;
-
         set({
             selectedVersionId: versionId,
             viewMode: 'detail',
             activeCDUs: selectedVersion.cdus || [],
-            originalVersionState: JSON.parse(JSON.stringify(selectedVersion))
+            originalVersionState: JSON.parse(JSON.stringify(selectedVersion)),
         });
     },
 
     deselectVersion: () => {
-        set({ selectedVersionId: null, viewMode: 'list', activeCDUs: [], originalVersionState: null });
+        set({ selectedVersionId: null, viewMode: 'changelog', activeCDUs: [], originalVersionState: null });
     },
 
     updateCurrentVersion: (updatedVersionData) => {
@@ -277,56 +296,14 @@ export const useDataStore = create((set, get) => ({
 
         const newVersions = [...versions];
         newVersions[index] = updatedVersionData;
-
-        set({ versions: newVersions });
+        set({
+            versions: newVersions,
+            filteredVersions: get()._applyFilter(newVersions, get().filterText),
+        });
 
         if (get().selectedVersionId === updatedVersionData.id) {
             set({ activeCDUs: updatedVersionData.cdus });
         }
-
-        get()._scheduleSave();
-    },
-
-    evolveCDU: async (versionId, cduUuid, newCduData) => {
-        const versions = get().versions;
-        const versionIndex = versions.findIndex(v => v.id === versionId);
-        if (versionIndex === -1) return;
-
-        const version = { ...versions[versionIndex] };
-        const cduIndex = version.cdus.findIndex(c => c.uuid === cduUuid);
-        if (cduIndex === -1) return;
-
-        const currentCdu = version.cdus[cduIndex];
-
-        // Crear snapshot para historial
-        const historyEntry = {
-            ...currentCdu,
-            fechaArchivado: new Date().toISOString(),
-            razonCambio: 'Evolución a nueva versión'
-        };
-        // Limpiamos historial recursivo si existiera para no anidar infinitamente
-        delete historyEntry.historial;
-
-        // Actualizamos CDU
-        const updatedCdu = {
-            ...newCduData,
-            historial: [...(currentCdu.historial || []), historyEntry]
-        };
-
-        const newCdus = [...version.cdus];
-        newCdus[cduIndex] = updatedCdu;
-
-        version.cdus = newCdus;
-        const newVersions = [...versions];
-        newVersions[versionIndex] = version;
-
-        set({ versions: newVersions });
-
-        // Si es la versión activa, actualizamos activeCDUs
-        if (get().selectedVersionId === versionId) {
-            set({ activeCDUs: newCdus });
-        }
-
         get()._scheduleSave();
     },
 

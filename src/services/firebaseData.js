@@ -1,181 +1,237 @@
 import { db } from './firebaseConfig';
-import { doc, setDoc, onSnapshot, collection, writeBatch } from 'firebase/firestore';
+import {
+    doc,
+    collection,
+    setDoc,
+    deleteDoc,
+    getDocs,
+    onSnapshot,
+    writeBatch,
+    getDoc,
+} from 'firebase/firestore';
+
+// ---------------------------------------------------------------------------
+// Helpers de rutas
+// ---------------------------------------------------------------------------
 
 /**
- * src/services/firebaseData.js (Modo Migración y Subcolecciones)
- * Administra el estado en una nueva colección de "versions" y un documento "metadata",
- * manteniendo soporte para lectura del antiguo "mainDoc".
+ * Devuelve las referencias para un workspaceId.
+ *
+ * Estructura nueva (sharded):
+ *   appState/meta                     ← { versionEnProduccionId, timestamp }
+ *   appState/meta/versions/{id}       ← 1 doc por versión
+ *
+ * Para workspaces dinámicos:
+ *   workspaces/{wsId}/appState/meta
+ *   workspaces/{wsId}/appState/meta/versions/{id}
+ *
+ * Legacy (a migrar):
+ *   appState/mainDoc                  ← array completo
  */
+function getRefs(workspaceId) {
+    const isLegacy = !workspaceId || workspaceId === 'ventas-b2c';
 
-// Referencias de la nueva y vieja estructura
-const APP_STATE_DOC_REF = doc(db, 'appState', 'mainDoc');
-const METADATA_DOC_REF = doc(db, 'appState', 'metadata');
-const VERSIONS_COL_REF = collection(db, 'versions');
+    if (isLegacy) {
+        return {
+            metaRef:      doc(db, 'appState', 'meta'),
+            versionsCol:  collection(db, 'appState', 'meta', 'versions'),
+            legacyDocRef: doc(db, 'appState', 'mainDoc'),
+        };
+    }
 
-// Cache para evitar sobreescribir documentos en Firebase si no han cambiado en memoria
-let cachedVersions = {};
-let cachedVersionEnProduccionId = undefined;
-
-/**
- * Se suscribe a:
- * 1. Colección de versiones (nueva)
- * 2. Documento de metadata (version en prod)
- * 3. Documento legacy (mainDoc) por si la nueva colección está vacía (migración en progreso)
- */
-export function subscribeToAppState(callback) {
-    let metadata = { versionEnProduccionId: null };
-    let versionsMap = new Map();
-    let legacyVersions = null;
-
-    let isMetadataLoaded = false;
-    let isVersionsLoaded = false;
-    let isLegacyLoaded = false;
-
-    const emitIfReady = () => {
-        if (isMetadataLoaded && isVersionsLoaded && isLegacyLoaded) {
-            let finalVersions = Array.from(versionsMap.values());
-            
-            // Si la nueva colección no tiene datos pero la estructura antigua sí, caemos en el fallback
-            if (finalVersions.length === 0 && legacyVersions && legacyVersions.length > 0) {
-                finalVersions = legacyVersions;
-                console.log("🔥 Firebase: Cargado estado LEGACY (migración pendiente).", finalVersions.length, "versiones.");
-            } else {
-                console.log("🔥 Firebase: Cargado estado ACTUALIZADO (colecciones).", finalVersions.length, "versiones.");
-            }
-
-            callback({
-                versions: finalVersions,
-                versionEnProduccionId: metadata.versionEnProduccionId
-            });
-        }
+    return {
+        metaRef:      doc(db, 'workspaces', workspaceId, 'appState', 'meta'),
+        versionsCol:  collection(db, 'workspaces', workspaceId, 'appState', 'meta', 'versions'),
+        legacyDocRef: doc(db, 'workspaces', workspaceId, 'appState', 'mainDoc'),
     };
+}
 
-    const unsubMetadata = onSnapshot(METADATA_DOC_REF, (docSnap) => {
-        if (docSnap.exists()) {
-            metadata = docSnap.data();
-            cachedVersionEnProduccionId = metadata.versionEnProduccionId;
+// ---------------------------------------------------------------------------
+// Migración automática (formato viejo → nuevo)
+// ---------------------------------------------------------------------------
+
+/**
+ * Detecta si existe el documento legacy (mainDoc con array `versiones`)
+ * y, de ser así, migra los datos al nuevo formato de subcolección.
+ * Es idempotente: si ya migró, no hace nada.
+ */
+async function migrateIfNeeded(workspaceId) {
+    const { metaRef, versionsCol, legacyDocRef } = getRefs(workspaceId);
+
+    // Chequear si ya existe el nuevo formato
+    const metaSnap = await getDoc(metaRef);
+    if (metaSnap.exists()) {
+        // Ya está en el nuevo formato, no migrar
+        return;
+    }
+
+    // Chequear si existe el documento viejo
+    const legacySnap = await getDoc(legacyDocRef);
+    if (!legacySnap.exists()) {
+        // No hay nada que migrar
+        return;
+    }
+
+    const legacyData = legacySnap.data();
+    const versiones  = Array.isArray(legacyData.versiones) ? legacyData.versiones : [];
+    const prodId     = legacyData.versionEnProduccionId || null;
+
+    console.log(`[Firebase] Migrando ${versiones.length} versiones al nuevo formato para workspace "${workspaceId}"...`);
+
+    // Escribir en lotes (Firestore limita 500 ops por batch)
+    const BATCH_SIZE = 400;
+    for (let i = 0; i < versiones.length; i += BATCH_SIZE) {
+        const batch = writeBatch(db);
+        const chunk = versiones.slice(i, i + BATCH_SIZE);
+
+        for (const version of chunk) {
+            const versionId = String(version.id ?? Date.now() + Math.random());
+            const vRef = doc(versionsCol, versionId);
+            batch.set(vRef, version);
         }
-        isMetadataLoaded = true;
-        emitIfReady();
-    }, (err) => console.error("🔥 Error Metadata:", err));
+        await batch.commit();
+    }
 
-    const unsubVersions = onSnapshot(VERSIONS_COL_REF, (colSnap) => {
-        versionsMap.clear();
-        colSnap.forEach(docSnap => {
-            const data = docSnap.data();
-            versionsMap.set(docSnap.id, data);
-            
-            // Llenamos el caché con lo que viene de Firebase para no sobreescribir innecesariamente después
-            cachedVersions[docSnap.id] = JSON.stringify(data);
+    // Escribir el meta doc con versionEnProduccionId
+    await setDoc(metaRef, {
+        versionEnProduccionId: prodId,
+        timestamp: new Date().toISOString(),
+        migratedAt: new Date().toISOString(),
+    });
+
+    // Borrar el documento viejo solo si la migración fue exitosa
+    await deleteDoc(legacyDocRef);
+
+    console.log(`[Firebase] Migración completada para workspace "${workspaceId}".`);
+}
+
+// ---------------------------------------------------------------------------
+// API pública
+// ---------------------------------------------------------------------------
+
+/**
+ * Se suscribe al estado de un workspace.
+ * Devuelve { versions, versionEnProduccionId }.
+ *
+ * Primero realiza la migración (si corresponde), luego se suscribe
+ * al meta doc y a la subcolección de versiones.
+ */
+export function subscribeToAppState(workspaceId, callback, onError) {
+    const { metaRef, versionsCol } = getRefs(workspaceId);
+
+    let cleanupFn     = null;
+    let cancelled     = false;
+
+    // 1. Primero migrar si es necesario, luego suscribirse
+    migrateIfNeeded(workspaceId)
+        .then(() => {
+            if (cancelled) return;
+
+            // Estado combinado: meta + versions
+            let currentMeta     = { versionEnProduccionId: null };
+            let currentVersions = null; // null = aún no cargó
+
+            const notify = () => {
+                if (currentVersions === null) return; // esperar primera carga de versions
+                callback({
+                    versions: currentVersions,
+                    versionEnProduccionId: currentMeta.versionEnProduccionId,
+                });
+            };
+
+            // Suscripción al meta doc
+            const metaUnsub = onSnapshot(metaRef, (snap) => {
+                if (snap.exists()) {
+                    currentMeta = snap.data();
+                } else {
+                    currentMeta = { versionEnProduccionId: null };
+                }
+                notify();
+            }, (error) => {
+                console.error('Error en suscripción meta:', error);
+                if (onError) onError(error);
+            });
+
+            // Suscripción a la subcolección de versiones
+            const versionsUnsub = onSnapshot(versionsCol, (snap) => {
+                currentVersions = snap.docs.map(d => d.data());
+                // Ordenar por número de versión para mantener el orden
+                currentVersions.sort((a, b) => {
+                    const na = parseFloat(a.numero) || 0;
+                    const nb = parseFloat(b.numero) || 0;
+                    return na - nb;
+                });
+                notify();
+            }, (error) => {
+                console.error('Error en suscripción versions:', error);
+                if (onError) onError(error);
+            });
+
+            // Guardar función de limpieza
+            cleanupFn = () => {
+                metaUnsub();
+                versionsUnsub();
+            };
+        })
+        .catch((error) => {
+            console.error('Error en migración Firebase:', error);
+            if (onError) onError(error);
         });
-        isVersionsLoaded = true;
-        emitIfReady();
-    }, (err) => console.error("🔥 Error Versions:", err));
 
-    const unsubLegacy = onSnapshot(APP_STATE_DOC_REF, (docSnap) => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            legacyVersions = Array.isArray(data.versiones) ? data.versiones : [];
-            // Usamos legacy production ID solo si el nuevo no existe
-            if (!isMetadataLoaded && data.versionEnProduccionId && !metadata.versionEnProduccionId) {
-                metadata.versionEnProduccionId = data.versionEnProduccionId;
-            }
-        }
-        isLegacyLoaded = true;
-        emitIfReady();
-    }, (err) => console.error("🔥 Error Legacy:", err));
-
+    // Devolver función para cancelar (funciona aunque la migración no terminó aún)
     return () => {
-        unsubMetadata();
-        unsubVersions();
-        unsubLegacy();
+        cancelled = true;
+        if (cleanupFn) cleanupFn();
     };
 }
 
 /**
- * Guarda el estado en la nueva estructura basada en colecciones usando batch.
+ * Guarda el estado completo de un workspace en Firebase.
+ * Cada versión se escribe en su propio documento en la subcolección `versions/`.
+ * El meta doc almacena solo { versionEnProduccionId, timestamp }.
  */
-export async function saveAppState(fullState) {
+export async function saveAppState(workspaceId, fullState) {
+    const { metaRef, versionsCol } = getRefs(workspaceId);
+    const { versions, versionEnProduccionId } = fullState;
+
     try {
-        let batches = [];
-        let currentBatch = writeBatch(db);
-        let operationsCount = 0;
-        let totalOperationsCount = 0;
+        // 1. Obtener IDs actuales en Firestore para detectar versiones borradas
+        const existingSnap = await getDocs(versionsCol);
+        const existingIds  = new Set(existingSnap.docs.map(d => d.id));
+        const newIds       = new Set(versions.map(v => String(v.id)));
 
-        const commitCurrentBatch = () => {
-            batches.push(currentBatch.commit());
-            currentBatch = writeBatch(db);
-            operationsCount = 0;
-        };
+        // 2. Escribir/actualizar versiones en lotes
+        const BATCH_SIZE = 400;
+        for (let i = 0; i < versions.length; i += BATCH_SIZE) {
+            const batch = writeBatch(db);
+            const chunk = versions.slice(i, i + BATCH_SIZE);
 
-        const incrementAndCheck = () => {
-            operationsCount++;
-            totalOperationsCount++;
-            if (operationsCount >= 490) { // Límite de 500 por lote
-                commitCurrentBatch();
+            for (const version of chunk) {
+                const versionId = String(version.id);
+                const vRef = doc(versionsCol, versionId);
+                batch.set(vRef, version);
             }
-        };
-
-        let localCacheUpdate = {}; // Para actualizar localmente la caché si tiene éxito
-        let updateMetadataCache = false;
-
-        // 1. Guardar Metadata SOLO si cambió la version en producción
-        if (fullState.versionEnProduccionId !== cachedVersionEnProduccionId) {
-            currentBatch.set(METADATA_DOC_REF, {
-                versionEnProduccionId: fullState.versionEnProduccionId || null,
-                timestamp: new Date().toISOString()
-            });
-            incrementAndCheck();
-            updateMetadataCache = true;
+            await batch.commit();
         }
 
-        // 2. Determinar versiones eliminadas para borrarlas de la subcolección
-        const currentVersionIds = fullState.versions.map(v => String(v.id));
-        const deletedIds = Object.keys(cachedVersions).filter(id => !currentVersionIds.includes(id));
-        
-        for (const id of deletedIds) {
-            currentBatch.delete(doc(db, 'versions', id));
-            incrementAndCheck();
-            localCacheUpdate[id] = null; // null significa borrado
-        }
-
-        // 3. Guardar versiones nuevas o modificadas
-        for (const v of fullState.versions) {
-            const stringifiedV = JSON.stringify(v);
-            const idDoc = String(v.id);
-
-            // Solo enviar a Firebase si es distinta a lo que tenemos en caché
-            if (cachedVersions[idDoc] !== stringifiedV) {
-                const docRef = doc(db, 'versions', idDoc);
-                currentBatch.set(docRef, v);
-                incrementAndCheck();
-                localCacheUpdate[idDoc] = stringifiedV;
+        // 3. Borrar versiones que ya no existen en el estado local
+        const toDelete = [...existingIds].filter(id => !newIds.has(id));
+        if (toDelete.length > 0) {
+            const deleteBatch = writeBatch(db);
+            for (const id of toDelete) {
+                deleteBatch.delete(doc(versionsCol, id));
             }
+            await deleteBatch.commit();
         }
 
-        if (operationsCount > 0) {
-            batches.push(currentBatch.commit());
-        }
+        // 4. Actualizar meta doc
+        await setDoc(metaRef, {
+            versionEnProduccionId: versionEnProduccionId ?? null,
+            timestamp: new Date().toISOString(),
+        });
 
-        if (batches.length > 0) {
-            await Promise.all(batches);
-            console.log(`💾 Estado guardado exitosamente (${totalOperationsCount} operaciones).`);
-            
-            // Actualizar caché solo si todo salió bien
-            if (updateMetadataCache) {
-                cachedVersionEnProduccionId = fullState.versionEnProduccionId;
-            }
-
-            for (const [id, value] of Object.entries(localCacheUpdate)) {
-                if (value === null) {
-                    delete cachedVersions[id];
-                } else {
-                    cachedVersions[id] = value;
-                }
-            }
-        }
     } catch (error) {
-        console.error("❌ Error al guardar estado:", error);
+        console.error('Error al guardar estado en Firebase:', error);
         throw error;
     }
 }

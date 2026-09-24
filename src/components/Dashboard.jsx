@@ -1,15 +1,17 @@
 import React, { useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { useDataStore } from '../store/dataStore';
-
-// Importamos los componentes REALES
+import { useWorkspaceStore } from '../store/workspaceStore';
 import Header from './layout/Header';
+import ChangelogView from './views/ChangelogView';
 import VersionList from './views/VersionList';
 import DetailView from './views/DetailView';
 import LoadingOverlay from './ui/LoadingOverlay';
 
 export default function Dashboard() {
-    const { currentUser, logout } = useAuth();
+    const { activeWorkspaceId, getActiveWorkspace } = useWorkspaceStore();
+    const activeWorkspace = getActiveWorkspace();
+    const workspaceType = activeWorkspace?.type || 'full';
+
     const {
         initialize,
         clearStore,
@@ -19,35 +21,25 @@ export default function Dashboard() {
         selectedVersionId,
     } = useDataStore();
 
-    // Inicializa la carga de datos y establece la suscripción en tiempo real
+    // Re-inicializar cuando cambia el workspace activo
     useEffect(() => {
-        let unsubscribe;
-        if (currentUser) {
-            console.log("Inicializando DataStore...");
-            unsubscribe = initialize();
-        }
-
-        return () => {
-            if (unsubscribe) {
-                unsubscribe();
-            }
-        };
-    }, [currentUser, initialize]);
-
-    // Limpiar el store al hacer logout
-    const handleLogout = () => {
         clearStore();
-        logout();
-    };
+        const unsub = initialize(activeWorkspaceId);
+        return () => { if (unsub) unsub(); };
+    }, [activeWorkspaceId]);
 
-    // Decidir qué componente mostrar
-    const ContentComponent = (viewMode === 'detail' && selectedVersionId)
-        ? DetailView
-        : VersionList;
+    const renderContent = () => {
+        // Vista detalle solo disponible en workspaces tipo 'full'
+        if (viewMode === 'detail' && selectedVersionId && workspaceType === 'full') {
+            return <DetailView />;
+        }
+        if (viewMode === 'list') return <VersionList />;
+        return <ChangelogView workspaceType={workspaceType} />;
+    };
 
     return (
         <div className="container">
-            <Header onLogout={handleLogout} />
+            <Header workspaceType={workspaceType} />
 
             <div className="view-container active">
                 {error && (
@@ -55,10 +47,8 @@ export default function Dashboard() {
                         {error}
                     </div>
                 )}
-
                 {loading && <LoadingOverlay message="Sincronizando datos..." />}
-
-                <ContentComponent />
+                {renderContent()}
             </div>
         </div>
     );

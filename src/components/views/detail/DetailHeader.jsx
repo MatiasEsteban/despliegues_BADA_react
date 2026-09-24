@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useDataStore } from '../../../store/dataStore';
 import { Button } from '../../ui/Button';
 import { Icons } from '../../ui/Icons';
-import CommentsModal from '../../modals/CommentsModal';
+import ChangelogEntriesModal from '../../modals/ChangelogEntriesModal';
 import ProgressModal from '../../modals/ProgressModal';
+import { normalizeComments } from '../../../store/dataStore';
 
 export default function DetailHeader() {
     const { selectedVersionId, versions, deselectVersion, updateCurrentVersion } = useDataStore();
@@ -23,13 +24,11 @@ export default function DetailHeader() {
         updateCurrentVersion(updatedVersion);
     };
 
-    // Calcular total de comentarios para el badge
-    const totalComments = version.comentarios
-        ? (version.comentarios.mejoras?.length || 0) +
-        (version.comentarios.salidas?.length || 0) +
-        (version.comentarios.cambiosCaliente?.length || 0) +
-        (version.comentarios.observaciones?.length || 0)
-        : 0;
+    // Calcular total de entradas para el badge
+    const normalizedComments = normalizeComments(version.comentarios);
+    const totalComments = Object.values(normalizedComments).reduce(
+        (sum, arr) => sum + (arr?.filter(e => e.texto?.trim()).length || 0), 0
+    );
 
     return (
         <div className="version-detail-header">
@@ -113,7 +112,7 @@ export default function DetailHeader() {
                 <Button variant="info" onClick={() => setShowProgress(true)}>Progreso</Button>
 
                 <div style={{ position: 'relative' }}>
-                    <Button variant="secondary" onClick={() => setShowComments(true)}>Comentarios</Button>
+                    <Button variant="secondary" onClick={() => setShowComments(true)}>Changelog</Button>
                     {/* Badge de comentarios */}
                     {totalComments > 0 && (
                         <span style={{
@@ -140,7 +139,7 @@ export default function DetailHeader() {
             </div>
 
             {/* MODALES */}
-            <CommentsModal
+            <ChangelogEntriesModal
                 isOpen={showComments}
                 onClose={() => setShowComments(false)}
                 version={version}

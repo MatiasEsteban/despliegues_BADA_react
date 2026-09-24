@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Estado legacy de Ventas B2C — acceso público
+    match /appState/{document} {
+      allow read, write: if true;
+
+      // Subcolección de versiones bajo el meta doc (nuevo formato sharded)
+      match /versions/{versionId} {
+        allow read, write: if true;
+      }
+    }
+
+    // Workspaces dinámicos — acceso público
+    match /workspaces/{workspaceId} {
+      allow read, write: if true;
+
+      // Sub-colección appState de cada workspace
+      match /appState/{document} {
+        allow read, write: if true;
+
+        // Subcolección de versiones bajo el meta doc (nuevo formato sharded)
+        match /versions/{versionId} {
+          allow read, write: if true;
+        }
+      }
+    }
+  }
+}

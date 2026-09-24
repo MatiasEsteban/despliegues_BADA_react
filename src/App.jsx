@@ -1,24 +1,27 @@
-import React from 'react';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import React, { useEffect } from 'react';
 import { ModalProvider } from './context/ModalContext';
 import { ToastProvider } from './context/ToastContext';
-import Login from './components/Login';
+import { useWorkspaceStore } from './store/workspaceStore';
 import Dashboard from './components/Dashboard';
 
-const AppContent = () => {
-    const { currentUser } = useAuth();
-    return currentUser ? <Dashboard /> : <Login />;
-};
+function AppContent() {
+    const { initialize } = useWorkspaceStore();
+
+    useEffect(() => {
+        const unsub = initialize();
+        return () => { if (unsub) unsub(); };
+    }, [initialize]);
+
+    return <Dashboard />;
+}
 
 function App() {
     return (
-        <AuthProvider>
-            <ModalProvider>
-                <ToastProvider>
-                    <AppContent />
-                </ToastProvider>
-            </ModalProvider>
-        </AuthProvider>
+        <ModalProvider>
+            <ToastProvider>
+                <AppContent />
+            </ToastProvider>
+        </ModalProvider>
     );
 }
 
