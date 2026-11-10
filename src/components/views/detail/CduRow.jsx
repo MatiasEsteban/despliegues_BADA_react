@@ -122,13 +122,12 @@ export default function CduRow({ cdu, onUpdate, onDelete, onEvolve, onViewHistor
             </td>
 
             {/* 9. ACCIONES */}
-            <td style={{ textAlign: 'center' }}>
-                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+            <td className="cdu-actions-cell">
+                <div className="cdu-actions">
                     <button
-                        className="btn btn-primary"
+                        className="btn btn-primary cdu-action-btn"
                         onClick={onEvolve}
                         title="Evolucionar CDU (Nueva Fase)"
-                        style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}
                     >
                         <Icons.Edit className="icon" /> Evol.
                     </button>

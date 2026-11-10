@@ -37,12 +37,32 @@
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.progress-bar-fill {
+/* Barra nativa. El color de la variante se pinta en el pseudo-elemento del
+   valor, no en el fondo del elemento. */
+.progress-bar {
+    appearance: none;
+    -webkit-appearance: none;
+    display: block;
+    width: 100%;
     height: 100%;
-    border-radius: 12px;
+    border: none;
+    background: transparent;
+}
+
+.progress-bar::-webkit-progress-bar {
+    background: transparent;
+    border-radius: var(--radius-lg);
+}
+
+.progress-bar::-webkit-progress-value {
+    background-color: var(--palette-orange-500);
+    border-radius: var(--radius-lg);
     transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 0;
-    /* Animará al valor inline */
+}
+
+.progress-bar::-moz-progress-bar {
+    background-color: var(--palette-orange-500);
+    border-radius: var(--radius-lg);
 }
 
 .progress-note {
@@ -60,7 +80,12 @@
     background-color: var(--palette-orange-500);
 }
 
-.progress-bar-fill.progress-low {
+/* El fondo de la variante se anula en <progress>: el color va en el valor. */
+.progress-bar.progress-low {
+    background-color: transparent;
+}
+
+.progress-bar.progress-low::-webkit-progress-value {
     background-color: var(--palette-orange-500);
 }
 
@@ -74,7 +99,11 @@
     background-color: var(--palette-blue-500);
 }
 
-.progress-bar-fill.progress-mid {
+.progress-bar.progress-mid {
+    background-color: transparent;
+}
+
+.progress-bar.progress-mid::-webkit-progress-value {
     background-color: var(--palette-blue-500);
 }
 
@@ -88,12 +117,26 @@
     background-color: var(--palette-green-500);
 }
 
-.progress-bar-fill.progress-complete {
+.progress-bar.progress-complete {
+    background-color: transparent;
+}
+
+.progress-bar.progress-complete::-webkit-progress-value {
     background-color: var(--palette-green-500);
 }
 
 .progress-big-text.progress-complete {
     background-color: var(--bg-primary);
+}
+
+/* Firefox pinta el valor con `-moz-progress-bar`, que no admite variantes por
+   clase sobre el mismo elemento; se declara una regla por variante. */
+.progress-bar.progress-mid::-moz-progress-bar {
+    background-color: var(--palette-blue-500);
+}
+
+.progress-bar.progress-complete::-moz-progress-bar {
+    background-color: var(--palette-green-500);
 }
 
 /* === LAYOUT DE GRÁFICOS === */
@@ -154,6 +197,65 @@
     flex-shrink: 0;
 }
 
+/* Tarta SVG: el disco se pinta con `stroke-width = 50` sobre `r = 25`. */
+.pie-chart {
+    display: block;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+}
+
+.chart-content-wrapper .pie-chart {
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+.chart-content-wrapper.expanded .pie-chart {
+    width: 120px;
+    height: 120px;
+}
+
+.pie-segment {
+    fill: none;
+    stroke-width: 50;
+}
+
+/* Segmentos por categoría. Los slugs son estables y no dependen del texto visible. */
+.pie-segment--desarrollo {
+    stroke: var(--palette-blue-500);
+}
+
+.pie-segment--pendiente {
+    stroke: var(--palette-amber-500);
+}
+
+.pie-segment--certificado {
+    stroke: var(--palette-green-500);
+}
+
+.pie-segment--produccion {
+    stroke: var(--palette-violet-500);
+}
+
+.pie-segment--baja {
+    stroke: var(--palette-green-500-alt);
+}
+
+.pie-segment--media {
+    stroke: var(--palette-yellow-500);
+}
+
+.pie-segment--alta {
+    stroke: var(--palette-red-500);
+}
+
+.pie-segment--v1 {
+    stroke: var(--palette-sky-400);
+}
+
+.pie-segment--v2 {
+    stroke: var(--palette-pink-500);
+}
+
 .chart-details {
     flex: 1;
     column-count: auto;
@@ -170,6 +272,41 @@
 .status-column {
     break-inside: avoid;
     margin-bottom: 1.5rem;
+}
+
+.status-heading {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.status-heading--desarrollo {
+    color: var(--palette-blue-500);
+    border-bottom: 2px solid var(--palette-blue-500);
+}
+
+.status-heading--pendiente {
+    color: var(--palette-amber-500);
+    border-bottom: 2px solid var(--palette-amber-500);
+}
+
+.status-heading--certificado {
+    color: var(--palette-green-500);
+    border-bottom: 2px solid var(--palette-green-500);
+}
+
+.status-heading--produccion {
+    color: var(--palette-violet-500);
+    border-bottom: 2px solid var(--palette-violet-500);
+}
+
+.status-heading--v1 {
+    color: var(--palette-sky-400);
+    border-bottom: 2px solid var(--palette-sky-400);
+}
+
+.status-heading--v2 {
+    color: var(--palette-pink-500);
+    border-bottom: 2px solid var(--palette-pink-500);
 }
 
 .status-list {
@@ -197,6 +334,43 @@
     width: 10px;
     height: 10px;
     border-radius: 2px;
+}
+
+/* Colores de leyenda por categoría. */
+.legend-color--desarrollo {
+    background-color: var(--palette-blue-500);
+}
+
+.legend-color--pendiente {
+    background-color: var(--palette-amber-500);
+}
+
+.legend-color--certificado {
+    background-color: var(--palette-green-500);
+}
+
+.legend-color--produccion {
+    background-color: var(--palette-violet-500);
+}
+
+.legend-color--baja {
+    background-color: var(--palette-green-500-alt);
+}
+
+.legend-color--media {
+    background-color: var(--palette-yellow-500);
+}
+
+.legend-color--alta {
+    background-color: var(--palette-red-500);
+}
+
+.legend-color--v1 {
+    background-color: var(--palette-sky-400);
+}
+
+.legend-color--v2 {
+    background-color: var(--palette-pink-500);
 }
 
 .legend-label {

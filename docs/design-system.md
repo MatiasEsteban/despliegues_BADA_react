@@ -23,7 +23,7 @@
 
 ## 2. Capa 1 — Paleta cruda
 
-- 74 tokens `--palette-*`, 74 valores únicos, correspondencia 1:1 con los hex activos.
+- 76 tokens `--palette-*`, 76 valores únicos: 74 corresponden a hex de CSS activos y 2 son la excepción aprobada el 2026-11-10 (`--palette-sky-400: #0EA5E9`, `--palette-pink-500: #EC4899`), valores ya presentes en `BadaGraph.jsx`; no son hues nuevos.
 - Independiente del tema: el mismo token vale lo mismo en claro y oscuro.
 - Los 11 hex de archivos huérfanos no se tokenizaron y desaparecen con esos archivos.
 
@@ -189,7 +189,7 @@ Los seis valores cubren exactamente los z-index en uso.
 
 | Capa | Tokens | Consumidores externos |
 |---|---:|---:|
-| Paleta | 74 | 144 usos directos + 14 referencias desde la capa semántica |
+| Paleta | 76 | 144 usos directos + 14 referencias desde la capa semántica |
 | Semántica | 35 | **0** |
 | Escalas | 35 | **1** (`--radius-md`) |
 | Tema | 23 | Los consumidores preexistentes |

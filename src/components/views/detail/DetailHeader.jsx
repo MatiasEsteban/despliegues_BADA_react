@@ -111,27 +111,11 @@ export default function DetailHeader() {
             <div className="version-header-buttons">
                 <Button variant="info" onClick={() => setShowProgress(true)}>Progreso</Button>
 
-                <div style={{ position: 'relative' }}>
+                <div className="version-comments-wrapper">
                     <Button variant="secondary" onClick={() => setShowComments(true)}>Changelog</Button>
                     {/* Badge de comentarios */}
                     {totalComments > 0 && (
-                        <span style={{
-                            position: 'absolute',
-                            top: '-8px',
-                            right: '-8px',
-                            background: '#ef4444',
-                            color: 'white',
-                            fontSize: '0.7rem',
-                            fontWeight: 'bold',
-                            minWidth: '18px',
-                            height: '18px',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            border: '2px solid var(--bg-primary)', // Borde para separar visualmente del botón
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                        }}>
+                        <span className="version-comments-badge">
                             {totalComments}
                         </span>
                     )}

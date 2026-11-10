@@ -211,6 +211,15 @@ Umbrales: texto normal 4,5:1 · texto grande 3:1 · componentes gráficos 3:1.
 
 **Observación:** `#38393a` y `#38393b` son indistinguibles (diferencia de 1 unidad en azul) y cumplen roles de texto primario y secundario. Se conservan como tokens separados por la regla de no unificación; su consolidación es deuda para una spec posterior.
 
+### 9.1 Adiciones aprobadas en P2-05 — 2 valores procedentes de JSX
+
+| Hex | Origen | Token de paleta | Rol observado | vs blanco | vs negro |
+|---|---|---|---:|---:|
+| `#0ea5e9` | `BadaGraph.jsx`, `ProgressModal.jsx` | `--palette-sky-400` | V1 del gráfico Bada | 2,77 | 7,58 |
+| `#ec4899` | `BadaGraph.jsx`, `ProgressModal.jsx` | `--palette-pink-500` | V2 del gráfico Bada | 3,53 | 5,95 |
+
+> Excepción aprobada 2026-11-10: valores ya presentes en `BadaGraph.jsx`; no son hues nuevos. No figuran en el inventario de CSS porque vivían en `style={{}}`; se tokenizan con el valor exacto para eliminar el hex del JSX.
+
 ---
 
 ## 10. Contrato propuesto de capa de paleta
@@ -236,7 +245,13 @@ Umbrales: texto normal 4,5:1 · texto grande 3:1 · componentes gráficos 3:1.
   /* Cielo */
   --palette-sky-50: #EBF8FF;
   --palette-sky-100: #E0F2FE;
+  /* Excepción aprobada 2026-11-10: valores ya presentes en BadaGraph.jsx; no son hues nuevos. */
+  --palette-sky-400: #0EA5E9;
   --palette-sky-500: #4299E1;
+
+  /* Rosa */
+  /* Excepción aprobada 2026-11-10: valores ya presentes en BadaGraph.jsx; no son hues nuevos. */
+  --palette-pink-500: #EC4899;
 
   /* Rojo */
   --palette-red-50: #FFF5F5;
@@ -307,9 +322,9 @@ Umbrales: texto normal 4,5:1 · texto grande 3:1 · componentes gráficos 3:1.
 }
 ```
 
-**Total: 74 tokens de paleta**, exactamente los 74 valores únicos que sobreviven.
+**Total: 76 tokens de paleta**: los 74 valores únicos que sobreviven más las 2 excepciones aprobadas en `P2-05` (`--palette-sky-400` y `--palette-pink-500`).
 
-> Implementado en `P1-02` el 2026-11-09 en `src/styles/base/variables.css`. Verificado: 74 nombres únicos, 74 valores únicos, 0 consumidores y build correcto.
+> Implementado en `P1-02` el 2026-11-09 en `src/styles/base/variables.css`. Verificado: 74 nombres únicos, 74 valores únicos, 0 consumidores y build correcto. Ampliado en `P2-05` (2026-11-10) con 2 tokens exactos procedentes de JSX.
 
 ---
 

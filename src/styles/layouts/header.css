@@ -126,3 +126,26 @@
     display: flex;
     gap: 0.75rem;
 }
+
+/* Contenedor del botón de changelog: ancla del badge de comentarios. */
+.version-comments-wrapper {
+    position: relative;
+}
+
+.version-comments-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--palette-red-500);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

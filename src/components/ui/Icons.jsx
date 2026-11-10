@@ -16,7 +16,7 @@ export const Icons = {
             {/* Se ha modificado el comando 'v' (línea vertical) en la segunda parte del trazado.
     Originalmente era 'v280', ahora es 'v380', añadiendo 100 unidades de longitud hacia abajo.
   */}
-            <path fill="#ffffff" d="M512 114a110 110 0 1 1 0 220a110 110 0 0 1 0-220m-110 396a110 110 0 0 1 220 0v380a110 110 0 0 1-220 0z" />
+            <path fill="white" d="M512 114a110 110 0 1 1 0 220a110 110 0 0 1 0-220m-110 396a110 110 0 0 1 220 0v380a110 110 0 0 1-220 0z" />
         </svg>
     ),
     // Navegación

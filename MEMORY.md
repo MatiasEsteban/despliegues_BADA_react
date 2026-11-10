@@ -70,5 +70,5 @@ Corrección del baseline: 4 variables CSS indefinidas reales (+1 con fallback) y
 
 5. Próximos Pasos Inmediatos
 A-05/A-06 pendientes: restaurar node_modules y build, y fijar la lista exacta de capturas baseline. P1-06 solo requiere importar detail-header.css tras las capturas.
-F2: P2-01/P2-02/P2-03 cerradas y P2-04 migrada (15 usos en 5 archivos: 7 dinámicos de ProgressModal + 8 de detalle); P2-03.11 y P2-04.6 pendientes de baseline P0-04; siguiente P2-05 detalle.
+[2026-11-10] P2-05/P2-06: 0 inline styles y 0 hex en src/components; paleta 76 tokens (sky-400/pink-500 exactos desde BadaGraph). ProgressModal usa <progress> y 3 tartas SVG; BadaGraph, SVG; badge de DetailHeader en layouts/header.css porque detail-header.css no se importa. P2-05.6, P2-03.11, P2-04.6 y P1-06.2 esperan baseline P0-04; P2-06.2 (helper de portapapeles) queda como propuesta.
 Derivar SPEC-002 (fechas locales), SPEC-003 (auth y firestore.rules), SPEC-004 (testing/CI) y SPEC-005 (sanitización de importación).

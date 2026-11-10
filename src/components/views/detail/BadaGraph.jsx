@@ -16,8 +16,20 @@ export default function BadaGraph({ pasos = [] }) {
     return (
         <div className="bada-graph-container">
             <div className="bada-graph-bar">
-                {v1Count > 0 && <div className="bada-segment segment-v1" style={{ width: `${v1Percent}%` }}></div>}
-                {v2Count > 0 && <div className="bada-segment segment-v2" style={{ width: `${v2Percent}%` }}></div>}
+                <svg
+                    className="bada-graph"
+                    viewBox="0 0 100 12"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                    focusable="false"
+                >
+                    {v1Count > 0 && (
+                        <rect className="bada-segment segment-v1" x={0} y={0} width={v1Percent} height={12} />
+                    )}
+                    {v2Count > 0 && (
+                        <rect className="bada-segment segment-v2" x={v1Percent} y={0} width={v2Percent} height={12} />
+                    )}
+                </svg>
             </div>
             <div className="bada-graph-labels">
                 {v1Count > 0 && <span className="label-v1">V1: {Math.round(v1Percent)}%</span>}

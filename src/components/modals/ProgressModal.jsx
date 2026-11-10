@@ -3,6 +3,82 @@ import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { calculateVersionStats } from '../../store/statsCalculator';
 
+// Clases estables por categoría. Se declaran aquí (nunca se derivan del texto
+// visible) para que el color viva en `modal-progress.css` con tokens de paleta.
+const STATUS_CLASSES = {
+    'En Desarrollo': { pie: 'pie-segment--desarrollo', legend: 'legend-color--desarrollo', heading: 'status-heading--desarrollo' },
+    'Pendiente de Certificacion': { pie: 'pie-segment--pendiente', legend: 'legend-color--pendiente', heading: 'status-heading--pendiente' },
+    'Certificado OK': { pie: 'pie-segment--certificado', legend: 'legend-color--certificado', heading: 'status-heading--certificado' },
+    'En Produccion': { pie: 'pie-segment--produccion', legend: 'legend-color--produccion', heading: 'status-heading--produccion' }
+};
+
+const DIFFICULTY_CLASSES = {
+    'Baja': { pie: 'pie-segment--baja', legend: 'legend-color--baja' },
+    'Media': { pie: 'pie-segment--media', legend: 'legend-color--media' },
+    'Alta': { pie: 'pie-segment--alta', legend: 'legend-color--alta' }
+};
+
+const BADA_CLASSES = {
+    'V1': { pie: 'pie-segment--v1', legend: 'legend-color--v1', heading: 'status-heading--v1' },
+    'V2': { pie: 'pie-segment--v2', legend: 'legend-color--v2', heading: 'status-heading--v2' }
+};
+
+// Tarta por segmentos. Un círculo con `r = 25` y `stroke-width = 50` pinta un
+// disco de radio 50; `pathLength="100"` normaliza `stroke-dasharray` a porcentajes
+// y conserva los mismos ángulos que el antiguo `conic-gradient`.
+function PieChart({ data, classes }) {
+    const total = Object.values(data).reduce((sum, value) => sum + value, 0);
+
+    if (total === 0) {
+        return <svg className="pie-chart" viewBox="0 0 100 100" aria-hidden="true" focusable="false" />;
+    }
+
+    let offset = 0;
+    const segments = Object.entries(data)
+        .filter(([, value]) => value > 0)
+        .map(([key, value]) => {
+            const percent = (value / total) * 100;
+            const segment = { key, percent, offset, className: classes[key]?.pie ?? '' };
+            offset += percent;
+            return segment;
+        });
+
+    return (
+        <svg className="pie-chart" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+            <g transform="rotate(-90 50 50)">
+                {segments.map(({ key, percent, offset, className }) => (
+                    <circle
+                        key={key}
+                        className={`pie-segment ${className}`}
+                        cx="50"
+                        cy="50"
+                        r="25"
+                        pathLength="100"
+                        strokeDasharray={`${percent} ${100 - percent}`}
+                        strokeDashoffset={-offset}
+                    />
+                ))}
+            </g>
+        </svg>
+    );
+}
+
+function RenderLegend({ data, classes }) {
+    return (
+        <div className="chart-legend">
+            {Object.entries(data).map(([key, value]) => {
+                if (value === 0) return null;
+                return (
+                    <div key={key} className="legend-item">
+                        <span className={`legend-color ${classes[key]?.legend ?? ''}`}></span>
+                        <span className="legend-label">{key}: {value}</span>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
 export default function ProgressModal({ isOpen, onClose, version }) {
     if (!version) return null;
 
@@ -16,62 +92,6 @@ export default function ProgressModal({ isOpen, onClose, version }) {
     let progressClass = 'progress-low';
     if (finalProgress >= 100) progressClass = 'progress-complete';
     else if (finalProgress >= 50) progressClass = 'progress-mid';
-
-    // Helper para generar conic-gradient
-    const getConicGradient = (data, colors) => {
-        let currentAngle = 0;
-        const total = Object.values(data).reduce((a, b) => a + b, 0);
-        if (total === 0) return 'gray 0% 100%';
-
-        const segments = Object.entries(data).map(([key, value]) => {
-            if (value === 0) return null;
-            const percentage = (value / total) * 100;
-            const start = currentAngle;
-            const end = currentAngle + percentage;
-            currentAngle = end;
-            return `${colors[key] || 'gray'} ${start}% ${end}%`;
-        }).filter(Boolean);
-
-        return `conic-gradient(${segments.join(', ')})`;
-    };
-
-    // Colores
-    const statusColors = {
-        'En Desarrollo': '#3b82f6', // blue-500
-        'Pendiente de Certificacion': '#f59e0b', // amber-500
-        'Certificado OK': '#10b981', // emerald-500
-        'En Produccion': '#8b5cf6' // violet-500
-    };
-
-    const difficultyColors = {
-        'Baja': '#22c55e', // green-500
-        'Media': '#eab308', // yellow-500
-        'Alta': '#ef4444' // red-500
-    };
-
-    const badaColors = {
-        'V1': '#0ea5e9', // sky-500
-        'V2': '#ec4899' // pink-500
-    };
-
-    const statusGradient = getConicGradient(statusCounts, statusColors);
-    const difficultyGradient = getConicGradient(difficultyCounts, difficultyColors);
-    const badaGradient = getConicGradient(badaVersionCounts, badaColors);
-
-    // Render Legend Helper
-    const RenderLegend = ({ data, colors }) => (
-        <div className="chart-legend">
-            {Object.entries(data).map(([key, value]) => {
-                if (value === 0) return null;
-                return (
-                    <div key={key} className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: colors[key] }}></span>
-                        <span className="legend-label">{key}: {value}</span>
-                    </div>
-                );
-            })}
-        </div>
-    );
 
     return (
         <Modal
@@ -92,10 +112,12 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                         {finalProgress}%
                     </div>
                     <div className="progress-bar-container">
-                        <div
-                            className={`progress-bar-fill ${progressClass}`}
-                            style={{ width: `${finalProgress}%` }}
-                        ></div>
+                        <progress
+                            className={`progress-bar ${progressClass}`}
+                            value={finalProgress}
+                            max={100}
+                            aria-label="Progreso global"
+                        />
                     </div>
                     <p className="progress-note">
                         Basado en {validCdus} CDUs activos.
@@ -115,15 +137,8 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                         <div className={`chart-content-wrapper ${expandedChart === 'status' ? 'expanded' : ''}`}>
                             {/* Gráfico */}
                             <div className="pie-chart-container pie-chart-container--fixed">
-                                <div className="pie-chart" style={{
-                                    width: expandedChart === 'status' ? '120px' : '80px',
-                                    height: expandedChart === 'status' ? '120px' : '80px',
-                                    borderRadius: '50%',
-                                    background: statusGradient,
-                                    flexShrink: 0,
-                                    transition: 'all 0.3s ease'
-                                }}></div>
-                                <RenderLegend data={statusCounts} colors={statusColors} />
+                                <PieChart data={statusCounts} classes={STATUS_CLASSES} />
+                                <RenderLegend data={statusCounts} classes={STATUS_CLASSES} />
                             </div>
 
                             {/* Detalles (Solo visible si está expandido) */}
@@ -133,12 +148,7 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                                         if (titles.length === 0) return null;
                                         return (
                                             <div key={status} className="status-column">
-                                                <h5 style={{
-                                                    color: statusColors[status],
-                                                    marginBottom: '0.5rem',
-                                                    fontSize: '1rem',
-                                                    borderBottom: `2px solid ${statusColors[status]}`
-                                                }}>
+                                                <h5 className={`status-heading ${STATUS_CLASSES[status]?.heading ?? ''}`}>
                                                     {status} ({titles.length})
                                                 </h5>
                                                 <ul className="status-list">
@@ -160,14 +170,8 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                     <div className="chart-card">
                         <h4 className="chart-subtitle">Dificultad (Pasos)</h4>
                         <div className="pie-chart-container">
-                            <div className="pie-chart" style={{
-                                width: '80px',
-                                height: '80px',
-                                borderRadius: '50%',
-                                background: difficultyGradient,
-                                flexShrink: 0
-                            }}></div>
-                            <RenderLegend data={difficultyCounts} colors={difficultyColors} />
+                            <PieChart data={difficultyCounts} classes={DIFFICULTY_CLASSES} />
+                            <RenderLegend data={difficultyCounts} classes={DIFFICULTY_CLASSES} />
                         </div>
                     </div>
 
@@ -180,15 +184,8 @@ export default function ProgressModal({ isOpen, onClose, version }) {
 
                         <div className={`chart-content-wrapper ${expandedChart === 'bada' ? 'expanded' : ''}`}>
                             <div className="pie-chart-container pie-chart-container--fixed">
-                                <div className="pie-chart" style={{
-                                    width: expandedChart === 'bada' ? '120px' : '80px',
-                                    height: expandedChart === 'bada' ? '120px' : '80px',
-                                    borderRadius: '50%',
-                                    background: badaGradient,
-                                    flexShrink: 0,
-                                    transition: 'all 0.3s ease'
-                                }}></div>
-                                <RenderLegend data={badaVersionCounts} colors={badaColors} />
+                                <PieChart data={badaVersionCounts} classes={BADA_CLASSES} />
+                                <RenderLegend data={badaVersionCounts} classes={BADA_CLASSES} />
                             </div>
 
                             {/* Detalles BADA */}
@@ -214,12 +211,7 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                                             if (titles.length === 0) return null;
                                             return (
                                                 <div key={ver} className="status-column">
-                                                    <h5 style={{
-                                                        color: badaColors[ver],
-                                                        marginBottom: '0.5rem',
-                                                        fontSize: '1rem',
-                                                        borderBottom: `2px solid ${badaColors[ver]}`
-                                                    }}>
+                                                    <h5 className={`status-heading ${BADA_CLASSES[ver]?.heading ?? ''}`}>
                                                         Dominante {ver} ({titles.length})
                                                     </h5>
                                                     <ul className="status-list">

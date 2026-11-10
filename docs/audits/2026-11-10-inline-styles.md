@@ -638,3 +638,84 @@ Queda en `◐` por la ausencia de `node_modules`, dev server y baseline `P0-04`.
 - `CommentsModal`: ausencia de padding del contenedor y scroll.
 - `DeploymentReportModal` sin datos: centrado y ancho completo.
 - Iconos `Plus`/`X` de `ChangelogEntriesModal`.
+
+---
+
+## 9. Ejecución P2-05 — Geometría dinámica y colores por categoría
+
+Fecha: 2026-11-10. Alcance: los 15 usos restantes. Resultado: **0 `style={{}}` y 0 hex en `src/components`**.
+
+### 9.1 Uso → destino (15)
+
+| # | Uso (línea base) | Tipo | Técnica | Clase / atributo | Delta |
+|---|---|---|---|---|---|
+| 1 | `BadaGraph.jsx:19` ancho `${v1Percent}%` | GEOMETRÍA | SVG | `<rect width={v1Percent} height={12}>` + `.bada-graph` | Animación de ancho depende de SVG2; proporción idéntica |
+| 2 | `BadaGraph.jsx:20` ancho `${v2Percent}%` | GEOMETRÍA | SVG | `<rect x={v1Percent} width={v2Percent}>` | Idem |
+| 3 | `CduRow.jsx:125` `textAlign: center` | ESTÁTICO | clase | `.cdu-actions-cell` | Ninguno |
+| 4 | `CduRow.jsx:126` `display/gap/justifyContent` | ESTÁTICO | clase | `.cdu-actions` | Ninguno |
+| 5 | `CduRow.jsx:131` `padding`/`fontSize` | ESTÁTICO | clase | `.cdu-action-btn` (`--space-1`, `--space-2`, `--font-size-sm`) | Ninguno |
+| 6 | `StepsEditor.jsx:47` `transform`/`transition` | ESTÁTICO | clase | `.pasos-toggle-icon` + `.pasos-toggle-icon--active` | Ninguno |
+| 7 | `DetailHeader.jsx:114` `position: relative` | ESTÁTICO | clase | `.version-comments-wrapper` (`layouts/header.css`) | Ninguno |
+| 8 | `DetailHeader.jsx:118` badge (12 declaraciones + `#ef4444`) | ESTÁTICO + COLOR | clase + token | `.version-comments-badge` + `--palette-red-500` | Ninguno: mismo valor exacto |
+| 9 | `ProgressModal.jsx:68` `backgroundColor: colors[key]` | COLOR | clase | `.legend-color--*` (9 slugs) | Ninguno: mismos valores |
+| 10 | `ProgressModal.jsx:97` ancho `${finalProgress}%` | GEOMETRÍA | `<progress>` | `<progress className="progress-bar" value={finalProgress} max={100}>` | Valor final idéntico; la transición de 1 s puede no animar en nativo |
+| 11 | `ProgressModal.jsx:118` tarta de estados | GEOMETRÍA | SVG | `<PieChart>`: `<circle r="25" stroke-width="50" pathLength="100" stroke-dasharray>` | Mismos ángulos y colores; borde de sector con antialiasing distinto |
+| 12 | `ProgressModal.jsx:136` color del `h5` de estado | COLOR | clase | `.status-heading` + `.status-heading--*` | Ninguno |
+| 13 | `ProgressModal.jsx:163` tarta de dificultad | GEOMETRÍA | SVG | `<PieChart>` | Idem |
+| 14 | `ProgressModal.jsx:183` tarta de versión Bada | GEOMETRÍA | SVG | `<PieChart>` | Idem |
+| 15 | `ProgressModal.jsx:217` color del `h5` de Bada | COLOR | clase | `.status-heading--v1/--v2` | Ninguno |
+
+### 9.2 Decisiones de implementación
+
+- **BadaGraph:** el `<svg>` (`viewBox="0 0 100 12"`, `preserveAspectRatio="none"`) va dentro del marco existente `.bada-graph-bar`, que conserva fondo, borde y `border-radius: 6px` con `overflow: hidden`. Los rectángulos llevan `x`/`width` como atributos; las reglas pasan de `background-color` a `fill`. El gráfico es decorativo (`aria-hidden="true"`) porque las etiquetas `V1: n%` / `V2: n%` ya describen el dato.
+- **Tartas:** un `<circle r="25">` con `stroke-width: 50` y `pathLength="100"` pinta un disco de radio 50 y convierte `stroke-dasharray` en porcentajes; `transform="rotate(-90 50 50)"` alinea el inicio a las 12 en punto y `stroke-dashoffset` acumula los segmentos. Se elimina el `conic-gradient` construido en JS: ningún degradado se sustituye por relleno sólido, porque el SVG conserva los mismos sectores.
+- **`<progress>`:** se mantiene `.progress-bar-container` como marco y `.progress-bar` se estiliza con `::-webkit-progress-bar`, `::-webkit-progress-value` y `::-moz-progress-bar`. Las variantes `.progress-low/mid/complete` se conservan en el elemento para el color del valor, con `background-color: transparent` para anular el fondo que esas reglas aplican al texto grande.
+- **DetailHeader — desviación justificada:** las reglas nuevas se añaden a `layouts/header.css`, que ya contiene `.version-header-buttons` y sí está importado. `layouts/detail-header.css` sigue sin importarse (bloqueo `P1-06.2`): escribir allí las clases habría eliminado el badge en producción. El archivo huérfano queda intacto y su importación sigue pendiente de `P0-04`.
+- **Tokenización de hex:** `#ef4444` → `--palette-red-500` (mismo valor, distinta caja). Los 9 colores de `ProgressModal` se mapean a tokens ya existentes con valores idénticos: `blue-500`, `amber-500`, `green-500`, `violet-500`, `green-500-alt`, `yellow-500`, `red-500`, y los dos nuevos `sky-400`/`pink-500`. Los mapas `status → clase` son constantes con slugs estables; ninguna clase se genera a partir del texto visible.
+- **`Icons.Info`:** `fill="#ffffff"` → `fill="white"`. Es el mismo color (`#FFFFFF`) sin hex en JSX; el icono sigue con relleno fijo, deuda de contraste ya registrada para `P4`.
+
+### 9.3 Deltas visuales asumidos, por riesgo
+
+| Riesgo | Delta | Motivo |
+|---|---|---|
+| Medio | La barra nativa puede no animar el crecimiento de 1 s | `::-webkit-progress-value` no siempre acepta `transition`; el estado final es idéntico |
+| Medio | El borde de cada sector de tarta puede mostrar antialiasing algo distinto al `conic-gradient` | Cambio de técnica de pintado, mismos ángulos y colores |
+| Bajo | La transición de ancho de `BadaGraph` depende de que el navegador anime la geometría SVG (`width` CSS en `<rect>`) | En el peor caso, el gráfico aparece en su valor final sin animar |
+| Bajo | `pie-chart` sin datos queda invisible | Antes el `conic-gradient` se generaba inválido (`gray 0% 100%`) y también era invisible |
+
+### 9.4 Conteos antes / después
+
+| Métrica | Antes | Después | Delta |
+|---|---:|---:|---:|
+| `style={{` en `src/components` | 15 (5 archivos) | **0** | −15 |
+| ESTÁTICO / GEOMETRÍA / COLOR / VAR-CSS | 6 / 6 / 3 / 0 | **0 / 0 / 0 / 0** | −15 |
+| Hex en `src/components` | 11 | **0** | −11 |
+| Clases CSS / consumidas | 467 / 445 | **502 / 480** | +35 / +35 |
+| Dinámicas / muertas | 21 / 1 | **21 / 1** | 0 |
+| Clases JSX sin regla | 18 | **17** | −1 |
+| Imports de `main.css` / rotos | 30 / 0 | **30 / 0** | 0 |
+
+### 9.5 Clases nuevas (35 netas)
+
+| Archivo | Clases |
+|---|---|
+| `components/table.css` | `.bada-graph`, `.cdu-actions-cell`, `.cdu-actions`, `.cdu-action-btn`, `.pasos-toggle-icon`, `.pasos-toggle-icon--active` |
+| `layouts/header.css` | `.version-comments-wrapper`, `.version-comments-badge` |
+| `modals/modal-progress.css` | `.progress-bar`, `.pie-chart`, `.pie-segment` + 9 `.pie-segment--*`, 9 `.legend-color--*`, `.status-heading` + 6 `.status-heading--*` |
+
+Se retira `.progress-bar-fill`: 36 nombres nuevos − 1 eliminado = +35.
+
+### 9.6 P2-06 — fallback de portapapeles
+
+- **P2-06.1 ✅.** Solo hay dos copias: `DeploymentInfoModal.jsx:99-125` (asignaciones `textArea.style.*`) y `FullSummaryModal.jsx:113-127` (`Object.assign(ta.style, {...})`). Fuera del alcance de portapapeles, `validator.js:126` usa `parent.style.position = 'relative'` para anclar mensajes de validación.
+- **P2-06.2 ◐ — propuesta, no ejecutada.** Las dos copias son equivalentes (position fixed, 2em, opacity 0, z-index −1, `execCommand('copy')`), pero difieren en el manejo de errores y mensajes. Extraerlas a `src/utils/clipboard.js` tocaría 3 archivos (helper + 2 modales), por encima del límite de 2 fijado para esta tarea: queda como propuesta para una tarea propia.
+- **P2-06.3 ✅.** `grep 'style={{'` en `src/components` = 0; `.style.` solo aparece en los dos fallbacks documentados y en `validator.js`.
+
+### 9.7 P2-05.6 — verificación visual pendiente (`⛔ P0-04`)
+
+Sin `node_modules` ni dev server no se puede comparar contra baseline. A validar en G2:
+
+- `BadaGraph`: proporción V1/V2, esquinas redondeadas del marco y animación.
+- `ProgressModal`: barra en 0/49/50/100 %, tartas con 1, 2 y 3 categorías, leyenda y encabezados por estado.
+- `DetailHeader`: posición y color del badge con y sin comentarios.
+- `CduRow` y `StepsEditor`: botones de acción y rotación del chevron.

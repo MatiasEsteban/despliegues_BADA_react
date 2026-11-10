@@ -43,11 +43,11 @@ export default function StepsEditor({ steps = [], onChange }) {
                     title="Mostrar/Ocultar pasos"
                 >
                     <Icons.ChevronDown
-                        className="icon-small"
-                        style={{
-                            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)',
-                            transition: 'transform 0.3s'
-                        }}
+                        className={clsx(
+                            'icon-small',
+                            'pasos-toggle-icon',
+                            isExpanded && 'pasos-toggle-icon--active'
+                        )}
                     />
                 </button>
             </div>

@@ -5,7 +5,7 @@
 | Spec | [`SPEC-001-endurecimiento-diseno-accesibilidad.md`](SPEC-001-endurecimiento-diseno-accesibilidad.md) |
 | Plan | [`../plan.md`](../plan.md) |
 | Fecha de auditoría | 2026-11-10 |
-| Estado global | F0 parcial · F1 casi cerrada · F2–F7 pendientes |
+| Estado global | F0 parcial · F1 casi cerrada · F2 código cerrado (verificación visual pendiente) · F3–F7 pendientes |
 | Rama | `feat/spec-001-design-hardening` |
 
 Este archivo divide cada tarea del plan en subtareas de **una sola sesión de revisión**. Una subtarea se cierra únicamente con evidencia reproducible. El plan conserva la visión por fases; este tablero es la unidad de ejecución.
@@ -236,15 +236,15 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 
 | ID | Tarea | Archivo | Dep. | Esf. | Estado | Criterio |
 |---|---|---|---|---|---|---|
-| P2-05.1 | Convertir `BadaGraph` a SVG/`<progress>` | `detail/BadaGraph.jsx`, `table.css` | P2-03.4 | M | ☐ | Proporciones y colores idénticos |
-| P2-05.2 | Eliminar geometría inline de `CduRow` | `detail/CduRow.jsx`, `table.css` | P2-03.4 | S | ☐ | 0 `style` |
-| P2-05.3 | Eliminar geometría inline de `StepsEditor` | `detail/StepsEditor.jsx`, `table.css` | P2-03.4 | XS | ☐ | 0 `style` |
-| P2-05.4 | Eliminar geometría inline de `DetailHeader` | `detail/DetailHeader.jsx`, `detail-header.css` | P2-03.6 | S | ☐ | 0 `style` |
-| P2-05.5 | Migrar barras y segmentos de `ProgressModal` | `modals/ProgressModal.jsx`, `modal-progress.css` | P2-04.5 | M | ☐ | `<progress>` o SVG con atributos |
-| P2-05.6 | Comparar gráficos y barras contra baseline | — | P2-05.1–5, P0-04.7 | S | ⛔ P0-04 | Lectura visual equivalente |
-| P2-06.1 | Localizar usos de `element.style` | `DeploymentInfoModal`, `FullSummaryModal` | P2-04 | XS | ☐ | Solo fallback de portapapeles |
-| P2-06.2 | Aislar y documentar el fallback | `src/utils/` + doc | P2-06.1 | S | ☐ | Helper único o comentario justificado |
-| P2-06.3 | Verificar `grep` final | — | P2-06.2 | XS | ☐ | `style={{` = 0; `.style.` = solo fallback |
+| P2-05.1 | Convertir `BadaGraph` a SVG/`<progress>` | `detail/BadaGraph.jsx`, `table.css` | P2-03.4 | M | ✅ | SVG con `viewBox="0 0 100 12"`; `x`/`width` como atributos y `fill` por token. Sin `style`. |
+| P2-05.2 | Eliminar geometría inline de `CduRow` | `detail/CduRow.jsx`, `table.css` | P2-03.4 | S | ✅ | 0 `style`; `.cdu-actions-cell`, `.cdu-actions` y `.cdu-action-btn`. |
+| P2-05.3 | Eliminar geometría inline de `StepsEditor` | `detail/StepsEditor.jsx`, `table.css` | P2-03.4 | XS | ✅ | 0 `style`; el inline estaba en el chevron, no en un input: `.pasos-toggle-icon--active`. |
+| P2-05.4 | Eliminar geometría inline de `DetailHeader` | `detail/DetailHeader.jsx`, `layouts/header.css` | P2-03.6 | S | ✅ | 0 `style`; `.version-comments-wrapper`/`-badge` en `header.css` porque `detail-header.css` no está importado (P1-06.2). `#ef4444` → `--palette-red-500`. |
+| P2-05.5 | Migrar barras y segmentos de `ProgressModal` | `modals/ProgressModal.jsx`, `modal-progress.css` | P2-04.5 | M | ✅ | Barra con `<progress>`; 3 tartas con `<circle pathLength="100">`; colores por `.legend-color--*`/`.status-heading--*` con slugs estables. 0 hex. |
+| P2-05.6 | Comparar gráficos y barras contra baseline | — | P2-05.1–5, P0-04.7 | S | ⛔ P0-04 | Lectura visual equivalente; sin dev server ni baseline. |
+| P2-06.1 | Localizar usos de `element.style` | `DeploymentInfoModal`, `FullSummaryModal` | P2-04 | XS | ✅ | Solo dos fallbacks de portapapeles (`textArea.style.*` y `Object.assign(ta.style)`); `validator.js:126` fuera del alcance. |
+| P2-06.2 | Aislar y documentar el fallback | `src/utils/` + doc | P2-06.1 | S | ◐ | Propuesta: helper en `src/utils/clipboard.js`; tocaría 3 archivos (>2) y los modales difieren en el manejo de errores. Documentado en el audit §9.6. |
+| P2-06.3 | Verificar `grep` final | — | P2-06.2 | XS | ✅ | `style={{` = 0; `.style.` solo en los dos fallbacks documentados. |
 
 **Gate G2:** 0 inline styles, solo el fallback documentado, gráficos equivalentes y diff visual sin cambios.
 

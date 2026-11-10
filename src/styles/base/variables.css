@@ -8,7 +8,7 @@
    Esta capa es independiente del tema: los valores son los mismos
    en claro y en oscuro. La capa semántica (Fase 1, P1-03) es la
    que decide qué token usar en cada tema.
-   Total: 74 tokens, 74 valores únicos.
+   Total: 76 tokens (74 heredados + 2 excepciones aprobadas), 76 valores únicos.
    Inventario: docs/design-system/color-inventory.md
    ============================================================ */
 
@@ -32,7 +32,13 @@
     /* === CIELO === */
     --palette-sky-50: #EBF8FF;
     --palette-sky-100: #E0F2FE;
+    /* Excepción aprobada 2026-11-10: valores ya presentes en BadaGraph.jsx; no son hues nuevos. */
+    --palette-sky-400: #0EA5E9;
     --palette-sky-500: #4299E1;
+
+    /* === ROSA === */
+    /* Excepción aprobada 2026-11-10: valores ya presentes en BadaGraph.jsx; no son hues nuevos. */
+    --palette-pink-500: #EC4899;
 
     /* === ROJO === */
     --palette-red-50: #FFF5F5;
