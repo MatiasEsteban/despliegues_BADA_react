@@ -120,19 +120,6 @@
     text-overflow: ellipsis;
 }
 
-.changelog-date {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-    white-space: nowrap;
-}
-
-.changelog-time {
-    opacity: 0.7;
-}
-
 .changelog-chevron {
     color: var(--text-secondary);
     display: flex;

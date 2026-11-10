@@ -159,7 +159,7 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P1-06.4 | Cerrar la parte CSS de G1 | `plan.md` | P1-06.3, P1-09.5 | XS | ☐ | Checklist G1 completo |
 | P1-07.1 | Eliminar 6 hojas muertas | 6 archivos | P1-05.1 | S | ✅ | Archivos fuera del árbol |
 | P1-07.2 | Verificar 0 imports y 0 consumidores | — | P1-07.1 | S | ✅ | `grep` sin referencias |
-| P1-07.3 | Eliminar selectores sin consumidor citados | CSS de modales | P1-07.1 | XS | ✅ | `.modal.deployment-report`, `.modal-deployment-info .modal-box` ausentes |
+| P1-07.3 | Eliminar selectores sin consumidor citados | CSS de modales | P1-07.1 | XS | ✅ | La afirmación «ausentes» se refería a consumidores en JSX, no a las reglas: `.modal.deployment-report` (desde `8dd12c4`) y `.modal-deployment-info .modal-box` (desde `6b8e447`, movida en `0560aa9`) seguían en `HEAD`; ambas eliminadas en P1-10.4. Ver informe §9.6 |
 | P1-08.1 | Dividir `changelog.css` en 6 archivos | `styles/components/changelog/*`, `modals/export-modal.css`, `modals/deployment-info.css` | P1-05.1 | L | ✅ | 208 bloques |
 | P1-08.2 | Verificar 0 selectores duplicados | — | P1-08.1 | XS | ✅ | Script de conteo |
 | P1-08.3 | Documentar desvíos del split | `docs/audits/2026-11-10-changelog-split.md` | P1-08.1 | XS | ✅ | `docs/audits/2026-11-10-changelog-split.md`; 4 desvíos documentados; sin conflicto de cascada |
@@ -172,8 +172,8 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P1-10.1 | Inventariar selectores CSS y buscar su clase en JSX | `scripts/audit-selectors.mjs`, `docs/audits/2026-11-10-dead-selectors.md` | P1-07.2 | M | ✅ | `docs/audits/2026-11-10-dead-selectors.md`; 56 muertas, 21 dinámicas, 31 clases JSX sin regla. Falsos positivos por construcción dinámica: 5 `changelog-modal-tab--{key}`, 4 `dep-info-cat--{key}`, 4 `toast-*`, 3 `modal-*` y 5 `btn-{variant}`, generados con template literal en `ChangelogEntriesModal.jsx:111`, `DeploymentInfoModal.jsx:179`, `Toast.jsx:12`, `Modal.jsx:26` y `Button.jsx:8`. |
 | P1-10.2 | Eliminar muertos en base/layouts | `base/*`, `layouts/*` | P1-10.1 | S | ✅ | 11 clases / 16 reglas eliminadas (`animations.css` 3, `reset.css` 1, `header.css` 12); 0 muertas en base/layouts; 21 dinámicas intactas; 30 imports, 0 rotos |
 | P1-10.3 | Eliminar muertos en components | `components/*` | P1-10.1 | M | ✅ | 3 clases / 9 reglas eliminadas (`cards.css` 1, `buttons.css` 5, `grid.css` 3); 0 muertas en components; 0 imports rotos |
-| P1-10.4 | Eliminar muertos en modales/changelog | `modals/*`, `changelog/*` | P1-10.1 | M | ☐ | Sin selectores sin uso |
-| P1-10.5 | Verificar 0 selectores muertos | script | P1-10.2–4 | S | ☐ | Solo falsos positivos documentados. Ejecutar `node scripts/audit-selectors.mjs`; salida vacía salvo los falsos positivos documentados en el informe. |
+| P1-10.4 | Eliminar muertos en modales/changelog | `modals/*`, `changelog/*` | P1-10.1 | M | ✅ | 41 clases / 59 reglas eliminadas (`card.css` 2, `modal-entries.css` 1, `deployment-info.css` 17, `modal-base.css` 2, `modal-comentarios.css` 2, `modal-login.css` 2, `modal-progress.css` 1, `modal-deployment-report.css` 4); `modal-changes-summary.css` (28 reglas) y su import eliminados; 1 excluida (`.deployment-report .modal-actions`, descendiente vivo); script 42→1; 21 dinámicas intactas; 29 imports, 0 rotos |
+| P1-10.5 | Verificar 0 selectores muertos | script | P1-10.2–4 | S | ✅ | `node scripts/audit-selectors.mjs`: `CSS clases: 424 \| consumidas: 402 \| dinámicas: 21 \| muertas: 1 \| JSX sin regla: 32`. La única muerta es `deployment-report`, justificada como excluida en el informe §9.3 |
 
 **Gate G1:** 0 hex, 0 variables indefinidas, 0 hojas sin importar, 0 CSS en componentes, diff visual sin cambios y `changelog.css` dividido.
 
@@ -569,6 +569,7 @@ spec-001(P2-03.1): migrar estilos inline de ChangelogCard
 | 2026-11-10 | A-01 completado: plan.md movido de `specs/` a la raíz. |
 | 2026-11-10 | P1-08.3 y P1-10.1 cerradas: 4 desvíos del split documentados y auditoría de selectores (56 muertas, 21 dinámicas, 31 clases JSX sin regla). §6.3 y §6.4 corregidos a 27 y 36 usos (suma 78). |
 | 2026-11-10 | P1-10.2/P1-10.3 cerradas: 14 clases y 25 reglas muertas eliminadas en base/layouts/components. Script 56→42 muertas (quedan solo P1-10.4), 21 dinámicas intactas, 0 imports rotos. |
+| 2026-11-10 | P1-10.4/P1-10.5 cerradas: 41 clases y 59 reglas eliminadas en modales/changelog; `modal-changes-summary.css` (28 reglas) y su import retirados. Script 42→1 muerta (solo `deployment-report`, excluida por descendiente vivo), 21 dinámicas intactas, 29 imports y 0 rotos. Discrepancia P1-07.3 corregida: los selectores existían desde el primer commit; «ausentes» se refería a consumidores. |
 
 
 

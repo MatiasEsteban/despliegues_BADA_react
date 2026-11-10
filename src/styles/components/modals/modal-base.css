@@ -63,11 +63,6 @@
     flex-grow: 1;
 }
 
-.modal-header .modal-icon-header {
-    color: var(--accent-color);
-    width: 24px;
-    height: 24px;
-}
 .modal-title {
     font-size: 1.25rem;
     font-weight: 700;
@@ -165,15 +160,3 @@
     color: var(--text-primary);
 }
 
-/* Header genérico para modales con scroll (Historial, Comentarios) */
-.modal-historial-header {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-    background: var(--bg-secondary);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-shrink: 0;
-}

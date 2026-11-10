@@ -66,9 +66,11 @@ Corrección del baseline: 4 variables CSS indefinidas reales (+1 con fallback) y
 
 [2026-11-09/10] - F1 (P1-01 a P1-08): 74 tokens --palette-*, 35 semánticos y 35 de escala documentados en docs/design-system.md; 144 hex tokenizados con round-trip verificado; 6 hojas muertas eliminadas; changelog.css (1.526 líneas) dividido en 6 archivos sin selectores duplicados; modal-history.css movida a main.css. Pendiente P1-06 (detail-header.css) por capturas. Único delta visual: --radius-md en CduHistoryModal. Auditoría 2026-11-10: plan.md movido a la raíz; tablero granular en specs/tasks.md; nuevas P1-09 (variables indefinidas), P1-10 (selectores muertos) y P3-06 (tablas).
 
+[2026-11-10] - P1-09/P1-10 cerradas: 0 variables indefinidas; 55 clases y 84 reglas muertas eliminadas (14/25 en base-layouts-components, 41/59 en modales-changelog). `modal-changes-summary.css` retirada con su import. Auditoría: 466→424 clases, muertas 42→1 (solo `deployment-report`, excluida por descendiente vivo `.modal-actions`), 21 dinámicas intactas, 29 imports y 0 rotos. Discrepancia P1-07.3 corregida: los selectores existían desde el primer commit; «ausentes» se refería a consumidores.
+
 5. Próximos Pasos Inmediatos
 A-05/A-06/A-07: restaurar node_modules y build, fijar capturas baseline y commitear F0/F1 auditado.
-Completar P1-09 y P1-10; P1-06 solo requiere importar detail-header.css tras las capturas.
+Completadas P1-09 y P1-10; P1-06 solo requiere importar detail-header.css tras las capturas.
 Iniciar F2 siguiendo specs/tasks.md (inventario P2-01 y migración por archivo).
 
 Derivar SPEC-002 (fechas locales), SPEC-003 (auth y firestore.rules), SPEC-004 (testing/CI) y SPEC-005 (sanitización de importación).

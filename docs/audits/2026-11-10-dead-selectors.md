@@ -230,7 +230,7 @@ El resto son nombres redundantes: el elemento ya está estilado por otra regla o
 
 - **No borrar estados aplicados desde JS**: `.modal-show`, `.toast-show`, `.toast-loading`, `.toast-spinner`, `.campo-invalido` y `.active` dependen de `classList`/`clsx`, aunque su nombre no aparezca literal en un `className`.
 - **Hooks de animación transitorios**: `adding`, `removing` y `filtered-match` no tienen consumidor hoy, pero son ganchos de animación de la tabla. Antes de borrarlos, revisar si `dataStore`/`notifications.js` los aplicarán tras una refactorización pendiente.
-- **Reglas que nunca se activan**: `.modal.deployment-report` y `.modal-deployment-info .modal-box` están muertas, pero contienen layout del modal. `P1-07.3` ya declaró ausentes esos selectores y las reglas siguen ahí: conviene confirmar si su eliminación cambia el tamaño de esos modales antes de tocar `P1-10.4`.
+- **Reglas que nunca se activan**: `.modal.deployment-report` y `.modal-deployment-info .modal-box` están muertas, pero contienen layout del modal. `P1-07.3` ya declaró ausentes esos selectores y las reglas siguen ahí: conviene confirmar si su eliminación cambia el tamaño de esos modales antes de tocar `P1-10.4`. **Resuelto en §9.6**: la afirmación de `P1-07.3` se refería a consumidores, no a reglas; ambas se eliminaron en `P1-10.4`.
 - **Archivo completo obsoleto**: `modal-changes-summary.css` aporta 17 de las 42 muertas de `P1-10.4`; corresponde a un modal que ya no se monta. La opción más segura es retirar el archivo y su `@import` (`main.css:25`) en bloque, no regla a regla.
 - **Duplicados entre destinos**: `cat-icon` (modal + header) y `badge-produccion-inline` (cards + grid) obligan a coordinar `P1-10.2` con `P1-10.3`/`P1-10.4`.
 - **Heurística conservadora**: cualquier sufijo que coincida con un valor de `variant`/`type` se considera dinámico. Es deliberado para no borrar clases vivas, pero `P1-10.5` debe revisar manualmente los 21 dinámicos y no exigir su desaparición.
@@ -333,4 +333,120 @@ Después: `CSS clases: 466 | consumidas: 403 | dinámicas: 21 | muertas: 42 | JS
 - Comprobación de imports de `main.css`: 30 imports, **0 rotos**.
 - Sin cambios en `src/**/*.jsx`, `src/**/*.js`, `index.html` ni `public/`.
 - Sin cambios visuales esperados: todas las reglas eliminadas exigían una clase que ningún elemento recibe.
+
+---
+
+## 9. Ejecución P1-10.4
+
+Ejecutado el 2026-11-10 sobre `modals/` y `changelog/`. Se eliminaron **41 de las 42 clases muertas**, repartidas en **59 reglas**, y **1 archivo completo** (`modal-changes-summary.css`) con su `@import`. Queda **1 clase muerta residual** (`deployment-report`) por una regla que se conserva como excluida.
+
+### 9.1 Acciones por clase
+
+| Clase | Archivo | Acción | Razón |
+|---|---|---|---|
+| `cat-icon` | `modals/modal-comentarios.css` | Eliminada (1 regla) | 0 consumidores; el bloque de comentarios ya no pinta iconos con esa clase |
+| `change-cdu-name` | `modals/modal-changes-summary.css` | Eliminada con el archivo (6 reglas) | Modal de resumen de cambios no montado; sin consumidores |
+| `change-creation-note` | `modals/modal-changes-summary.css` | Eliminada con el archivo (1 regla) | Ídem |
+| `change-details` | `modals/modal-changes-summary.css` | Eliminada con el archivo (1 regla) | Ídem |
+| `change-estado` | `modals/modal-changes-summary.css` | Eliminada con el archivo (4 reglas) | Ídem |
+| `change-header` | `modals/modal-changes-summary.css` | Eliminada con el archivo (1 regla) | Ídem |
+| `change-item` | `modals/modal-changes-summary.css` | Eliminada con el archivo (2 reglas) | Ídem |
+| `change-item-creation` | `modals/modal-changes-summary.css` | Eliminada con el archivo (4 reglas) | Ídem |
+| `change-item-produccion` | `modals/modal-changes-summary.css` | Eliminada con el archivo (7 reglas) | Ídem |
+| `change-number` | `modals/modal-changes-summary.css` | Eliminada con el archivo (1 regla) | Ídem |
+| `change-type-badge` | `modals/modal-changes-summary.css` | Eliminada con el archivo (4 reglas) | Ídem |
+| `change-version` | `modals/modal-changes-summary.css` | Eliminada con el archivo (1 regla) | Ídem |
+| `changelog-date` | `changelog/card.css` | Eliminada (1 regla) | El JSX usa `changelog-dates-group`; el token exacto no aparece |
+| `changelog-time` | `changelog/card.css` | Eliminada (1 regla) | El JSX usa `changelog-timeline`; el token exacto no aparece |
+| `changes-summary` | `modals/modal-changes-summary.css` | Eliminada con el archivo (1 regla) | Regla `.modal.changes-summary`; ningún `className` pasa `changes-summary` |
+| `dep-info-cdu-row` | `modals/deployment-info.css` | Eliminada (2 reglas) | Bloque CDU antiguo; `DeploymentInfoModal.jsx` no renderiza `row` |
+| `dep-info-cdu-row--certificado-ok` | `modals/deployment-info.css` | Eliminada (1 regla) | Ídem |
+| `dep-info-cdu-row--en-desarrollo` | `modals/deployment-info.css` | Eliminada (1 regla) | Ídem |
+| `dep-info-cdu-row--en-produccion` | `modals/deployment-info.css` | Eliminada (1 regla) | Ídem |
+| `dep-info-cdu-row--pendiente-de-certificacion` | `modals/deployment-info.css` | Eliminada (1 regla) | Ídem |
+| `dep-info-cdu-row-estado` | `modals/deployment-info.css` | Eliminada (5 reglas) | Ídem |
+| `dep-info-cdu-row-name` | `modals/deployment-info.css` | Eliminada (1 regla) | Ídem |
+| `dep-info-cdus-list` | `modals/deployment-info.css` | Eliminada (1 regla) | Ídem |
+| `dep-info-cdus-section` | `modals/deployment-info.css` | Eliminada (1 regla) | Ídem |
+| `dep-info-cdus-title` | `modals/deployment-info.css` | Eliminada (1 regla) | Ídem |
+| `dep-info-preview` | `modals/deployment-info.css` | Eliminada (1 regla) | Bloque «Preview copy/paste» no renderizado |
+| `dep-info-preview-label` | `modals/deployment-info.css` | Eliminada (1 regla) | Ídem |
+| `dep-info-preview-text` | `modals/deployment-info.css` | Eliminada (3 reglas) | Ídem, incluidos dos `::-webkit-scrollbar` |
+| `deployment-report` | `modals/modal-deployment-report.css` | Eliminada (1 regla) | `.modal.deployment-report` no se aplica; el JSX solo usa `deployment-report-*`. Residual en la regla excluida (ver 9.3) |
+| `deployment-report-header-right` | `modals/modal-deployment-report.css` | Eliminada (2 reglas) | 0 consumidores; incluye la regla del descendiente `.icon-deployment` |
+| `estado-new` | `modals/modal-changes-summary.css` | Eliminada con el archivo (2 reglas) | Sin consumidores |
+| `estado-old` | `modals/modal-changes-summary.css` | Eliminada con el archivo (2 reglas) | Sin consumidores |
+| `icon-arrow` | `modals/modal-changes-summary.css` | Eliminada con el archivo (1 regla) | Sin consumidores |
+| `icon-deployment` | `modals/modal-deployment-report.css` | Eliminada (2 reglas) | Los iconos del reporte usan `deployment-check-icon`; token ausente |
+| `login-group` | `modals/modal-login.css` | Eliminada (2 reglas) | 0 consumidores; incluye `.login-group label` |
+| `modal-box` | `modals/deployment-info.css` | Eliminada (1 regla) | `.modal-deployment-info .modal-box`; ningún elemento aplica `modal-box` |
+| `modal-changes-summary-content` | `modals/modal-changes-summary.css` | Eliminada con el archivo (1 regla) | Sin consumidores |
+| `modal-changes-summary-info` | `modals/modal-changes-summary.css` | Eliminada con el archivo (1 regla) | Sin consumidores |
+| `modal-historial-header` | `modals/modal-base.css`, `modals/modal-comentarios.css` | Eliminada (2 reglas) | Regla base + compuesta vacía bajo `.modal-comentarios-categorized` |
+| `modal-icon-header` | `modals/modal-base.css` | Eliminada (1 regla) | `.modal-header .modal-icon-header`; 0 consumidores |
+| `progress-label` | `modals/modal-progress.css` | Eliminada (1 regla) | 0 consumidores |
+| `tab-emoji` | `changelog/modal-entries.css` | Eliminada (1 regla) | 0 consumidores; el tab usa `changelog-modal-tab--*` y `tab-label` |
+
+### 9.2 Reglas y archivos
+
+| Archivo | Reglas eliminadas | Notas |
+|---|---:|---|
+| `changelog/card.css` | 2 | — |
+| `changelog/modal-entries.css` | 1 | — |
+| `modals/deployment-info.css` | 17 | `.modal-box` + bloque CDU (10) + bloque preview (6) |
+| `modals/modal-base.css` | 2 | Se eliminó el comentario de sección de `.modal-historial-header` al quedar sin reglas |
+| `modals/modal-comentarios.css` | 2 | Se eliminó el comentario de `.cat-icon`; se conserva el de «Ajustes al header» |
+| `modals/modal-login.css` | 2 | — |
+| `modals/modal-progress.css` | 1 | — |
+| `modals/modal-deployment-report.css` | 4 | 1 regla conservada como excluida |
+| `modals/modal-changes-summary.css` | 28 | **Archivo eliminado** + `@import` retirado de `main.css` |
+| **Total** | **59** | 60 reglas afectadas: 59 eliminadas, 1 excluida |
+
+Se eliminaron también los comentarios de sección `/* CDUs section */` y `/* Preview copy/paste */` al quedar sin reglas. No se tocaron `@keyframes`, `:root` ni tokens.
+
+### 9.3 Excluidas
+
+| Clase | Archivo | Regla conservada | Razón |
+|---|---|---|---|
+| `deployment-report` | `modals/modal-deployment-report.css` | `.deployment-report .modal-actions` | El ancestro `.deployment-report` está muerto, pero el descendiente `.modal-actions` está vivo. Regla 3: no se borra una regla con descendiente vivo. Es un no-op actualmente (el ancestro nunca se aplica); se conserva a la espera de decidir si se elimina el wrapper o se restaura la clase |
+
+Consecuencia: el script sigue contando `deployment-report` como muerta (1). Es la única pendiente y está justificada.
+
+### 9.4 Recuento antes/después
+
+| Métrica | Antes | Después |
+|---|---:|---:|
+| Clases CSS únicas | 466 | 424 |
+| Consumidas | 403 | 402 |
+| Dinámicas | 21 | 21 |
+| Muertas | 42 | 1 |
+| Clases JSX sin regla CSS | 31 | 32 |
+
+- La caída de consumidas (403 → 402) se debe a `modal-deployment-info`: era la clase viva de la regla `.modal-deployment-info .modal-box`. Al retirar la regla, la clase sigue en el JSX pero ya no tiene CSS propio; no hay cambio visual porque la regla nunca se activaba (`.modal-box` no existe en el DOM).
+- Por el mismo motivo, «JSX sin regla» sube de 31 a 32 (`modal-deployment-info`). No es una regresión de R-DS-04 (que mide selectores sin consumidor), pero queda anotado.
+- Las 21 dinámicas siguen intactas.
+
+### 9.5 Verificación
+
+```bash
+node scripts/audit-selectors.mjs
+```
+
+Antes: `CSS clases: 466 | consumidas: 403 | dinámicas: 21 | muertas: 42 | JSX sin regla: 31`
+Después: `CSS clases: 424 | consumidas: 402 | dinámicas: 21 | muertas: 1 | JSX sin regla: 32`
+
+- Imports de `main.css`: **29** (baja 1 por el archivo eliminado), **0 rotos**.
+- Único import de CSS desde JS/JSX: `src/main.jsx:5` (`styles/main.css`); ningún componente importa CSS.
+- Sin cambios en `src/**/*.jsx`, `src/**/*.js`, `index.html` ni `public/`.
+
+### 9.6 Discrepancia P1-07.3
+
+La fila `P1-07.3` afirmaba: «`.modal.deployment-report`, `.modal-deployment-info .modal-box` ausentes». La afirmación era **falsa respecto a las reglas CSS**:
+
+- `.modal.deployment-report` existe en `src/styles/components/modals/modal-deployment-report.css:3` desde el primer commit (`8dd12c4`), sin moverse ni reintroducirse (`git log -S '.modal.deployment-report' -- src/styles` solo devuelve `8dd12c4`).
+- `.modal-deployment-info .modal-box` se introdujo en `6b8e447` dentro de `src/styles/components/changelog.css:1244` y pasó a `deployment-info.css` en el split `0560aa9`; seguía en `HEAD` (`9c97345`).
+- Lo que sí estaba «ausente» era el **consumidor en JSX**: ningún elemento aplica `modal-box` y ningún `className` aplica el token desnudo `deployment-report` (solo variantes `deployment-report-*`). El auditor anterior confundió «sin consumidor» con «regla ausente».
+
+Conclusión: el resultado neto de `P1-07.3` (no hay consumidores) sigue siendo válido, pero su evidencia era incorrecta. Ambas reglas se han eliminado en `P1-10.4`.
+
 

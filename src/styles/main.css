@@ -22,7 +22,6 @@
 /* === MODALS === */
 @import './components/modals/modal-base.css';
 @import './components/modals/modal-deployment-report.css';
-@import './components/modals/modal-changes-summary.css';
 @import './components/modals/modal-comentarios.css';
 @import './components/modals/modal-history.css';
 @import './components/modals/modal-login.css';

@@ -19,12 +19,6 @@
 /* ============================================
    DEPLOYMENT INFO MODAL
    ============================================ */
-.modal-deployment-info .modal-box {
-    max-width: 680px;
-    width: 95vw;
-    max-height: 90vh;
-}
-
 .dep-info-layout {
     display: flex;
     flex-direction: column;
@@ -190,114 +184,9 @@
     line-height: 1.45;
 }
 
-/* CDUs section */
-.dep-info-cdus-section {
-    border-top: 1px solid var(--border-color);
-    padding: 10px 16px !important;
-}
-
-.dep-info-cdus-title {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    margin-bottom: 8px;
-}
-
-.dep-info-cdus-list {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.dep-info-cdu-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 5px 0;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 0.825rem;
-}
-
-.dep-info-cdu-row:last-child { border-bottom: none; }
-
-.dep-info-cdu-row-name {
-    color: var(--text-primary);
-    font-weight: 500;
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.dep-info-cdu-row-estado {
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    padding: 2px 7px;
-    border-radius: 10px;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.dep-info-cdu-row--en-desarrollo .dep-info-cdu-row-estado {
-    background: var(--estado-desarrollo-bg);
-    color: var(--estado-desarrollo-color);
-    border: 1px solid var(--estado-desarrollo-border);
-}
-.dep-info-cdu-row--pendiente-de-certificacion .dep-info-cdu-row-estado {
-    background: var(--estado-pendiente-bg);
-    color: var(--estado-pendiente-color);
-    border: 1px solid var(--estado-pendiente-border);
-}
-.dep-info-cdu-row--certificado-ok .dep-info-cdu-row-estado {
-    background: var(--estado-certificado-bg);
-    color: var(--estado-certificado-color);
-    border: 1px solid var(--estado-certificado-border);
-}
-.dep-info-cdu-row--en-produccion .dep-info-cdu-row-estado {
-    background: var(--estado-produccion-bg);
-    color: var(--estado-produccion-color);
-    border: 1px solid var(--estado-produccion-border);
-}
-
 .dep-info-empty {
     padding: 2rem;
     text-align: center;
     color: var(--text-secondary);
     font-size: 0.875rem;
 }
-
-/* Preview copy/paste */
-.dep-info-preview {
-    border-top: 1px solid var(--border-color);
-    background: var(--bg-secondary);
-}
-
-.dep-info-preview-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-secondary);
-    padding: 8px 16px 4px;
-    font-weight: 600;
-}
-
-.dep-info-preview-text {
-    margin: 0;
-    padding: 8px 16px 14px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    white-space: pre-wrap;
-    word-break: break-word;
-    max-height: 160px;
-    overflow-y: auto;
-    line-height: 1.5;
-}
-
-.dep-info-preview-text::-webkit-scrollbar { width: 4px; }
-.dep-info-preview-text::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }

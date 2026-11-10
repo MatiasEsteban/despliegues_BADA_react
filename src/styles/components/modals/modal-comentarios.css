@@ -39,14 +39,6 @@
     border-bottom: 1px solid var(--border-color);
 }
 
-/* Icono de la categoría (Arregla los iconos gigantes) */
-.cat-icon {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-    color: var(--accent-hover);
-}
-
 .comentario-categoria-titulo {
     font-size: 1rem;
     font-weight: 600;
@@ -100,10 +92,6 @@
 }
 
 /* --- Ajustes al header genérico para este modal --- */
-
-.modal-comentarios-categorized .modal-historial-header {
-    /* Hereda de modal-base.css */
-}
 
 .modal-comentarios-categorized .modal-title {
     font-size: 1.25rem;
