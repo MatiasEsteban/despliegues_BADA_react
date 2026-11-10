@@ -189,10 +189,10 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 
 | ID | Tarea | Archivos | Dep. | Esf. | Estado | Criterio / evidencia |
 |---|---|---|---|---|---|---|
-| P2-01.1 | Generar inventario de 79 usos (archivo, línea, tipo) | `docs/audits/2026-11-10-inline-styles.md` | G1 | S | ☐ | Tabla completa, 78 filas |
-| P2-01.2 | Clasificar: estático / geometría dinámica / color dinámico / variable CSS | idem | P2-01.1 | S | ☐ | 4 categorías cerradas |
-| P2-01.3 | Definir clase CSS destino por caso | idem | P2-01.2 | M | ☐ | Ningún caso sin destino |
-| P2-01.4 | Aprobar estrategia de valores dinámicos (`<progress>`, SVG, clases) | idem | P2-01.3 | XS | ☐ | Decisión escrita antes de tocar JSX |
+| P2-01.1 | Generar inventario de 78 usos (archivo, línea, tipo) | `docs/audits/2026-11-10-inline-styles.md` | G1 | S | ✅ | 78 filas, 22 archivos; reproducible con `scripts/audit-inline-styles.mjs` (exit 0). Informe §2. |
+| P2-01.2 | Clasificar: estático / geometría dinámica / color dinámico / variable CSS | idem | P2-01.1 | S | ✅ | 4 categorías cerradas: 64 ESTÁTICO · 11 GEOMETRÍA · 3 COLOR · 0 VAR-CSS. Informe §1.2. |
+| P2-01.3 | Definir clase CSS destino por caso | idem | P2-01.2 | M | ✅ | 78/78 con destino; 12 reutilizan regla existente y 66 exigen CSS nuevo (68 selectores: 61 netos + 7 desde el `<style>` embebido). Informe §2 y §2.1. |
+| P2-01.4 | Aprobar estrategia de valores dinámicos (`<progress>`, SVG, clases) | idem | P2-01.3 | XS | ✅ | 5 reglas, 10 ejemplos antes→después y criterio de cierre en §5 del informe; `<progress>`/SVG con atributos. |
 
 ### 6.2 UI base (7 usos)
 
