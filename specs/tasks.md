@@ -170,8 +170,8 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P1-09.4 | Resolver fallback `--tab-color` | `modal-entries.css`, `ChangelogEntriesModal.jsx` | P1-05.1 | S | ✅ | Clases por categoría `changelog-modal-tab--{key}` en `modal-entries.css`; colores idénticos (`--estado-desarrollo-border`, `--estado-produccion-border`, `--palette-red-500`, `--estado-certificado-border`, `--palette-violet-500`); 0 hex en JSX; `var(--tab-color` = 0 |
 | P1-09.5 | Verificar 0 variables indefinidas | script | P1-09.1–4 | XS | ✅ | Barrido de `src/**/*.{css,jsx,js}`: 0 variables usadas sin declarar |
 | P1-10.1 | Inventariar selectores CSS y buscar su clase en JSX | `scripts/audit-selectors.mjs`, `docs/audits/2026-11-10-dead-selectors.md` | P1-07.2 | M | ✅ | `docs/audits/2026-11-10-dead-selectors.md`; 56 muertas, 21 dinámicas, 31 clases JSX sin regla. Falsos positivos por construcción dinámica: 5 `changelog-modal-tab--{key}`, 4 `dep-info-cat--{key}`, 4 `toast-*`, 3 `modal-*` y 5 `btn-{variant}`, generados con template literal en `ChangelogEntriesModal.jsx:111`, `DeploymentInfoModal.jsx:179`, `Toast.jsx:12`, `Modal.jsx:26` y `Button.jsx:8`. |
-| P1-10.2 | Eliminar muertos en base/layouts | `base/*`, `layouts/*` | P1-10.1 | S | ☐ | Sin selectores sin uso |
-| P1-10.3 | Eliminar muertos en components | `components/*` | P1-10.1 | M | ☐ | Sin selectores sin uso |
+| P1-10.2 | Eliminar muertos en base/layouts | `base/*`, `layouts/*` | P1-10.1 | S | ✅ | 11 clases / 16 reglas eliminadas (`animations.css` 3, `reset.css` 1, `header.css` 12); 0 muertas en base/layouts; 21 dinámicas intactas; 30 imports, 0 rotos |
+| P1-10.3 | Eliminar muertos en components | `components/*` | P1-10.1 | M | ✅ | 3 clases / 9 reglas eliminadas (`cards.css` 1, `buttons.css` 5, `grid.css` 3); 0 muertas en components; 0 imports rotos |
 | P1-10.4 | Eliminar muertos en modales/changelog | `modals/*`, `changelog/*` | P1-10.1 | M | ☐ | Sin selectores sin uso |
 | P1-10.5 | Verificar 0 selectores muertos | script | P1-10.2–4 | S | ☐ | Solo falsos positivos documentados. Ejecutar `node scripts/audit-selectors.mjs`; salida vacía salvo los falsos positivos documentados en el informe. |
 
@@ -568,6 +568,7 @@ spec-001(P2-03.1): migrar estilos inline de ChangelogCard
 | 2026-11-10 | Lote P1-09 cerrado (variables indefinidas). Decisión: P1-09.4 se resuelve con clases por categoría, no con --border-color. P1-09.2 usa --text-secondary para cumplir 3:1 en ambos temas. Revisión QA: NR-01 corregido, NR-02 derivado a P4-08.7, NR-03/NR-04 documentales aplicados, NR-05 anotado en P1-10.1. |
 | 2026-11-10 | A-01 completado: plan.md movido de `specs/` a la raíz. |
 | 2026-11-10 | P1-08.3 y P1-10.1 cerradas: 4 desvíos del split documentados y auditoría de selectores (56 muertas, 21 dinámicas, 31 clases JSX sin regla). §6.3 y §6.4 corregidos a 27 y 36 usos (suma 78). |
+| 2026-11-10 | P1-10.2/P1-10.3 cerradas: 14 clases y 25 reglas muertas eliminadas en base/layouts/components. Script 56→42 muertas (quedan solo P1-10.4), 21 dinámicas intactas, 0 imports rotos. |
 
 
 

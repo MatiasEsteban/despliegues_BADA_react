@@ -252,3 +252,85 @@ CSS clases: 481 | consumidas: 404 | dinámicas: 21 | muertas: 56 | JSX sin regla
 ```
 
 Salida por `stdout`: las tablas de las secciones 1–4 en Markdown. El script no modifica archivos y termina con código 0; es reutilizable por `P1-10.5`.
+
+---
+
+## 8. Ejecución P1-10.2/P1-10.3
+
+Ejecutado el 2026-11-10 sobre los destinos `base/`, `layouts/` y `components/`. Se eliminaron **14 clases muertas** (11 de `P1-10.2`, 3 de `P1-10.3`) repartidas en **25 reglas** y **3 comentarios de sección**. No se tocó `P1-10.4`: sus 42 clases siguen en el árbol.
+
+### 8.1 Acciones por clase
+
+| Clase | Archivo | Acción | Razón |
+|---|---|---|---|
+| `adding` | `base/animations.css` | Eliminada (1 regla) | 0 consumidores; ningún `classList` la aplica |
+| `removing` | `base/animations.css` | Eliminada (1 regla) | 0 consumidores; ningún `classList` la aplica |
+| `filtered-match` | `base/animations.css` | Eliminada (1 regla) | 0 consumidores; ningún `classList` la aplica |
+| `icon-large` | `base/reset.css` | Eliminada (1 regla) | 0 consumidores; `.icon` y `.icon-small` se conservan |
+| `version-comments-display` | `layouts/header.css` | Eliminada (1 regla) | 0 consumidores; bloque de comentarios retirado del JSX |
+| `version-comments-container` | `layouts/header.css` | Eliminada (1 regla) | 0 consumidores |
+| `comentario-display-categoria` | `layouts/header.css` | Eliminada (1 regla) | 0 consumidores |
+| `comentario-display-header` | `layouts/header.css` | Eliminada (2 reglas) | 0 consumidores; incluye `.comentario-display-header .cat-icon` |
+| `comentario-header-title` | `layouts/header.css` | Eliminada (1 regla) | 0 consumidores |
+| `btn-toggle-comment` | `layouts/header.css` | Eliminada (2 reglas) | 0 consumidores; incluye `:hover` |
+| `comentario-display-list` | `layouts/header.css` | Eliminada (4 reglas) | 0 consumidores; incluye `.hidden`, `li` y `li::before` |
+| `badge-produccion-inline` | `components/cards.css`, `layouts/grid.css` | Eliminada (2 reglas) | 0 consumidores; `.badge-produccion` se conserva |
+| `btn-save-changes` | `components/buttons.css`, `layouts/grid.css` | Eliminada (5 reglas) | 0 consumidores; `btn-save` se conserva |
+| `changes-count` | `components/buttons.css`, `layouts/grid.css` | Eliminada (2 reglas) | 0 consumidores |
+
+Notas:
+
+- **`cat-icon`**: la regla `.comentario-display-header .cat-icon` de `layouts/header.css` se eliminó con el bloque de comentarios; la clase sigue siendo muerta por `.cat-icon` en `modals/modal-comentarios.css:43`, que pertenece a `P1-10.4` y no se tocó.
+- **`hidden`**: solo existía en dos compuestos (`.btn-save-changes.hidden` y `.comentario-display-list.hidden`). No había regla `.hidden` independiente ni JS/JSX que la aplique; al retirar ambos compuestos desaparece del CSS.
+- **Sin selectores agrupados**: ninguna regla mezclaba una clase muerta con una viva, así que no hubo «grupo recortado».
+- **Sin excluidas**: ninguna regla se conservó por descendiente vivo. `.comentario-display-list li` y `li::before` dependen de un ancestro muerto; `.comentario-display-header .cat-icon` tiene ambos extremos muertos.
+- **Archivos conservados**: ninguno quedó vacío; no se eliminó ningún archivo ni `@import`.
+
+### 8.2 Recuento antes/después
+
+| Métrica | Antes | Después |
+|---|---:|---:|
+| Clases CSS únicas | 481 | 466 |
+| Consumidas | 404 | 403 |
+| Dinámicas | 21 | 21 |
+| Muertas | 56 | 42 |
+| Clases JSX sin regla CSS | 31 | 31 |
+
+La caída de consumidas (404 → 403) no es una regresión: `hidden` figuraba como consumida por un falso positivo del script, que comprueba `public/` con `text.includes(token)` y encontraba `hidden` dentro de `aria-hidden` en `public/vite.svg`. Ningún elemento recibe la clase `hidden`.
+
+Estado por destino tras la limpieza:
+
+| Destino | Muertas |
+|---|---:|
+| `P1-10.2` base/layouts | 0 |
+| `P1-10.3` components | 0 |
+| `P1-10.4` modales/changelog | 42 |
+
+### 8.3 Reglas eliminadas por archivo
+
+| Archivo | Reglas | Comentarios de sección |
+|---|---:|---|
+| `base/animations.css` | 3 | 0 |
+| `base/reset.css` | 1 | 0 |
+| `layouts/header.css` | 12 | 1 (`COMENTARIOS DE VERSIÓN`) |
+| `layouts/grid.css` | 3 | 1 (`Badges`) |
+| `components/cards.css` | 1 | 0 |
+| `components/buttons.css` | 5 | 1 (`BOTÓN DE GUARDAR CAMBIOS FLOTANTE`) |
+| **Total** | **25** | **3** |
+
+**Keyframes huérfanos conservados** (no son clases y la regla de eliminación prohíbe tocarlos): `slideInRow` (solo lo usaba `.adding`), `highlight-match` (solo `.filtered-match`) y `slideInUp` (solo `.btn-save-changes`). Quedan como candidatos a limpieza en una tarea específica de `@keyframes`.
+
+### 8.4 Verificación
+
+```bash
+node scripts/audit-selectors.mjs
+```
+
+Antes: `CSS clases: 481 | consumidas: 404 | dinámicas: 21 | muertas: 56 | JSX sin regla: 31`
+Después: `CSS clases: 466 | consumidas: 403 | dinámicas: 21 | muertas: 42 | JSX sin regla: 31`
+
+- Las 21 dinámicas siguen intactas.
+- Comprobación de imports de `main.css`: 30 imports, **0 rotos**.
+- Sin cambios en `src/**/*.jsx`, `src/**/*.js`, `index.html` ni `public/`.
+- Sin cambios visuales esperados: todas las reglas eliminadas exigían una clase que ningún elemento recibe.
+

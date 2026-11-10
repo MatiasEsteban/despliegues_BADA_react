@@ -228,56 +228,6 @@
     color: white;
 }
 
-/* === BOTÓN DE GUARDAR CAMBIOS FLOTANTE === */
-.btn-save-changes {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: linear-gradient(135deg, var(--palette-green-600-alt) 0%, var(--palette-green-700-alt) 100%);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 1rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 10px 25px rgba(56, 161, 105, 0.4);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 999;
-    animation: slideInUp 0.4s ease-out;
-}
-
-.btn-save-changes:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 15px 35px rgba(56, 161, 105, 0.5);
-}
-
-.btn-save-changes:active {
-    transform: translateY(-2px) scale(1.02);
-}
-
-.btn-save-changes.hidden {
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(100px);
-}
-
-.changes-count {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.875rem;
-    font-weight: 700;
-    animation: pulse 2s ease-in-out infinite;
-}
-
 /* === BOTÓN CARGAR MÁS === */
 .btn-load-more {
     background: var(--bg-primary);

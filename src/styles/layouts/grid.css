@@ -44,27 +44,7 @@
         width: 100%;
     }
     
-    /* Badges */
-    .badge-produccion-inline {
-        display: block;
-        margin: 0.5rem 0 0 0;
-        width: fit-content;
-    }
-    
     /* Botones */
-    .btn-save-changes {
-        bottom: 1rem;
-        right: 1rem;
-        padding: 0.875rem 1.25rem;
-        font-size: 0.875rem;
-    }
-    
-    .changes-count {
-        width: 24px;
-        height: 24px;
-        font-size: 0.75rem;
-    }
-    
     .btn-load-more {
         width: 100%;
         justify-content: center;

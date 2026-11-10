@@ -26,12 +26,6 @@ h1 {
     height: 1.25rem;
 }
 
-.icon-large {
-    width: 2.5rem;
-    height: 2.5rem;
-    color: var(--accent-color);
-}
-
 .icon-small {
     width: 16px;
     height: 16px;

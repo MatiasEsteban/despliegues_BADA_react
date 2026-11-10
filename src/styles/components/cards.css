@@ -255,20 +255,6 @@ hr.card-separator {
     vertical-align: middle;
 }
 
-.badge-produccion-inline {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--palette-prod-500) 0%, var(--palette-prod-600) 100%);
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.35rem 0.75rem;
-    border-radius: 6px;
-    margin-left: 1rem;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
-    vertical-align: middle;
-}
-
 /* === CONTENEDOR CARGAR MÁS === */
 .load-more-container {
     display: flex;
