@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { normalizeComments } from '../../store/dataStore';
+import { copyText } from '../../utils/clipboard';
 
 // Categorías estándar (sin cambiosCDU que se renderiza aparte)
 const CATEGORIAS = [
@@ -80,50 +81,7 @@ export default function DeploymentInfoModal({ isOpen, onClose, version, isProduc
     };
 
     const handleCopy = async () => {
-        const textToCopy = buildCopyText();
-        let success = false;
-
-        // 1. Intentar con Clipboard API moderna
-        if (navigator?.clipboard && typeof navigator.clipboard.writeText === 'function') {
-            try {
-                await navigator.clipboard.writeText(textToCopy);
-                success = true;
-            } catch (err) {
-                console.warn('navigator.clipboard no disponible o bloqueado, usando fallback:', err);
-            }
-        }
-
-        // 2. Fallback infalible con elemento textarea
-        if (!success) {
-            try {
-                const textArea = document.createElement('textarea');
-                textArea.value = textToCopy;
-                textArea.setAttribute('readonly', '');
-                textArea.style.position = 'fixed';
-                textArea.style.top = '0';
-                textArea.style.left = '0';
-                textArea.style.width = '2em';
-                textArea.style.height = '2em';
-                textArea.style.padding = '0';
-                textArea.style.border = 'none';
-                textArea.style.outline = 'none';
-                textArea.style.boxShadow = 'none';
-                textArea.style.background = 'transparent';
-                textArea.style.opacity = '0';
-                textArea.style.zIndex = '-1';
-
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                textArea.setSelectionRange(0, textToCopy.length);
-
-                success = document.execCommand('copy');
-                document.body.removeChild(textArea);
-            } catch (err) {
-                console.error('Error al ejecutar execCommand:', err);
-                success = false;
-            }
-        }
+        const success = await copyText(buildCopyText());
 
         if (success) {
             setCopied(true);

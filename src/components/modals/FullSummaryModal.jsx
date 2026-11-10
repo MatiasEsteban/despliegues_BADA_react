@@ -2,6 +2,7 @@
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { normalizeComments } from '../../store/dataStore';
+import { copyText } from '../../utils/clipboard';
 
 const CATEGORIAS = [
     { key: 'mejoras',         label: 'MEJORAS Y BUGFIX' },
@@ -97,38 +98,7 @@ export default function FullSummaryModal({ isOpen, onClose, versions, produccion
     }, [versions, produccionId]);
 
     const handleCopy = async () => {
-        let success = false;
-
-        if (navigator?.clipboard && typeof navigator.clipboard.writeText === 'function') {
-            try {
-                await navigator.clipboard.writeText(fullText);
-                success = true;
-            } catch (err) {
-                console.warn('navigator.clipboard bloqueado, usando fallback:', err);
-            }
-        }
-
-        if (!success) {
-            try {
-                const ta = document.createElement('textarea');
-                ta.value = fullText;
-                ta.setAttribute('readonly', '');
-                Object.assign(ta.style, {
-                    position: 'fixed', top: '0', left: '0',
-                    width: '2em', height: '2em', padding: '0',
-                    border: 'none', outline: 'none', boxShadow: 'none',
-                    background: 'transparent', opacity: '0', zIndex: '-1',
-                });
-                document.body.appendChild(ta);
-                ta.focus();
-                ta.select();
-                ta.setSelectionRange(0, fullText.length);
-                success = document.execCommand('copy');
-                document.body.removeChild(ta);
-            } catch (err) {
-                console.error('execCommand fallo:', err);
-            }
-        }
+        const success = await copyText(fullText);
 
         if (success) {
             setCopied(true);
