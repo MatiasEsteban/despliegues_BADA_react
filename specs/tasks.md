@@ -260,14 +260,14 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P3-01.4 | Auditar overflow en modales | — | G2 | S | ✅ | Análisis estático: 18 hallazgos (0 alta / 8 media / 10 baja) |
 | P3-01.5 | Auditar overflow en Header y workspace switcher | — | G2 | S | ✅ | Análisis estático: 15 hallazgos (0 alta / 6 media / 9 baja); toasts aparte (2) |
 | P3-01.6 | Consolidar hallazgos | `docs/audits/2026-11-10-responsive.md`, `scripts/audit-responsive.mjs` | P3-01.1–5 | XS | ✅ | Informe con 82 hallazgos (6 alta / 35 media / 41 baja; 74 automáticos + 8 manuales), 26 hojas sin `@media` (14 en `changelog/*` y `modals/*`) |
-| P3-02.1 | Breakpoints en `changelog/timeline.css` | `timeline.css` | P3-01.1 | S | ☐ | 900/768/600 — 3 media (M-08…M-10) |
-| P3-02.2 | Breakpoints en `changelog/card.css` | `card.css` | P3-01.1 | M | ☐ | 900/768/600 — 7 media + A-06 (header sin wrap) |
-| P3-02.3 | Breakpoints en `changelog/modal-entries.css` | `modal-entries.css` | P3-01.4 | S | ☐ | 900/768/600 — tabs 220 px fijos (M-12, M-15) |
-| P3-02.4 | Breakpoints en `changelog/date-editor.css` | `date-editor.css` | P3-01.1 | S | ☐ | Al menos 600 (0 hallazgos; grid 2 columnas) |
-| P3-02.5 | Dropdown móvil en `workspace-switcher.css` | `workspace-switcher.css` | P3-01.5 | S | ☐ | Sin desbordamiento — M-34/M-35; 0 `@media` |
-| P3-02.6 | Verificar 0 scroll horizontal a 320 | — | P3-02.1–5 | S | ☐ | ⛔ A-05/P0-04: capturas 320 no disponibles |
-| P3-02.7 | Breakpoints en `cards.css` (estadísticas de tarjeta) | `cards.css` | P3-01.2 | S | ☐ | 900/768/600; A-01 `repeat(4,1fr)` |
-| P3-02.8 | Breakpoints en `layouts/header.css` y `view-toggle.css` | `header.css`, `view-toggle.css` | P3-01.5 | S | ☐ | 900/768/600; M-30…M-33 sin wrap |
+| P3-02.1 | Breakpoints en `changelog/timeline.css` | `timeline.css` | P3-01.1 | S | ✅ | 900/768/600: `-toolbar-right` con wrap y `flex-shrink:1` (M-08), buscador fluido (M-09) y contador con wrap (M-10). Verificación visual pendiente (P0-04) |
+| P3-02.2 | Breakpoints en `changelog/card.css` | `card.css` | P3-01.1 | M | ✅ | 900/768/600: header con wrap y grupos con `flex-shrink`/`min-width:0` (A-06/M-01…M-03), pie con wrap (M-06). Se mantiene `overflow:hidden` (§7.2 del informe). Verificación visual pendiente (P0-04) |
+| P3-02.3 | Breakpoints en `changelog/modal-entries.css` | `modal-entries.css` | P3-01.4 | S | ✅ | 768/600: tabs 180 px y a 600 una columna con tabs en carril horizontal (M-12/M-15); campos del editor a fila completa (M-14). `.changelog-modal-tab--*` intactas. Verificación visual pendiente (P0-04) |
+| P3-02.4 | Breakpoints en `changelog/date-editor.css` | `date-editor.css` | P3-01.1 | S | ✅ | 600: `.date-modal-fields` a una columna y atajos flexibles (0 hallazgos; el nativo `input[type=date]` no cabe en 2 columnas a 320). Verificación visual pendiente (P0-04) |
+| P3-02.5 | Dropdown móvil en `workspace-switcher.css` | `workspace-switcher.css` | P3-01.5 | S | ✅ | 768/600: dropdown `min(240px, calc(100vw - 2*--space-4))` con `left:0`; switcher y trigger encogen (M-34/M-35). Verificación visual pendiente (P0-04) |
+| P3-02.6 | Verificar 0 scroll horizontal a 320 | — | P3-02.1–5 | S | ⛔ P0-04 | Sin build ni baseline no se puede medir el scroll real: A-05 está corregido en código pero no verificado |
+| P3-02.7 | Breakpoints en `cards.css` (estadísticas de tarjeta) | `cards.css` | P3-01.2 | S | ✅ | A-01: base a `repeat(4, minmax(0,1fr))` (mismo escritorio); 768: 2 columnas; 600: footer con wrap; 480 justificado (gap y etiqueta). Verificación visual pendiente (P0-04) |
+| P3-02.8 | Breakpoints en `layouts/header.css` y `view-toggle.css` | `header.css`, `view-toggle.css` | P3-01.5 | S | ✅ | 768/600: `.version-detail-meta` con wrap y campos a 40%/100% (A-05, misma regla que P3-04.1), `header-info`/badges/sync con wrap (M-30…M-32) y `header-view-toggle` (M-33). Verificación visual pendiente (P0-04) |
 | P3-03.1 | Adaptar `modal-full-summary.css` a 320 | `modal-full-summary.css` | P3-01.4 | S | ☐ | Acciones visibles; texto `pre` sin reflow (M-26) |
 | P3-03.2 | Adaptar `modal-base.css` a 320 | `modal-base.css` | P3-01.4 | S | ☐ | Cabecera y cierre utilizables; `.modal-login min-width:300` (M-27) |
 | P3-03.3 | Adaptar `modal-progress.css` a 320 | `modal-progress.css` | P3-01.4 | S | ☐ | Gráficos sin recorte; `column-width:300px` |
@@ -575,6 +575,7 @@ spec-001(P2-03.1): migrar estilos inline de ChangelogCard
 | 2026-11-10 | P1-10.2/P1-10.3 cerradas: 14 clases y 25 reglas muertas eliminadas en base/layouts/components. Script 56→42 muertas (quedan solo P1-10.4), 21 dinámicas intactas, 0 imports rotos. |
 | 2026-11-10 | P1-10.4/P1-10.5 cerradas: 41 clases y 59 reglas eliminadas en modales/changelog; `modal-changes-summary.css` (28 reglas) y su import retirados. Script 42→1 muerta (solo `deployment-report`, excluida por descendiente vivo), 21 dinámicas intactas, 29 imports y 0 rotos. Discrepancia P1-07.3 corregida: los selectores existían desde el primer commit; «ausentes» se refería a consumidores. |
 | 2026-11-10 | P3-01.1–6 cerradas con auditoría estática (`scripts/audit-responsive.mjs`, 32 hojas, 760 reglas): 82 hallazgos (6 alta / 35 media / 41 baja), 26 hojas de layout sin `@media`. Nuevas tareas: P3-02.7, P3-02.8, P3-03.6, P3-03.7. Corregido el alcance de P3-04.1 (`layouts/header.css`, porque `detail-header.css` no se importa), P3-05.2 (añade `workspace-switcher.css`) y P3-06.1 (añade `list-view.css`). P3-02.6, P3-05.3 y P3-07.1 marcadas ⛔ A-05/P0-04. |
+| 2026-11-10 | P3-02.1–8 aplicadas (solo CSS, sin JSX): 8 hojas con breakpoints 900/768/600 (+480 justificado solo en `cards.css`); todos los bloques al final de cada hoja, 0 cambios de escritorio salvo `repeat(4, 1fr)` → `repeat(4, minmax(0,1fr))` en `cards.css` (A-01, causa raíz). Audit: 74→73 hallazgos (alta 4→3; quedan `.toast` —falso positivo— y las 2 altas de tabla de P3-06.1), hojas de layout sin `@media` 26→18 (`changelog/*`+`modals/*` 14→10), selectores `muertas 1`/`dinámicas 21` intactos. P3-02.6 sigue ⛔ P0-04: sin build no se mide el scroll real. |
 
 
 

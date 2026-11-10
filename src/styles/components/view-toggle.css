@@ -55,3 +55,17 @@
     border-radius: 8px;
     padding: 3px;
 }
+
+/* ============================================
+   P3-02.8 — R-RESP-01: toggle de vista del header
+   ============================================ */
+@media (max-width: 600px) {
+    /* M-33: el grupo no debe imponer su ancho al bloque de acciones del header. */
+    .header-view-toggle {
+        flex-wrap: wrap;
+    }
+
+    .btn-view-toggle {
+        padding: 0.6rem 0.75rem;
+    }
+}

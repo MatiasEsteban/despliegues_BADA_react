@@ -407,3 +407,77 @@
     margin-right: 12px;
     opacity: 0.7;
 }
+
+/* ============================================
+   P3-02.2 — R-RESP-01: cabecera y pie de la tarjeta
+   ============================================
+   Decisión (A-06): se mantiene `overflow: hidden` en `.changelog-card`. El recorte
+   no lo provoca el overflow, sino el `flex-shrink: 0` de los dos grupos del header,
+   que no caben en una fila. Con `flex-wrap` + `min-width: 0` el contenido nunca
+   supera la tarjeta. `overflow: visible` habría sacado el `.changelog-dot` y el
+   fondo del hover fuera del borde redondeado.
+   `.changelog-card-actions` sigue con `opacity: 0` (P3-05.2), no se toca aquí. */
+@media (max-width: 900px) {
+    /* A-06 / M-01: la cabecera envuelve en vez de recortar. */
+    .changelog-card-header {
+        flex-wrap: wrap;
+        row-gap: 8px;
+    }
+
+    /* M-02: el grupo izquierdo puede encoger; el título ya trunca con ellipsis. */
+    .changelog-card-header-left {
+        flex-shrink: 1;
+        min-width: 0;
+    }
+
+    /* M-03: fechas + 5 acciones envuelven dentro de su propio grupo. */
+    .changelog-card-header-right {
+        flex-shrink: 1;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 768px) {
+    /* El grupo derecho (2 chips de fecha + acciones) pasa a su propia línea. */
+    .changelog-card-header-right {
+        flex: 1 1 100%;
+        margin-left: 0;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 600px) {
+    .changelog-card-header {
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .changelog-card-header-left {
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .changelog-card-header-center {
+        flex: 1 1 100%;
+    }
+
+    /* Sin título el contenedor queda vacío: que no genere una fila muerta. */
+    .changelog-card-header-center:empty {
+        display: none;
+    }
+
+    /* M-06: las acciones del pie envuelven; `.btn-cl-detail` conserva su nowrap
+       porque es texto corto y el contenedor ya puede partir la línea. */
+    .changelog-footer-actions {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .changelog-category,
+    .changelog-card-footer {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}

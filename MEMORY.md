@@ -32,13 +32,7 @@ Seguridad: Particionado multi-workspace por workspaceId y validación de reglas 
 Carga de Datos: Sanitización y validación estricta de esquemas antes de persistir mutaciones o procesar Excel.
 
 4. Registro de Cambios Recientes
-[2026-11-08] - Configuración de Gobernanza SDD:
-
-Creación de directivas de agente en AGENTS.md.
-
-Definición de principios de arquitectura, seguridad y testing en CONSTITUTION.md.
-
-Inicialización de la memoria operativa y mapa de componentes en MEMORY.md.
+[2026-11-08] - Gobernanza SDD: AGENTS.md (rol y ciclo), docs/constitution.md (arquitectura, seguridad, testing) e inicialización de MEMORY.md.
 
 [2026-11-08] - Auditoría de diseño y accesibilidad (sin cambios de código):
 
@@ -68,8 +62,9 @@ Corrección del baseline: 4 variables CSS indefinidas reales (+1 con fallback) y
 
 [2026-11-10] - P1-09/P1-10 cerradas: 0 variables indefinidas; 55 clases y 84 reglas muertas eliminadas (14/25 en base-layouts-components, 41/59 en modales-changelog). `modal-changes-summary.css` retirada con su import. Auditoría: 466→424 clases, muertas 42→1 (solo `deployment-report`, excluida por descendiente vivo `.modal-actions`), 21 dinámicas intactas, 29 imports y 0 rotos. Discrepancia P1-07.3 corregida: los selectores existían desde el primer commit; «ausentes» se refería a consumidores.
 [2026-11-10] - F3 auditoría estática cerrada (P3-01.1–6): `scripts/audit-responsive.mjs` (32 hojas CSS, 760 reglas) y `docs/audits/2026-11-10-responsive.md` con 82 hallazgos (6 alta / 35 media / 41 baja) y 26 hojas de layout sin `@media` (14 en `changelog/*`+`modals/*`). Hallazgo clave: `detail-header.css` no se importa, así que el `flex-wrap` de `.version-detail-meta` es inerte; la regla viva es `layouts/header.css:106`. Nuevas tareas P3-02.7, P3-02.8, P3-03.6, P3-03.7; alcance corregido en P3-04.1/P3-05.2/P3-06.1. P3-02.6, P3-05.3 y P3-07.1 siguen bloqueadas por A-05/P0-04.
+[2026-11-10] - P3-02.1–8 aplicadas (solo CSS): `timeline`, `changelog/card`, `modal-entries`, `date-editor`, `workspace-switcher`, `cards`, `layouts/header` y `view-toggle` con @media 900/768/600 (+480 solo en `cards.css`, justificado). Todo al final de cada hoja; 0 cambios de escritorio salvo `repeat(4,1fr)` → `repeat(4,minmax(0,1fr))` (`cards.css`, A-01). Decisiones: `card.css` conserva `overflow:hidden` (la causa era `flex-shrink:0`); `modal-entries` colapsa a una columna con tabs en carril horizontal a 600; el dropdown del switcher queda con `left:0` y ancho `min(240px, 100vw - 2*--space-4)`. Audit 74→73 hallazgos (alta 4→3: `.toast` es falso positivo; las 2 de tabla son P3-06.1); hojas sin `@media` 26→18; selectores muertas 1/dinámicas 21. P3-02.6 sigue ⛔ P0-04.
 
 5. Próximos Pasos Inmediatos
-A-05/A-06 pendientes: restaurar node_modules y build, y fijar la lista exacta de capturas baseline. P1-06 solo requiere importar detail-header.css tras las capturas.
+A-05/A-06 ya tienen corrección estática (P3-02.2 / P3-02.8); falta restaurar node_modules/build y las capturas baseline (P0-04) para verificarlas. Después: P3-03 (modales), P3-05/P3-06 y el cierre G3.
 [2026-11-10] P2-05/P2-06: 0 inline styles y 0 hex en src/components; paleta 76 tokens (sky-400/pink-500 exactos desde BadaGraph). ProgressModal usa <progress> y 3 tartas SVG; BadaGraph, SVG; badge de DetailHeader en layouts/header.css porque detail-header.css no se importa. P2-06.2 cerrada: helper único src/utils/clipboard.js (copyText, try/finally) y modales sin duplicación. P2-05.6, P2-03.11, P2-04.6 y P1-06.2 esperan baseline P0-04.
 Derivar SPEC-002 (fechas locales), SPEC-003 (auth y firestore.rules), SPEC-004 (testing/CI) y SPEC-005 (sanitización de importación).

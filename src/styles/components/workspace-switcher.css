@@ -296,3 +296,41 @@
     font-size: 0.78rem;
     color: var(--text-secondary);
 }
+
+/* ============================================
+   P3-02.5 — R-RESP-01: dropdown del workspace switcher
+   ============================================
+   El switcher se ancla arriba a la izquierda del header: `left: 0` es la
+   referencia correcta. `right: 0` habría extendido el dropdown hacia la izquierda
+   desde el borde derecho del trigger y lo habría sacado de pantalla en el header
+   estrecho. El ancho se limita al viewport menos 2 × `--space-4` (1 rem) para
+   garantizar 16 px por lado a 320. */
+@media (max-width: 768px) {
+    /* M-34: el switcher deja de ser intocable dentro del flex del header. */
+    .ws-switcher {
+        flex-shrink: 1;
+        min-width: 0;
+    }
+
+    /* El nombre del trigger ya trunca con ellipsis (`.ws-trigger-name`). */
+    .ws-trigger {
+        max-width: min(220px, 60vw);
+    }
+
+    /* M-35: el dropdown nunca supera el viewport. */
+    .ws-dropdown {
+        width: min(240px, calc(100vw - 2 * var(--space-4)));
+    }
+}
+
+@media (max-width: 600px) {
+    .ws-trigger {
+        max-width: 100%;
+    }
+
+    /* Si la lista crece, el dropdown se desplaza dentro del viewport. */
+    .ws-dropdown {
+        max-height: calc(100vh - 10rem);
+        overflow-y: auto;
+    }
+}

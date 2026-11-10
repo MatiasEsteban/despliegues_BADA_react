@@ -160,3 +160,25 @@
     border-color: var(--palette-red-500);
     color: var(--palette-red-500);
 }
+
+/* ============================================
+   P3-02.4 — R-RESP-01: modal de edición de fechas
+   ============================================
+   Dos campos en 2 columnas no caben a 320: el modal mide 90vw ≈ 288 px y el
+   `input[type="date"]` nativo no baja de ~110 px de ancho útil. A ≤600 se apila. */
+@media (max-width: 600px) {
+    .date-modal-fields {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .date-modal-shortcuts {
+        gap: 8px;
+    }
+
+    /* Los atajos ocupan el ancho disponible en vez de desbordar la fila. */
+    .btn-date-shortcut {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+}

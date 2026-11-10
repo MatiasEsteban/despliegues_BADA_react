@@ -108,7 +108,9 @@ hr.card-separator {
 /* === ESTADÍSTICAS (Restaurado y ajustado) === */
 .version-card-stats {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 columnas */
+    /* P3-02.7 — R-RESP-01: `minmax(0, 1fr)` = mismo reparto en escritorio que
+       `1fr`, pero sin el mínimo `auto` implícito que permitía desbordar la pista. */
+    grid-template-columns: repeat(4, minmax(0, 1fr)); /* 4 columnas */
     gap: 0.75rem; /* Espacio entre iconos */
     margin-top: 0.5rem; /* Espacio sobre las stats */
 }
@@ -262,4 +264,40 @@ hr.card-separator {
     align-items: center;
     padding: 2rem 0;
     margin-bottom: 2rem;
+}
+
+/* ============================================
+   P3-02.7 — R-RESP-01: estadísticas de la tarjeta
+   ============================================ */
+@media (max-width: 768px) {
+    /* A-01: 4 columnas → 2, con pistas que no pueden desbordar. */
+    .version-card-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Los botones absolutos de la cabecera dejan menos margen reservado. */
+    .version-card-header {
+        padding-left: 2.75rem;
+        padding-right: 2.75rem;
+    }
+
+    .version-card-footer {
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+    }
+}
+
+/* 480 justificado: con 2 columnas a 320 px cada pista mide ~96 px; el gap de
+   0.75 rem (12 px) resta ancho a etiquetas como «Certificado» y las parte. */
+@media (max-width: 480px) {
+    .version-card-stats {
+        gap: 0.45rem;
+    }
+
+    .version-card-stat-label {
+        font-size: 0.66rem;
+    }
 }

@@ -149,3 +149,59 @@
     border: 2px solid var(--bg-primary);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+/* ============================================
+   P3-02.8 — R-RESP-01: cabecera global y metadatos del detalle
+   ============================================
+   A-05 vive aquí, no en `layouts/detail-header.css` (hoja no importada, P1-06.2):
+   `.version-detail-meta` es una fila sin wrap con 5 campos cuyos `min-width` reales
+   están en `forms.css` (120+85+100+120+85 = 510 px). Es el único hallazgo que
+   desborda la página, porque ningún ancestro recorta. */
+@media (max-width: 768px) {
+    .header-content {
+        gap: 0.75rem;
+    }
+
+    /* M-30 */
+    .header-info {
+        flex-wrap: wrap;
+        min-width: 0;
+    }
+
+    /* M-31 */
+    .header-status-badge {
+        flex-wrap: wrap;
+    }
+
+    /* M-32 */
+    .header-sync-status {
+        flex-wrap: wrap;
+    }
+
+    /* A-05: la fila de metadatos envuelve y cada campo cede ancho. */
+    .version-detail-meta {
+        flex-wrap: wrap;
+        gap: 0.5rem 0.75rem;
+    }
+
+    .version-meta-field {
+        flex: 1 1 40%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    /* A-05: un campo por fila; el input conserva su `min-width` y cabe holgado. */
+    .version-meta-field {
+        flex: 1 1 100%;
+    }
+
+    /* Al apilar, los separadores «•» quedarían huérfanos en su propia línea. */
+    .version-detail-meta > .separator {
+        display: none;
+    }
+
+    .version-header-buttons {
+        flex-wrap: wrap;
+    }
+}

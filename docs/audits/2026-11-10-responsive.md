@@ -15,6 +15,10 @@
 | Commit base | `565cc8e` — `spec-001(F2): correcciones de la validacion QA` |
 | Herramienta | `node scripts/audit-responsive.mjs` (32 hojas CSS, 760 reglas) |
 | Alcance | Solo diagnóstico: **no se modificó CSS ni JSX** |
+| Ejecución | P3-02 (2026-11-10): **sí se modificó CSS** — el delta está en el [§7](#7-ejecución-p3-02--breakpoints-aplicados-2026-11-10) |
+
+> **Las secciones 1–6 son la foto de P3-01**, tomada antes de tocar ninguna hoja.
+> No se reescriben: el estado posterior y su verificación están en el §7.
 
 ## 1. Resumen
 
@@ -394,3 +398,137 @@ recorre `src/styles/**/*.css` y `src/components/**/*.jsx`, y aplica las 7 heurí
 de P3-01. Limitación conocida: analiza todas las hojas, **incluidas las no importadas**
 (`detail-header.css`), de modo que una corrección muerta puede ocultar el riesgo vivo
 (caso A-05).
+
+## 7. Ejecución P3-02 — breakpoints aplicados (2026-11-10)
+
+Se ejecutaron P3-02.1 … P3-02.8 (con P3-02.7/P3-02.8 creadas en P3-01).
+
+**Método:** solo CSS. Todas las reglas nuevas viven dentro de `@media (max-width: …)`
+al final de cada hoja; la base de escritorio no cambia salvo la excepción declarada en
+el §7.2. Sin `node_modules` no hay build: **no se ha visto el render** y cada fila de
+la tabla es una expectativa estática, no una medición.
+
+Breakpoints usados: **768 y 600** en todas las hojas; **900** donde la fila empieza a
+no caber (`timeline`, `card`); **480 solo en `cards.css`**, justificado en el §7.2.
+No se usó `min-width` ni mobile-first: la cascada del proyecto es desktop-first.
+
+### 7.1 Reglas por hallazgo
+
+| Hallazgo | Archivo | Breakpoint | Regla aplicada | Riesgo residual |
+|---|---|---|---|---|
+| M-08 | `changelog/timeline.css` | 900 | `.changelog-toolbar-right { flex-shrink: 1; flex-wrap: wrap; min-width: 0 }` | el orden visual de select/contador cambia al envolver |
+| M-09 | `changelog/timeline.css` | 900 / 600 | `.changelog-search-wrap`: `flex: 1 1 180px; min-width: 0; max-width: none` y a 600 `flex: 1 1 100%` | el input pierde ancho útil a 320 (sigue usable) |
+| M-10 | `changelog/timeline.css` | 600 | `.changelog-count-badge { white-space: normal }` | el contador puede partir en dos líneas |
+| M-08 | `changelog/timeline.css` | 768 | izquierda y derecha de la toolbar a `flex: 1 1 100%` | dos filas de toolbar en tablet |
+| A-06 / M-01 | `changelog/card.css` | 900 | `.changelog-card-header { flex-wrap: wrap; row-gap: 8px }` | la cabecera crece en alto (2-3 filas) |
+| M-02 | `changelog/card.css` | 900 | `.changelog-card-header-left { flex-shrink: 1; min-width: 0 }` | los badges pueden quedar pegados al número |
+| M-03 | `changelog/card.css` | 900 | `.changelog-card-header-right { flex-shrink: 1; flex-wrap: wrap; justify-content: flex-end }` | — |
+| M-03 | `changelog/card.css` | 768 | grupo derecho a línea propia: `flex: 1 1 100%; margin-left: 0` | ocupa una fila completa también en tablet |
+| M-01 / M-02 | `changelog/card.css` | 600 | izquierda `flex: 1 1 100%; flex-wrap: wrap`; centro `1 1 100%` + `:empty { display: none }` | tres filas de cabecera |
+| M-06 | `changelog/card.css` | 600 | `.changelog-footer-actions { flex-wrap: wrap; gap: 8px }` | — |
+| M-07 | `changelog/card.css` | 600 | sin regla propia: se conserva `nowrap` en `.btn-cl-detail` porque el pie que lo contiene ya envuelve | no se añade ellipsis porque no hace falta |
+| M-12 / M-15 | `changelog/modal-entries.css` | 768 | tabs `width: 180px; min-width: 0`; body `padding: 16px` | el tab de categoría más larga trunca con ellipsis |
+| M-12 / M-15 | `changelog/modal-entries.css` | 600 | layout en columna; tabs en fila con `overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; -webkit-overflow-scrolling: touch`; tab `flex: 0 0 auto; max-width: 60vw` | el carril horizontal no es visible hasta que se intenta desplazar |
+| M-14 | `changelog/modal-entries.css` | 600 | `.changelog-entry-cdu-wrap` y `-autor-wrap` a `flex: 1 1 100%; min-width: 0` | una fila más alta por entrada |
+| M-13 | `changelog/modal-entries.css` | 600 | tab `flex: 0 0 auto` (etiqueta + badge siempre en la misma línea) | — |
+| — (0 hallazgos) | `changelog/date-editor.css` | 600 | `.date-modal-fields` a una columna (`minmax(0, 1fr)`); atajos `flex: 1 1 auto` | los atajos pueden ocupar 2-3 filas a 320 |
+| M-34 | `workspace-switcher.css` | 768 | `.ws-switcher { flex-shrink: 1; min-width: 0 }`; trigger `max-width: min(220px, 60vw)` | el nombre se trunca antes |
+| M-34 | `workspace-switcher.css` | 600 | trigger `max-width: 100%` | — |
+| M-35 | `workspace-switcher.css` | 768 | dropdown `width: min(240px, calc(100vw - 2 * var(--space-4)))`, `left: 0` | si el header tuviera menos de 16 px de sangrado, el margen izquierdo se reduce |
+| M-35 | `workspace-switcher.css` | 600 | `max-height: calc(100vh - 10rem); overflow-y: auto` | lista larga con scroll propio |
+| A-01 | `components/cards.css` | base (excepción) | `repeat(4, 1fr)` → `repeat(4, minmax(0, 1fr))` | ninguno en escritorio: mismo reparto, sin el mínimo `auto` |
+| A-01 | `components/cards.css` | 768 | `repeat(2, minmax(0, 1fr)); gap: .6rem` | dos filas de estadísticas |
+| — | `components/cards.css` | 600 | header con padding lateral `2.75rem`; `.version-card-footer { flex-wrap: wrap }` | — |
+| — | `components/cards.css` | 480 (justificado) | `gap: .45rem`; `.version-card-stat-label` a `.66rem` | etiqueta por debajo de la escala tipográfica |
+| A-05 / M-30 / M-31 / M-32 | `layouts/header.css` | 768 | `.version-detail-meta { flex-wrap: wrap; gap: .5rem .75rem }`; campo `flex: 1 1 40%; min-width: 0`; `header-info`, `header-status-badge` y `header-sync-status` con `flex-wrap` | dos campos por fila en tablet |
+| A-05 | `layouts/header.css` | 600 | campo `flex: 1 1 100%`; `.version-detail-meta > .separator { display: none }` | desaparece el «•» decorativo al apilar |
+| M-33 | `components/view-toggle.css` | 600 | `.header-view-toggle { flex-wrap: wrap }`; `.btn-view-toggle` con padding `.6rem .75rem` | — |
+
+### 7.2 Decisiones y excepciones
+
+1. **`cards.css` — excepción a la regla de oro (base).** `repeat(4, 1fr)` se cambió a
+   `repeat(4, minmax(0, 1fr))` **en la regla base**. `1fr` equivale a `minmax(auto, 1fr)`
+   y ese mínimo `auto` es la causa raíz de A-01: la pista puede crecer por encima del
+   contenedor. `minmax(0, 1fr)` reparte igual en escritorio (no hay contenido que
+   desborde a ese ancho), así que no hay cambio visual, y el script deja de marcar la
+   regla como `grid rígido` de 4 pistas. Es la única modificación fuera de `@media`.
+2. **`card.css` — se mantiene `overflow: hidden`** (A-06). El recorte no lo provoca el
+   `overflow`, sino el `flex-shrink: 0` de los grupos del header, que no caben en una
+   fila. Con `flex-wrap` + `min-width: 0` el contenido nunca supera la tarjeta.
+   `overflow: visible` habría sacado el `.changelog-dot` (posicionado a `left: -27px`)
+   y el fondo del hover fuera del borde redondeado. Descartado además `min-width: 0`
+   solo: sin `flex-wrap` no evita que la fila desborde.
+3. **`modal-entries.css` — una columna con tabs horizontales a ≤600.** A 320 el modal
+   mide `92vw ≈ 294 px`; con tabs verticales el cuerpo quedaría por debajo de 100 px,
+   que es el fallo de M-15. Se descartó «tabs verticales con ancho flexible» porque el
+   cuerpo seguiría siendo inservible, y se descartó ocultar tabs en un `<select>`
+   porque exige JSX. El carril `overflow-x: auto` mantiene las cinco categorías a un
+   gesto. Las reglas `.changelog-modal-tab--{categoría}` (P1-09.4) quedan intactas:
+   ninguna se reescribe en los bloques nuevos.
+4. **`workspace-switcher.css` — `left: 0`, no `right: 0`.** El switcher se ancla en la
+   esquina superior izquierda del header. `right: 0` habría extendido el dropdown hacia
+   la izquierda desde el borde derecho del trigger (~200 px) y con 240 px de ancho lo
+   habría sacado de pantalla. Con `left: 0` y
+   `width: min(240px, calc(100vw - 2 * var(--space-4)))` quedan ≥16 px por lado a 320.
+5. **480 solo en `cards.css`.** Justificación: con 2 columnas a 320 px cada pista mide
+   ~96 px y el gap de `.75rem` (12 px) resta ancho a etiquetas como «Certificado»; a
+   `.45rem` y `.66rem` la etiqueta cabe sin partirse. No se añadió 480 en `card.css`
+   porque el reflow ya se resuelve con 600.
+6. **`detail-header.css` no se toca.** Sigue sin importarse (P1-06.2): la corrección de
+   A-05 se aplica en `layouts/header.css`, donde vive la regla que llega al navegador.
+
+### 7.3 Verificación estática (P3-02.9)
+
+```text
+antes    node scripts/audit-responsive.mjs
+         Archivos CSS: 32 · reglas: 760
+         Hallazgos: 74 (alta 4 · media 29 · baja 41)
+         Archivos sin @media de layout: 26 (changelog/* y modals/*: 14)
+         --fail-on-alta → exit 1
+
+después  node scripts/audit-responsive.mjs
+         Archivos CSS: 32 · reglas: 809
+         Hallazgos: 73 (alta 3 · media 29 · baja 41)
+         Archivos sin @media de layout: 18 (changelog/* y modals/*: 10)
+         --fail-on-alta → exit 1 (3 altas, todas fuera del alcance de P3-02)
+```
+
+Altas restantes y por qué no se tocan aquí:
+
+| Alta | Archivo | Motivo |
+|---|---|---|
+| `.toast { min-width: 320px }` | `components/notifications.css:20` | **Falso positivo** (Anexo B): `grid.css @600` aplica `min-width: auto; width: 100%`. Es A-04, «verificar» en P3-02.6. |
+| `.tabla-despliegues { min-width: 1600px }` | `components/table.css:23` | A-02 → **P3-06.1**; el scroll ya está contenido en `.table-wrapper`. |
+| `.tabla-despliegues { min-width: 1000px }` | `layouts/grid.css:14` | A-03 → **P3-06.1**. |
+
+Ninguna de las 29 `media` ni de las 41 `baja` cambió: los bloques nuevos no introducen
+patrones nuevos (no declaran `display: flex`, `white-space: nowrap` sin ellipsis,
+`overflow: hidden` —solo `overflow-x`/`overflow-y`— ni pistas de grid rígidas de 3+).
+
+```text
+sintaxis  node <script de llaves> → 8/8 hojas con llaves balanceadas y @media cerradas
+          timeline 900/768/600 · card 900/768/600 · modal-entries 768/600
+          date-editor 600 · workspace-switcher 768/600 · cards 768/600/480
+          header 768/600 · view-toggle 600
+
+selectores node scripts/audit-selectors.mjs
+           muertas: 1 · dinámicas: 21 · clases 502 · consumidas 480 (sin cambios)
+```
+
+### 7.4 Lo que sigue necesitando navegador
+
+No verificable sin build ni baseline (P0-04): no se afirma nada sobre el render.
+
+1. Que a 320 px no haya **scroll horizontal de página** (P3-02.6) — el `min-content` de
+   A-05 se ha reducido en código, pero la medición es del render.
+2. Que en la tarjeta de changelog las 5 acciones y los 2 chips de fecha sean
+   **alcanzables** con el header envuelto, y que no quede una fila muerta.
+3. Que el **carril de tabs** horizontales se descubra en táctil (no hay indicio visual
+   añadido; eso es P3-06.2 para tablas).
+4. Que el **dropdown** del workspace switcher no se salga por la izquierda ni por la
+   derecha con nombres reales.
+5. El reparto real de `.version-card-stats` con etiquetas y fuentes del sistema.
+6. El ancho útil del `input[type="date"]` nativo en una columna a 320.
+7. **200 % de zoom y reflow** (R-A11Y-08) → P3-07.1.
+
+

@@ -409,3 +409,67 @@
     border-top: 1px solid var(--border-color);
     flex-shrink: 0;
 }
+
+/* ============================================
+   P3-02.3 — R-RESP-01: modal de entradas
+   ============================================
+   Decisión de layout (M-15): a ≤600 el layout pasa a UNA columna con los tabs en
+   fila horizontal y scroll-x contenido. Se descarta dejar los tabs verticales con
+   ancho flexible porque a 320 el modal mide 92vw ≈ 294 px y el cuerpo quedaría
+   por debajo de los 100 px, imposible para el editor de entradas.
+   Las reglas `.changelog-modal-tab--{categoría}` (P1-09.4) no se tocan. */
+@media (max-width: 768px) {
+    /* M-12: los tabs ceden ancho antes de comprimir el cuerpo. */
+    .changelog-modal-tabs {
+        width: 180px;
+        min-width: 0;
+    }
+
+    .changelog-modal-body {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .changelog-modal-layout {
+        flex-direction: column;
+    }
+
+    /* M-12 / M-15: tabs horizontales en un carril desplazable. */
+    .changelog-modal-tabs {
+        flex-direction: row;
+        width: auto;
+        min-width: 0;
+        flex-shrink: 0;
+        padding: 8px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        border-radius: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Los tabs conservan su ancho natural dentro del carril. */
+    .changelog-modal-tab {
+        flex: 0 0 auto;
+        max-width: 60vw;
+    }
+
+    .changelog-modal-body {
+        padding: 12px;
+    }
+
+    /* M-14: los campos del editor ocupan la fila completa. */
+    .changelog-entry-cdu-wrap,
+    .changelog-entry-autor-wrap {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+
+    .changelog-entry-row {
+        gap: 8px;
+        padding: 10px;
+    }
+}

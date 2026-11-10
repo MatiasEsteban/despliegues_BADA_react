@@ -137,3 +137,51 @@
 .changelog-empty-text {
     font-size: 0.95rem;
 }
+
+/* ============================================
+   P3-02.1 — R-RESP-01: toolbar, buscador y contador
+   Desktop-first: solo se añaden overrides en @media; la base no cambia.
+   ============================================ */
+@media (max-width: 900px) {
+    /* M-08: el bloque derecho deja de ser rígido y puede envolver. */
+    .changelog-toolbar-right {
+        flex-shrink: 1;
+        flex-wrap: wrap;
+        min-width: 0;
+    }
+
+    /* M-09: el buscador aporta su ancho preferido pero ya puede encogerse. */
+    .changelog-search-wrap {
+        flex: 1 1 180px;
+        min-width: 0;
+        max-width: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .changelog-toolbar-left {
+        flex: 1 1 100%;
+    }
+
+    .changelog-toolbar-right {
+        flex: 1 1 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 600px) {
+    .changelog-search-wrap {
+        flex: 1 1 100%;
+    }
+
+    .changelog-filter-select {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    /* M-10: el contador parte en dos líneas antes que empujar la fila. */
+    .changelog-count-badge {
+        white-space: normal;
+    }
+}
