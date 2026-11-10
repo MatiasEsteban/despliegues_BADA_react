@@ -42,12 +42,12 @@ export default function EvolutionModal({ isOpen, onClose, cdu, onConfirm }) {
                 </>
             }
         >
-            <div className="evolution-form" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <p className="evolution-warning" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+            <div className="evolution-form">
+                <p className="evolution-warning">
                     Al confirmar, se guardará el estado actual en el historial y se actualizará el CDU con los nuevos datos ingresados aquí.
                 </p>
 
-                <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="form-row form-row--split">
                     <Input
                         label="Nombre CDU"
                         value={formData.nombreCDU}
@@ -61,11 +61,10 @@ export default function EvolutionModal({ isOpen, onClose, cdu, onConfirm }) {
                 </div>
 
                 <div className="form-row">
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Descripción</label>
+                    <label className="evolution-label">Descripción</label>
                     <textarea
-                        className="input-field"
+                        className="evolution-textarea"
                         rows={3}
-                        style={{ width: '100%', padding: '0.5rem' }}
                         value={formData.descripcionCDU}
                         onChange={e => handleChange('descripcionCDU', e.target.value)}
                     />
@@ -85,7 +84,7 @@ export default function EvolutionModal({ isOpen, onClose, cdu, onConfirm }) {
                 </div>
 
                 <div className="form-section">
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Pasos</label>
+                    <label className="evolution-label">Pasos</label>
                     <StepsEditor
                         steps={formData.pasos}
                         onChange={newSteps => handleChange('pasos', newSteps)}
@@ -93,7 +92,7 @@ export default function EvolutionModal({ isOpen, onClose, cdu, onConfirm }) {
                 </div>
 
                 <div className="form-section">
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Responsables</label>
+                    <label className="evolution-label">Responsables</label>
                     <ResponsiblesEditor
                         responsibles={formData.responsables}
                         onChange={newResp => handleChange('responsables', newResp)}

@@ -151,6 +151,14 @@ flex: 0 0 auto; /* 👈 No crecer, no encoger, tamaño automático */
     margin-top: 0.2em; /* Alineación con el texto */
 }
 
+/* Estado vacío del reporte (sin categorías con datos) */
+.deployment-report-empty {
+    padding: 2rem;
+    text-align: center;
+    width: 100%;
+    color: var(--text-secondary);
+}
+
 /* Footer específico para este modal */
 .deployment-report .modal-actions {
     border-bottom-left-radius: 12px;

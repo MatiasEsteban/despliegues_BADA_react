@@ -82,7 +82,7 @@ export default function CommentsModal({ isOpen, onClose, version, onSave }) {
                 </>
             }
         >
-            <div className="modal-comentarios-categorized-content" style={{ padding: 0 }}>
+            <div className="modal-comentarios-categorized-content">
                 {renderSection('mejoras', 'Mejoras y Bugfixes')}
                 {renderSection('salidas', 'Salidas a Producción')}
                 {renderSection('cambiosCaliente', 'Cambios en Caliente')}

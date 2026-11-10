@@ -124,7 +124,7 @@ export default function ChangelogEntriesModal({ isOpen, onClose, version, onSave
                     <div className="changelog-modal-cat-header">
                         <span className="changelog-modal-cat-title">{currentCat?.label}</span>
                         <button className="btn-changelog-add" onClick={handleAdd}>
-                            <Icons.Plus style={{ width: '13px', height: '13px' }} />
+                            <Icons.Plus className="icon-sm" />
                             Agregar Cambio
                         </button>
                     </div>
@@ -135,7 +135,7 @@ export default function ChangelogEntriesModal({ isOpen, onClose, version, onSave
                             <div className="changelog-modal-empty">
                                 <span>Sin entradas en esta categoría</span>
                                 <button className="btn-changelog-add-empty" onClick={handleAdd}>
-                                    <Icons.Plus style={{ width: '13px', height: '13px' }} />
+                                    <Icons.Plus className="icon-sm" />
                                     Agregar la primera entrada
                                 </button>
                             </div>
@@ -184,7 +184,7 @@ export default function ChangelogEntriesModal({ isOpen, onClose, version, onSave
                                         onClick={() => handleRemove(item.id)}
                                         title="Eliminar este cambio"
                                     >
-                                        <Icons.X style={{ width: '14px', height: '14px' }} />
+                                        <Icons.X className="icon-md" />
                                     </button>
                                 </div>
                             ))

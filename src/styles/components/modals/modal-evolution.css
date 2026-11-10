@@ -1,0 +1,33 @@
+/* modal-evolution.css - Estilos del modal de evolución de CDU */
+
+.evolution-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.evolution-warning {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+/* Fila de dos campos. Solo la fila con dos Inputs usa el modificador: `.form-row`
+   también envuelve una label + textarea y un Select suelto, donde una rejilla de
+   dos columnas cambiaría el layout actual. */
+.form-row--split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.evolution-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.evolution-textarea {
+    width: 100%;
+    padding: 0.5rem;
+}

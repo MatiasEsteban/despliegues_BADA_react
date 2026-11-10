@@ -71,7 +71,7 @@ export default function DeploymentReportModal({ isOpen, onClose, version, isProd
             <div className="deployment-report-body">
                 {categorias.map(renderCategory)}
                 {(!comentarios || Object.values(comentarios).every(arr => arr.length === 0)) && (
-                    <div style={{ padding: '2rem', textAlign: 'center', width: '100%', color: 'var(--text-secondary)' }}>
+                    <div className="deployment-report-empty">
                         No hay información registrada para este reporte.
                     </div>
                 )}

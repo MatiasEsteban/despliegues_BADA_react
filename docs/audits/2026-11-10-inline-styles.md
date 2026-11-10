@@ -524,3 +524,117 @@ Nota sobre el chequeo de hex: el encargo esperaba 10 → 9 excluyendo el `fill` 
 - Error de Login y de Dashboard en sus dos contextos (formulario y vista).
 - Input file oculto: la importación debe seguir funcionando.
 - De P2-02: overlay de carga más claro y `Button.type` por defecto (submit de Login).
+
+---
+
+## 8. Ejecución P2-04 — Modales
+
+Fecha: 2026-11-10. Alcance: 29 usos en 5 modales. No se tocaron los 7 usos dinámicos de `ProgressModal` (barra, tartas y colores) reservados a `P2-05.5`.
+
+### 8.1 Uso → destino (29)
+
+| Uso (repetidos agrupados) | Archivo:línea | Antes | Destino | Clase | Delta visual |
+|---|---|---|---|---|---|
+| `Icons.Plus` ×2 | `ChangelogEntriesModal.jsx:127,138` | `13px` | `base/reset.css` | `.icon-sm` | Ninguno |
+| `Icons.X` | `ChangelogEntriesModal.jsx:187` | `14px` | `base/reset.css` | `.icon-md` | Ninguno |
+| `padding: 0` | `CommentsModal.jsx:85` | `style={{ padding: 0 }}` | `modal-comentarios.css` | regla existente `.modal-comentarios-categorized-content` | Ninguno; se elimina el `padding` de la regla porque el inline ya lo anulaba |
+| Estado vacío | `DeploymentReportModal.jsx:74` | `padding: 2rem`, `textAlign`, `width`, `color` | `modal-deployment-report.css` | `.deployment-report-empty` | Ninguno |
+| Contenedor del formulario | `EvolutionModal.jsx:45` | `display:flex`, `flexDirection`, `gap: 1rem` | `modal-evolution.css` | `.evolution-form` | Ninguno |
+| Aviso superior | `EvolutionModal.jsx:46` | `fontSize: .9rem`, `color`, `marginBottom` | `modal-evolution.css` | `.evolution-warning` | Ninguno |
+| Fila de dos campos | `EvolutionModal.jsx:50` | `display:grid`, `1fr 1fr`, `gap: 1rem` | `modal-evolution.css` | `.form-row--split` | Ninguno; el modificador se aplica solo a la fila de dos `Input` (ver 8.2) |
+| Etiquetas ×3 | `EvolutionModal.jsx:64,88,96` | `display:block`, `marginBottom`, `fontWeight` | `modal-evolution.css` | `.evolution-label` | Ninguno |
+| Textarea de descripción | `EvolutionModal.jsx:68` | `width: 100%`, `padding: .5rem` | `modal-evolution.css` | `.evolution-textarea` | Ninguno; sustituye a `.input-field`, que no tenía regla |
+| Contenedor del modal | `ProgressModal.jsx:86` | `display:grid`, `gap: 2rem` | `modal-progress.css` | `.modal-progress-content` (regla existente ampliada) | Ninguno; se conserva `align-items: center` |
+| Grid de gráficos | `ProgressModal.jsx:106` | `display:grid`, `auto-fit minmax(200px,1fr)`, `gap: 1.5rem` | `modal-progress.css` | `.charts-grid` | Ninguno |
+| Tarjeta expandible ×2 | `ProgressModal.jsx:112,208` | `cursor`, `gridColumn` condicional, `transition` | `modal-progress.css` | `.chart-card--expandable` + `.chart-card.expanded` | Ninguno; `grid-column: 1/-1` solo con `.expanded` |
+| Wrapper de contenido ×2 | `ProgressModal.jsx:120,216` | `display:flex`, `flexDirection`/`alignItems` condicional, `gap: 2rem` | `modal-progress.css` | `.chart-content-wrapper` + `.chart-content-wrapper.expanded` | Ninguno; se añade la clase `expanded` al wrapper |
+| Contenedor de tarta ×2 | `ProgressModal.jsx:127,222` | `display:flex`, `alignItems`, `gap: 1rem`, `flexShrink: 0` | `modal-progress.css` | `.pie-chart-container` + `.pie-chart-container--fixed` | Ninguno |
+| Contenedor de tarta (dificultad) | `ProgressModal.jsx:192` | `display:flex`, `alignItems`, `gap: 1rem` | `modal-progress.css` | `.pie-chart-container` | Ninguno; sin `flex-shrink` |
+| Detalles expandidos ×2 | `ProgressModal.jsx:146,241` | `flex`, columnas, `height`, `overflowX`, borde, `paddingLeft`, `animation` | `modal-progress.css` | `.chart-details` | Ninguno |
+| Columna de estado ×2 | `ProgressModal.jsx:161,272` | `breakInside: avoid`, `marginBottom: 1.5rem` | `modal-progress.css` | `.status-column` | Ninguno |
+| Lista ×2 | `ProgressModal.jsx:170,281` | `listStyle`, `padding: 0`, `margin: 0` | `modal-progress.css` | `.status-list` | Ninguno |
+| Elemento de lista ×2 | `ProgressModal.jsx:172,283` | `fontSize`, `marginBottom`, `color` | `modal-progress.css` | `.status-list li` | Ninguno |
+
+### 8.2 Decisiones de implementación
+
+- **`modal-evolution.css`:** no existía bloque de evolución en `modal-progress.css`, así que se crea el archivo y se importa en `main.css` justo después de `modal-full-summary.css`, sin reordenar los imports existentes.
+- **`.form-row` no se define:** el marcado usa `form-row` en tres sitios y solo el primero (dos `Input`) debe ser una rejilla de 2 columnas. Aplicar `display: grid; grid-template-columns: 1fr 1fr` a `.form-row` habría puesto la etiqueta al lado del textarea (línea 63) y habría dejado el `Select` de la línea 74 a media anchura. La rejilla se limita a `.form-row--split`, aplicado solo a la fila de dos campos.
+- **Textarea:** no existía una clase de textarea reutilizable (`forms.css` no define ninguna; `.input-field` se usa en JSX pero nunca se estiló), así que se crea `.evolution-textarea` con los mismos valores del inline.
+- **`CommentsModal`:** `.modal-comentarios-categorized-content` solo se usa en este modal y su `padding: 1rem 1.5rem 1.5rem 1.5rem` estaba anulado por el inline; se elimina la declaración en lugar de crear un modificador. Cada `.comentario-categoria` aporta su propio espaciado.
+- **`ProgressModal` — separación estático/dinámico:** los usos con `expandedChart ===` se resolvieron con clases (la tarjeta ya llevaba `.expanded`; el wrapper recibe ahora `.expanded` condicional), por lo que se pudieron eliminar completos sin tocar la lógica. Los 7 usos verdaderamente dinámicos (ancho `${finalProgress}%`, `colors[key]`, `statusGradient`/`difficultyGradient`/`badaGradient` y los dos `h5` con color de estado) permanecen intactos y pasan a `P2-05.5`.
+- **`.document`:** `.chart-title`, `.chart-subtitle`, `.legend-item`, `.legend-color` y `.legend-label` solo se usan en `ProgressModal`; pasan del `<style>` embebido al CSS global sin efectos cruzados.
+
+### 8.3 Bloque `<style>` embebido (`ProgressModal.jsx:304-315`)
+
+Contenía 7 reglas y 1 `@keyframes`:
+
+| Regla | Estado previo | Acción |
+|---|---|---|
+| `.chart-title` | válida | movida a `modal-progress.css` |
+| `.chart-subtitle` | válida | movida a `modal-progress.css` |
+| `.chart-card` | `borderRadius: 8px` **inválida** | movida con `border-radius: 8px` corregido |
+| `.legend-item` | `alignItems: center` **inválida** | movida con `align-items: center` corregido |
+| `.legend-color` | válida | movida a `modal-progress.css` |
+| `.legend-label` | válida | movida a `modal-progress.css` |
+| `@keyframes fadeIn` | válida | **no se duplica**: `base/animations.css` ya define exactamente la misma animación |
+
+Lo que **sí cambia el render** al corregir las propiedades camelCase:
+
+1. `.chart-card` gana `border-radius: 8px`. Antes la declaración se ignoraba y las tarjetas tenían esquinas rectas; ahora quedan redondeadas.
+2. `.legend-item` gana `align-items: center`. Antes el cuadradito de color y la etiqueta se alineaban por el valor inicial (`stretch`/baseline de flex), ahora se centran verticalmente.
+
+Ambos deltas son consecuencia de corregir CSS inválido, no de una decisión de diseño; deben validarse en G2.
+
+### 8.4 Conteos antes / después
+
+| Métrica | Antes | Después | Delta |
+|---|---:|---:|---:|
+| `style={{` globales | 44 (9 archivos) | **15 (5 archivos)** | −29 |
+| `style={{` en los 5 modales | 29 | **0** | −29 |
+| `ProgressModal` (usos restantes) | 24 | **7** (`P2-05.5`) | −17 |
+| `ESTÁTICO` | 31 | **6** | −25 |
+| `GEOMETRÍA` | 10 | **6** | −4 |
+| `COLOR` | 3 | **3** | 0 |
+| Clases CSS / consumidas | 446 / 424 | **467 / 445** | +21 / +21 |
+| Dinámicas / muertas | 21 / 1 | **21 / 1** | 0 |
+| Clases JSX sin regla | 32 | **18** | −14 |
+| Hex en `src/components` | 11 | **11** | 0 |
+
+**Nota sobre los tipos:** el encargo esperaba `ESTÁTICO 31 → 2` y `GEOMETRÍA 10 → 10`, asumiendo que los 29 usos eran ESTÁTICO. El script clasifica como GEOMETRÍA los 4 usos mixtos de `chart-card` y `chart-content-wrapper` porque contienen `expandedChart ===`; al migrarlos también, quedan `ESTÁTICO 6` (`CduRow` 3, `DetailHeader` 2, `StepsEditor` 1) y `GEOMETRÍA 6` (`BadaGraph` 2 + barra y 3 tartas de `ProgressModal`). El total de 15 restantes coincide con lo previsto.
+
+### 8.5 Clases nuevas (21)
+
+| Clase | Archivo | Consumidor |
+|---|---|---|
+| `.evolution-form` | `modals/modal-evolution.css` | `EvolutionModal.jsx` |
+| `.evolution-warning` | `modals/modal-evolution.css` | `EvolutionModal.jsx` |
+| `.form-row--split` | `modals/modal-evolution.css` | `EvolutionModal.jsx` |
+| `.evolution-label` | `modals/modal-evolution.css` | `EvolutionModal.jsx` |
+| `.evolution-textarea` | `modals/modal-evolution.css` | `EvolutionModal.jsx` |
+| `.deployment-report-empty` | `modals/modal-deployment-report.css` | `DeploymentReportModal.jsx` |
+| `.charts-grid` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.chart-title` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.chart-subtitle` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.chart-card` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.chart-card--expandable` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.expanded` (en `.chart-card`) | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.chart-content-wrapper` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.chart-content-wrapper.expanded` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.pie-chart-container` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.pie-chart-container--fixed` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.chart-details` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.status-column` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.status-list` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.legend-item` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+| `.legend-color`, `.legend-label` | `modals/modal-progress.css` | `ProgressModal.jsx` |
+
+### 8.6 P2-04.6 — verificación visual pendiente
+
+Queda en `◐` por la ausencia de `node_modules`, dev server y baseline `P0-04`. A validar en G2:
+
+- Esquinas de `.chart-card` (nuevo `border-radius: 8px`) y alineación vertical de la leyenda (`align-items: center`).
+- `ProgressModal` con y sin tarjeta expandida: grid de 3 columnas, salto a `1 / -1`, wrapper en fila/columna, altura de 70vh y columnas de 300px en `.chart-details`.
+- `EvolutionModal`: rejilla de dos campos, etiquetas, textarea y aviso.
+- `CommentsModal`: ausencia de padding del contenedor y scroll.
+- `DeploymentReportModal` sin datos: centrado y ancho completo.
+- Iconos `Plus`/`X` de `ChangelogEntriesModal`.

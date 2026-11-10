@@ -9,9 +9,10 @@
     flex-direction: column;
 }
 
-/* Contenedor principal del contenido (para el scroll) */
+/* Contenedor principal del contenido (para el scroll).
+   Sin padding: cada categoría aporta su propio espaciado (antes lo anulaba un
+   `style={{ padding: 0 }}` en CommentsModal). */
 .modal-comentarios-categorized-content {
-    padding: 1rem 1.5rem 1.5rem 1.5rem;
     overflow-y: auto; /* Habilita el scroll */
     flex-grow: 1; /* Permite que ocupe el espacio */
     background: var(--bg-primary);

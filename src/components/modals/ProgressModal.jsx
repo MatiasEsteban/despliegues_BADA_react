@@ -83,7 +83,7 @@ export default function ProgressModal({ isOpen, onClose, version }) {
             className={`modal-progress ${expandedChart ? 'modal-expanded' : ''}`}
             actions={<Button onClick={onClose}>Cerrar</Button>}
         >
-            <div className="modal-progress-content" style={{ display: 'grid', gap: '2rem' }}>
+            <div className="modal-progress-content">
 
                 {/* 1. PROGRESO GLOBAL */}
                 <div className="chart-section">
@@ -103,33 +103,18 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                 </div>
 
                 {/* GRID DE GRAFICOS */}
-                <div className="charts-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                <div className="charts-grid">
 
                     {/* 2. ESTADOS CDUS */}
                     <div
-                        className={`chart-card ${expandedChart === 'status' ? 'expanded' : ''}`}
+                        className={`chart-card chart-card--expandable ${expandedChart === 'status' ? 'expanded' : ''}`}
                         onClick={() => setExpandedChart(expandedChart === 'status' ? null : 'status')}
-                        style={{
-                            cursor: 'pointer',
-                            gridColumn: expandedChart === 'status' ? '1 / -1' : 'auto',
-                            transition: 'all 0.3s ease'
-                        }}
                     >
                         <h4 className="chart-subtitle">Estados CDUs {expandedChart === 'status' && '(Click para contraer)'}</h4>
 
-                        <div className="chart-content-wrapper" style={{
-                            display: 'flex',
-                            flexDirection: expandedChart === 'status' ? 'row' : 'column',
-                            gap: '2rem',
-                            alignItems: expandedChart === 'status' ? 'flex-start' : 'initial'
-                        }}>
+                        <div className={`chart-content-wrapper ${expandedChart === 'status' ? 'expanded' : ''}`}>
                             {/* Gráfico */}
-                            <div className="pie-chart-container" style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '1rem',
-                                flexShrink: 0
-                            }}>
+                            <div className="pie-chart-container pie-chart-container--fixed">
                                 <div className="pie-chart" style={{
                                     width: expandedChart === 'status' ? '120px' : '80px',
                                     height: expandedChart === 'status' ? '120px' : '80px',
@@ -143,22 +128,11 @@ export default function ProgressModal({ isOpen, onClose, version }) {
 
                             {/* Detalles (Solo visible si está expandido) */}
                             {expandedChart === 'status' && (
-                                <div className="chart-details" style={{
-                                    flex: 1,
-                                    columnCount: 'auto',
-                                    columnWidth: '300px',
-                                    columnGap: '2rem',
-                                    columnFill: 'auto',
-                                    height: '70vh',
-                                    overflowX: 'auto',
-                                    borderLeft: '1px solid var(--border-color)',
-                                    paddingLeft: '2rem',
-                                    animation: 'fadeIn 0.3s ease'
-                                }}>
+                                <div className="chart-details">
                                     {Object.entries(stats.cdusByStatus).map(([status, titles]) => {
                                         if (titles.length === 0) return null;
                                         return (
-                                            <div key={status} className="status-column" style={{ breakInside: 'avoid', marginBottom: '1.5rem' }}>
+                                            <div key={status} className="status-column">
                                                 <h5 style={{
                                                     color: statusColors[status],
                                                     marginBottom: '0.5rem',
@@ -167,13 +141,9 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                                                 }}>
                                                     {status} ({titles.length})
                                                 </h5>
-                                                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                                <ul className="status-list">
                                                     {titles.map((title, idx) => (
-                                                        <li key={idx} style={{
-                                                            fontSize: '0.9rem',
-                                                            marginBottom: '0.35rem',
-                                                            color: 'var(--text-secondary)'
-                                                        }}>
+                                                        <li key={idx}>
                                                             • {title}
                                                         </li>
                                                     ))}
@@ -189,7 +159,7 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                     {/* 3. DIFICULTAD */}
                     <div className="chart-card">
                         <h4 className="chart-subtitle">Dificultad (Pasos)</h4>
-                        <div className="pie-chart-container" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div className="pie-chart-container">
                             <div className="pie-chart" style={{
                                 width: '80px',
                                 height: '80px',
@@ -203,28 +173,13 @@ export default function ProgressModal({ isOpen, onClose, version }) {
 
                     {/* 4. VERSION BADA */}
                     <div
-                        className={`chart-card ${expandedChart === 'bada' ? 'expanded' : ''}`}
+                        className={`chart-card chart-card--expandable ${expandedChart === 'bada' ? 'expanded' : ''}`}
                         onClick={() => setExpandedChart(expandedChart === 'bada' ? null : 'bada')}
-                        style={{
-                            cursor: 'pointer',
-                            gridColumn: expandedChart === 'bada' ? '1 / -1' : 'auto',
-                            transition: 'all 0.3s ease'
-                        }}
                     >
                         <h4 className="chart-subtitle">Versión Bada (Pasos) {expandedChart === 'bada' && '(Click para contraer)'}</h4>
 
-                        <div className="chart-content-wrapper" style={{
-                            display: 'flex',
-                            flexDirection: expandedChart === 'bada' ? 'row' : 'column',
-                            gap: '2rem',
-                            alignItems: expandedChart === 'bada' ? 'flex-start' : 'initial'
-                        }}>
-                            <div className="pie-chart-container" style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '1rem',
-                                flexShrink: 0
-                            }}>
+                        <div className={`chart-content-wrapper ${expandedChart === 'bada' ? 'expanded' : ''}`}>
+                            <div className="pie-chart-container pie-chart-container--fixed">
                                 <div className="pie-chart" style={{
                                     width: expandedChart === 'bada' ? '120px' : '80px',
                                     height: expandedChart === 'bada' ? '120px' : '80px',
@@ -238,18 +193,7 @@ export default function ProgressModal({ isOpen, onClose, version }) {
 
                             {/* Detalles BADA */}
                             {expandedChart === 'bada' && (
-                                <div className="chart-details" style={{
-                                    flex: 1,
-                                    columnCount: 'auto',
-                                    columnWidth: '300px',
-                                    columnGap: '2rem',
-                                    columnFill: 'auto',
-                                    height: '70vh',
-                                    overflowX: 'auto',
-                                    borderLeft: '1px solid var(--border-color)',
-                                    paddingLeft: '2rem',
-                                    animation: 'fadeIn 0.3s ease'
-                                }}>
+                                <div className="chart-details">
                                     {/* Calcular CDUs por versión dominante on-the-fly */}
                                     {(() => {
                                         const cdusByBada = { 'V1': [], 'V2': [] };
@@ -269,7 +213,7 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                                         return Object.entries(cdusByBada).map(([ver, titles]) => {
                                             if (titles.length === 0) return null;
                                             return (
-                                                <div key={ver} className="status-column" style={{ breakInside: 'avoid', marginBottom: '1.5rem' }}>
+                                                <div key={ver} className="status-column">
                                                     <h5 style={{
                                                         color: badaColors[ver],
                                                         marginBottom: '0.5rem',
@@ -278,13 +222,9 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                                                     }}>
                                                         Dominante {ver} ({titles.length})
                                                     </h5>
-                                                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                                    <ul className="status-list">
                                                         {titles.map((title, idx) => (
-                                                            <li key={idx} style={{
-                                                                fontSize: '0.9rem',
-                                                                marginBottom: '0.35rem',
-                                                                color: 'var(--text-secondary)'
-                                                            }}>
+                                                            <li key={idx}>
                                                                 • {title}
                                                             </li>
                                                         ))}
@@ -301,18 +241,6 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                 </div>
             </div>
 
-            <style>{`
-                .chart-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary); }
-                .chart-subtitle { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-secondary); }
-                .chart-card { background: var(--bg-secondary); padding: 1rem; borderRadius: 8px; }
-                .legend-item { display: flex; alignItems: center; gap: 0.5rem; font-size: 0.8rem; margin-bottom: 0.25rem; }
-                .legend-color { width: 10px; height: 10px; border-radius: 2px; }
-                .legend-label { color: var(--text-primary); }
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-            `}</style>
         </Modal>
     );
 }

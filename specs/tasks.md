@@ -225,12 +225,12 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 
 | ID | Tarea | Archivo | Dep. | Esf. | Estado | Criterio |
 |---|---|---|---|---|---|---|
-| P2-04.1 | Migrar 3 estilos de `ChangelogEntriesModal` | `modals/ChangelogEntriesModal.jsx`, `changelog/modal-entries.css` | P2-01.3 | S | ☐ | 0 `style` (quedan 3; 1 consumido en P1-09.4) |
-| P2-04.2 | Migrar 1 estilo de `CommentsModal` | `modals/CommentsModal.jsx`, `modal-comentarios.css` | P2-01.3 | XS | ☐ | 0 `style` |
-| P2-04.3 | Migrar 1 estilo de `DeploymentReportModal` | `modals/DeploymentReportModal.jsx`, `modal-deployment-report.css` | P2-01.3 | XS | ☐ | 0 `style` |
-| P2-04.4 | Migrar 7 estilos de `EvolutionModal` | `modals/EvolutionModal.jsx`, `modal-progress.css` | P2-01.3 | M | ☐ | 0 `style` |
-| P2-04.5 | Migrar estilos estáticos de `ProgressModal` | `modals/ProgressModal.jsx`, `modal-progress.css` | P2-01.3 | M | ☐ | 0 `style` estático |
-| P2-04.6 | Revisión visual de modales | — | P2-04.1–5 | M | ☐ | Sin diferencias |
+| P2-04.1 | Migrar 3 estilos de `ChangelogEntriesModal` | `modals/ChangelogEntriesModal.jsx`, `changelog/modal-entries.css` | P2-01.3 | S | ✅ | 0 `style`; `.icon-sm` ×2 y `.icon-md` desde `base/reset.css`. |
+| P2-04.2 | Migrar 1 estilo de `CommentsModal` | `modals/CommentsModal.jsx`, `modal-comentarios.css` | P2-01.3 | XS | ✅ | 0 `style`; se elimina el `padding` de `.modal-comentarios-categorized-content` (el inline ya lo anulaba). |
+| P2-04.3 | Migrar 1 estilo de `DeploymentReportModal` | `modals/DeploymentReportModal.jsx`, `modal-deployment-report.css` | P2-01.3 | XS | ✅ | 0 `style`; `.deployment-report-empty`. |
+| P2-04.4 | Migrar 7 estilos de `EvolutionModal` | `modals/EvolutionModal.jsx`, `modal-evolution.css` | P2-01.3 | M | ✅ | 0 `style`; nuevo `modal-evolution.css` importado en `main.css`; `.form-row--split` para no romper las otras dos filas. |
+| P2-04.5 | Migrar estilos estáticos de `ProgressModal` | `modals/ProgressModal.jsx`, `modal-progress.css` | P2-01.3 | M | ✅ | 17 usos eliminados (13 estáticos + 4 mixtos resueltos con `.expanded`); quedan los 7 dinámicos de P2-05.5. `<style>` embebido movido y camelCase corregido. |
+| P2-04.6 | Revisión visual de modales | — | P2-04.1-5 | M | ◐ | Pendiente de baseline P0-04: sin dev server. Deltas a validar: `border-radius` de `.chart-card`, `align-items` de `.legend-item`, grids y estado vacío. |
 
 ### 6.5 Geometría dinámica y caso permitido
 
