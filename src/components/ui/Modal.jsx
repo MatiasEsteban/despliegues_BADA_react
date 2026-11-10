@@ -39,7 +39,7 @@ export function Modal({ isOpen, onClose, title, children, type = 'info', actions
                                 <IconComponent />
                             </div>
                         )}
-                        <div className="modal-message" style={{ width: showIcon ? 'auto' : '100%' }}>
+                        <div className={clsx('modal-message', !showIcon && 'modal-message--full')}>
                             {children}
                         </div>
                     </div>

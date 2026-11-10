@@ -7,15 +7,14 @@ export function Input({ className, error, label, id, icon: Icon, ...props }) {
             {/* CORRECCIÓN: Clase 'filter-label' para asegurar color del tema */}
             {label && <label htmlFor={id} className="filter-label">{label}</label>}
 
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <div className="input-wrapper">
                 <input
                     id={id}
-                    className={clsx('filter-input', error && 'campo-invalido', className)}
-                    style={Icon ? { paddingRight: '2.5rem' } : {}}
+                    className={clsx('filter-input', Icon && 'filter-input--with-icon', error && 'campo-invalido', className)}
                     {...props}
                 />
                 {Icon && (
-                    <div style={{ position: 'absolute', right: '0.75rem', color: 'var(--text-secondary)', pointerEvents: 'none', display: 'flex' }}>
+                    <div className="input-icon">
                         <Icon className="icon-small" />
                     </div>
                 )}

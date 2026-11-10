@@ -11,7 +11,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: var(--z-modal);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -125,6 +125,11 @@
     font-size: 1rem;
     line-height: 1.5;
     white-space: pre-wrap; /* Permite saltos de línea en el mensaje */
+}
+
+/* Sin icono el mensaje ocupa todo el ancho del contenedor flex */
+.modal-message--full {
+    width: 100%;
 }
 
 /* === FOOTER DEL MODAL === */

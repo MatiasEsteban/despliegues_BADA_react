@@ -92,3 +92,23 @@
     height: auto;
    }
 */
+
+/* === COMPONENTE INPUT CON ICONO === */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    right: 0.75rem;
+    display: flex;
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+/* Solo cuando el input tiene icono; doble clase para no depender del orden de imports */
+.filter-input.filter-input--with-icon {
+    padding-right: 2.5rem;
+}

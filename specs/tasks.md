@@ -198,11 +198,11 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 
 | ID | Tarea | Archivo | Dep. | Esf. | Estado | Criterio |
 |---|---|---|---|---|---|---|
-| P2-02.1 | Migrar 2 estilos de `Input` | `ui/Input.jsx`, `forms.css` | P2-01.3 | S | ☐ | 0 `style` en el archivo |
-| P2-02.2 | Migrar 4 estilos de `LoadingOverlay` | `ui/LoadingOverlay.jsx`, `notifications.css` | P2-01.3 | S | ☐ | 0 `style` |
-| P2-02.3 | Migrar 1 estilo de `Modal` | `ui/Modal.jsx`, `modal-base.css` | P2-01.3 | XS | ☐ | 0 `style` |
-| P2-02.4 | Fijar `Button.type="button"` por defecto (R-CODE-02) | `ui/Button.jsx` | P2-01.3 | XS | ☐ | `type` por defecto; formularios pasan `submit` explícito |
-| P2-02.5 | Verificar `Select`, `Toast` y `Button` sin inline styles | `ui/*.jsx` | P2-02.1–4 | XS | ☐ | `grep` 0 |
+| P2-02.1 | Migrar 2 estilos de `Input` | `ui/Input.jsx`, `forms.css` | P2-01.3 | S | ✅ | 0 `style` en el archivo (2 del inventario + 1 condicional); `.input-wrapper`, `.input-icon` y `.filter-input--with-icon`. |
+| P2-02.2 | Migrar 4 estilos de `LoadingOverlay` | `ui/LoadingOverlay.jsx`, `notifications.css` | P2-01.3 | S | ✅ | 0 `style`; reutiliza `.modal-overlay`, `z-index: var(--z-modal)`, 3 clases nuevas en `notifications.css`. |
+| P2-02.3 | Migrar 1 estilo de `Modal` | `ui/Modal.jsx`, `modal-base.css` | P2-01.3 | XS | ✅ | 0 `style`; `.modal-message--full` aplicada solo cuando `showIcon` es falso. |
+| P2-02.4 | Fijar `Button.type="button"` por defecto (R-CODE-02) | `ui/Button.jsx` | P2-01.3 | XS | ✅ | `type='button'` por defecto. 0 submits nuevos: el único `<form>` (`Login.jsx:40`) ya tenía `type="submit"` explícito en `Login.jsx:71`. |
+| P2-02.5 | Verificar `Select`, `Toast` y `Button` sin inline styles | `ui/*.jsx` | P2-02.1–4 | XS | ✅ | UI base 0 `style`; global 71 (78−7, 19 archivos); `audit-selectors`: 431 clases / 409 consumidas / 21 dinámicas / 1 muerta / 32 JSX sin regla (sin cambios en muertas ni dinámicas). |
 | P2-02.6 | Revisión visual de UI base | — | P2-02.1–5 | S | ☐ | Sin diferencias perceptibles |
 
 ### 6.3 Vistas, layout y raíz (27 usos)

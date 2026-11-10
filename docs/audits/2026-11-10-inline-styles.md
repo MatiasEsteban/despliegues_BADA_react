@@ -184,7 +184,7 @@ El script no hardcodea el número: hoy informa 78 y, tras la migración, debe in
 
 | Archivo | Línea | Código | Acción |
 |---|---:|---|---|
-| `src/components/ui/Input.jsx` | 14 | `style={Icon ? { paddingRight: '2.5rem' } : {}}` | `P2-02.1` debe eliminarlo también (`.filter-input--with-icon`). No cuenta en los 78. |
+| `src/components/ui/Input.jsx` | 14 | `style={Icon ? { paddingRight: '2.5rem' } : {}}` | **Resuelto en P2-02.1**: `.filter-input--with-icon`. No cuenta en los 78. |
 | `src/components/modals/ProgressModal.jsx` | 304–315 | `<style>{...}` con 8 reglas | `P2-04.5` debe moverlo a `modal-progress.css`. Incluye propiedades camelCase inválidas (`borderRadius`, `alignItems`) que hoy no se aplican. |
 
 ---
@@ -371,3 +371,55 @@ Capturas de referencia (escritorio y móvil) de: `ProgressModal` con y sin gráf
 - `grep -R "\.style\." src` → solo el helper de portapapeles de `P2-06`.
 - Sin hex en JSX: los dos detectados aquí quedan tokenizados.
 - G2 firmado con baseline de P0-04.
+
+---
+
+## 6. Ejecución P2-02 — UI base
+
+Fecha: 2026-11-10. Alcance: `Input`, `LoadingOverlay`, `Modal` y `Button` (`P2-02.1`–`P2-02.4`). No se cambió la API pública de los componentes: `Input` sigue aceptando `icon`, `LoadingOverlay` sigue aceptando `message`, `Modal` no cambia sus props y `Button` solo añade el valor por defecto de `type`.
+
+### 6.1 Uso → destino
+
+| Uso | Archivo:línea | Antes | Destino | Clase CSS |
+|---|---|---|---|---|
+| Wrapper del input | `ui/Input.jsx:10` | `style={{ position, display, alignItems }}` | `forms.css` | `.input-wrapper` |
+| Contenedor del icono | `ui/Input.jsx:18` | `style={{ position, right, color, pointerEvents, display }}` | `forms.css` | `.input-icon` |
+| Padding condicional | `ui/Input.jsx:14` | `style={Icon ? { paddingRight: '2.5rem' } : {}}` | `forms.css` | `.filter-input--with-icon` |
+| Overlay de carga | `ui/LoadingOverlay.jsx:5` | `style={{ zIndex: 1000, backgroundColor: 'rgba(0,0,0,0.5)' }}` | `notifications.css` + regla existente | `.loading-overlay` sobre `.modal-overlay` |
+| Caja del overlay | `ui/LoadingOverlay.jsx:6` | `style={{ maxWidth: '300px', textAlign: 'center' }}` | `notifications.css` | `.loading-overlay .modal` |
+| Mensaje | `ui/LoadingOverlay.jsx:9` | `style={{ marginBottom: '1rem', fontWeight: '600' }}` | `notifications.css` | `.loading-overlay-message` |
+| Spinner | `ui/LoadingOverlay.jsx:11` | `style={{ margin, width, height, borderWidth }}` | `notifications.css` | `.loading-overlay-spinner` sobre `.toast-spinner` |
+| Mensaje de modal | `ui/Modal.jsx:42` | `style={{ width: showIcon ? 'auto' : '100%' }}` | `modal-base.css` | `.modal-message--full` (solo sin icono) |
+
+### 6.2 Decisiones de implementación
+
+- **Input:** la clase base del campo es `.filter-input` (definida en `filters.css`), por lo que el modificador se nombra `.filter-input--with-icon` y se declara como `.filter-input.filter-input--with-icon` para no depender del orden de imports. `.input-wrapper` y `.input-icon` se añaden a `forms.css`, junto al resto de reglas del componente.
+- **LoadingOverlay:** se reutiliza `.modal-overlay` (ya tiene `z-index` y color de fondo) en lugar de duplicar la capa. `z-index: 1000` pasa a `var(--z-modal)` en la regla existente; el token vale exactamente 1000. El `rgba(0,0,0,0.5)` inline **no** se reintroduce: se usa el `rgba(0,0,0,0.4)` que ya declara `.modal-overlay`. Delta visual asumido (overlay ligeramente más claro) y anotado para G2.
+- **Modal:** el estado por defecto de `.modal-message` en el contenedor flex ya es `width: auto`, así que el único caso que necesita clase es el opuesto: `--full` cuando no hay icono. No se añade una clase `--with-icon` que sería un no-op.
+- **Button:** `type = 'button'` por defecto, pasado explícitamente al `<button>` antes de `{...props}`. El único `<form>` del proyecto es `Login.jsx:40`; su botón ya declaraba `type="submit"` (línea 71), por lo que **no hubo que añadir ningún `submit` explícito**. No se detectaron otros `Button` dentro de formularios.
+
+### 6.3 Conteos antes / después
+
+| Métrica | Antes | Después | Delta |
+|---|---:|---:|---:|
+| `style={{` globales | 78 (22 archivos) | **71 (19 archivos)** | −7 |
+| `style={{` en UI base | 7 | **0** | −7 |
+| Atributos `style=` en UI base (incl. condicional) | 8 | **0** | −8 |
+| `ESTÁTICO` / `GEOMETRÍA` / `COLOR` / `VAR-CSS` | 64 / 11 / 3 / 0 | **58 / 10 / 3 / 0** | −6 / −1 / 0 / 0 |
+| Clases CSS (`audit-selectors`) | 424 | **431** | +7 |
+| Clases consumidas | 402 | **409** | +7 |
+| Clases dinámicas | 21 | **21** | 0 |
+| Clases muertas | 1 | **1** (`deployment-report`) | 0 |
+| Clases JSX sin regla | 32 | **32** | 0 |
+
+### 6.4 Clases nuevas (7)
+
+| Clase | Archivo | Consumidor |
+|---|---|---|
+| `.input-wrapper` | `forms.css` | `Input.jsx` |
+| `.input-icon` | `forms.css` | `Input.jsx` |
+| `.filter-input--with-icon` | `forms.css` | `Input.jsx` (condicional con `Icon`) |
+| `.loading-overlay` | `notifications.css` | `LoadingOverlay.jsx` |
+| `.loading-overlay-message` | `notifications.css` | `LoadingOverlay.jsx` |
+| `.loading-overlay-spinner` | `notifications.css` | `LoadingOverlay.jsx` |
+| `.modal-message--full` | `modal-base.css` | `Modal.jsx` (condicional sin icono) |
