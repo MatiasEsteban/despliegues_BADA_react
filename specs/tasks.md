@@ -162,18 +162,18 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P1-07.3 | Eliminar selectores sin consumidor citados | CSS de modales | P1-07.1 | XS | ✅ | `.modal.deployment-report`, `.modal-deployment-info .modal-box` ausentes |
 | P1-08.1 | Dividir `changelog.css` en 6 archivos | `styles/components/changelog/*`, `modals/export-modal.css`, `modals/deployment-info.css` | P1-05.1 | L | ✅ | 208 bloques |
 | P1-08.2 | Verificar 0 selectores duplicados | — | P1-08.1 | XS | ✅ | Script de conteo |
-| P1-08.3 | Documentar desvíos del split | `specs/tasks.md` | P1-08.1 | XS | ☐ | `.header-view-toggle` migrado; `.changelog-empty` y `.changelog-entry-autor-badge` reordenados |
+| P1-08.3 | Documentar desvíos del split | `docs/audits/2026-11-10-changelog-split.md` | P1-08.1 | XS | ✅ | `docs/audits/2026-11-10-changelog-split.md`; 4 desvíos documentados; sin conflicto de cascada |
 | P1-08.4 | Verificar cascada visual | — | P1-08.3, P0-04.7 | S | ⛔ P0-04 | Sin diferencias perceptibles |
 | P1-09.1 | `--bg-card` → token existente | `modal-history.css:36` | P1-05.1 | XS | ✅ | `--surface-raised` (= `--bg-primary`, mismo fondo que `.modal-box`); `var(--bg-card` = 0 en `src/` |
 | P1-09.2 | `--primary-color` → token existente | `modal-history.css:51` | P1-05.1 | XS | ✅ | `--text-secondary`: `--accent-hover` daba 2,67:1 en oscuro y `--border-color` 1,2:1 en claro; `--text-secondary` ≥ 11:1 en ambos. `var(--primary-color` = 0 |
 | P1-09.3 | `--text-tertiary` → token existente | `modal-history.css:81` | P1-05.1 | XS | ✅ | `--text-secondary`; `var(--text-tertiary` = 0 |
 | P1-09.4 | Resolver fallback `--tab-color` | `modal-entries.css`, `ChangelogEntriesModal.jsx` | P1-05.1 | S | ✅ | Clases por categoría `changelog-modal-tab--{key}` en `modal-entries.css`; colores idénticos (`--estado-desarrollo-border`, `--estado-produccion-border`, `--palette-red-500`, `--estado-certificado-border`, `--palette-violet-500`); 0 hex en JSX; `var(--tab-color` = 0 |
 | P1-09.5 | Verificar 0 variables indefinidas | script | P1-09.1–4 | XS | ✅ | Barrido de `src/**/*.{css,jsx,js}`: 0 variables usadas sin declarar |
-| P1-10.1 | Inventariar selectores CSS y buscar su clase en JSX | script + `docs/audits/2026-11-10-dead-selectors.md` | P1-07.2 | M | ☐ | Tabla selector → consumidor / falso positivo. Incluir como falsos positivos por construcción dinámica las 5 clases `changelog-modal-tab--{key}`, generadas con template literal en `ChangelogEntriesModal.jsx:111`. |
+| P1-10.1 | Inventariar selectores CSS y buscar su clase en JSX | `scripts/audit-selectors.mjs`, `docs/audits/2026-11-10-dead-selectors.md` | P1-07.2 | M | ✅ | `docs/audits/2026-11-10-dead-selectors.md`; 56 muertas, 21 dinámicas, 31 clases JSX sin regla. Falsos positivos por construcción dinámica: 5 `changelog-modal-tab--{key}`, 4 `dep-info-cat--{key}`, 4 `toast-*`, 3 `modal-*` y 5 `btn-{variant}`, generados con template literal en `ChangelogEntriesModal.jsx:111`, `DeploymentInfoModal.jsx:179`, `Toast.jsx:12`, `Modal.jsx:26` y `Button.jsx:8`. |
 | P1-10.2 | Eliminar muertos en base/layouts | `base/*`, `layouts/*` | P1-10.1 | S | ☐ | Sin selectores sin uso |
 | P1-10.3 | Eliminar muertos en components | `components/*` | P1-10.1 | M | ☐ | Sin selectores sin uso |
 | P1-10.4 | Eliminar muertos en modales/changelog | `modals/*`, `changelog/*` | P1-10.1 | M | ☐ | Sin selectores sin uso |
-| P1-10.5 | Verificar 0 selectores muertos | script | P1-10.2–4 | S | ☐ | Solo falsos positivos documentados |
+| P1-10.5 | Verificar 0 selectores muertos | script | P1-10.2–4 | S | ☐ | Solo falsos positivos documentados. Ejecutar `node scripts/audit-selectors.mjs`; salida vacía salvo los falsos positivos documentados en el informe. |
 
 **Gate G1:** 0 hex, 0 variables indefinidas, 0 hojas sin importar, 0 CSS en componentes, diff visual sin cambios y `changelog.css` dividido.
 
@@ -182,6 +182,8 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 ## 6. F2 — Erradicación de estilos inline
 
 **Objetivo:** 0 `style={{...}}` en `src/components`. Total actual: 78 en 22 archivos (79 al inicio; P1-09.4 consumió 1).
+
+> Desglose real por archivo: 7 (§6.2) + 27 (§6.3) + 36 (§6.4) + 8 (§6.5) = 78. Los encabezados §6.3 y §6.4 estaban desfasados (14 y 37); corregidos el 2026-11-10.
 
 ### 6.1 Inventario y estrategia
 
@@ -203,7 +205,7 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P2-02.5 | Verificar `Select`, `Toast` y `Button` sin inline styles | `ui/*.jsx` | P2-02.1–4 | XS | ☐ | `grep` 0 |
 | P2-02.6 | Revisión visual de UI base | — | P2-02.1–5 | S | ☐ | Sin diferencias perceptibles |
 
-### 6.3 Vistas, layout y raíz (14 usos)
+### 6.3 Vistas, layout y raíz (27 usos)
 
 | ID | Tarea | Archivo | Dep. | Esf. | Estado | Criterio |
 |---|---|---|---|---|---|---|
@@ -219,7 +221,7 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P2-03.10 | Migrar 2 estilos de `Login` | `Login.jsx`, `modal-login.css` | P2-01.3 | S | ☐ | 0 `style` (aunque Login no esté montado) |
 | P2-03.11 | Revisión visual de vistas y layout | — | P2-03.1–10 | M | ☐ | Sin diferencias |
 
-### 6.4 Modales (37 usos)
+### 6.4 Modales (36 usos)
 
 | ID | Tarea | Archivo | Dep. | Esf. | Estado | Criterio |
 |---|---|---|---|---|---|---|
@@ -565,6 +567,7 @@ spec-001(P2-03.1): migrar estilos inline de ChangelogCard
 | 2026-11-10 | Creación tras auditoría de F0/F1; se añaden P1-09 y P3-06; se documentan A-01…A-10 |
 | 2026-11-10 | Lote P1-09 cerrado (variables indefinidas). Decisión: P1-09.4 se resuelve con clases por categoría, no con --border-color. P1-09.2 usa --text-secondary para cumplir 3:1 en ambos temas. Revisión QA: NR-01 corregido, NR-02 derivado a P4-08.7, NR-03/NR-04 documentales aplicados, NR-05 anotado en P1-10.1. |
 | 2026-11-10 | A-01 completado: plan.md movido de `specs/` a la raíz. |
+| 2026-11-10 | P1-08.3 y P1-10.1 cerradas: 4 desvíos del split documentados y auditoría de selectores (56 muertas, 21 dinámicas, 31 clases JSX sin regla). §6.3 y §6.4 corregidos a 27 y 36 usos (suma 78). |
 
 
 
