@@ -105,7 +105,7 @@ export default function Header({ workspaceType = 'full' }) {
                                 Changelog
                                 {isSaving ? (
                                     <span className="header-status-badge">
-                                        <Icons.Sync className="icon-small icon-xs toast-spinner" />
+                                        <Icons.Sync className="icon-xs toast-spinner" />
                                         Guardando...
                                     </span>
                                 ) : (

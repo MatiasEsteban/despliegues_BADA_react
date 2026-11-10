@@ -27,7 +27,7 @@ export function Modal({ isOpen, onClose, title, children, type = 'info', actions
                 {/* Header */}
                 <div className="modal-header">
                     <h2 className="modal-title">{title}</h2>
-                    <button className="modal-close-btn" onClick={onClose}>×</button>
+                    <button type="button" className="modal-close-btn" onClick={onClose}>×</button>
                 </div>
 
                 {/* Body */}

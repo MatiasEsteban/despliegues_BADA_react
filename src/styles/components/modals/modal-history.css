@@ -48,7 +48,7 @@
     width: 0.8rem;
     height: 0.8rem;
     background: var(--bg-primary);
-    /* R-DS-04/G1: --text-secondary mantiene >= 3:1 en claro (#38393b) y oscuro (#e8edf3);
+    /* R-DS-04/G1: --text-secondary mantiene contraste suficiente en claro y oscuro;
        --accent-hover en oscuro cae a 2,67:1 y --border-color desaparece sobre fondo claro. */
     border: 2px solid var(--text-secondary);
     border-radius: 50%;

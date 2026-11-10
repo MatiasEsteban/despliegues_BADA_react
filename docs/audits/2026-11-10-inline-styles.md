@@ -261,11 +261,11 @@ Los porcentajes y offsets ya se calculan hoy en `getConicGradient`; se reutiliza
 | Dificultad | `--baja`, `--media`, `--alta` | `--palette-green-500-alt`, `--palette-yellow-500`, `--palette-red-500` |
 | BADA | `--v1`, `--v2` | `--palette-blue-500`, `--palette-orange-500` |
 
-> **Delta de color documentado:** `badaColors` usa `#0ea5e9` y `#ec4899`, que **no existen** en la paleta congelada. Se alinean con `.segment-v1`/`.segment-v2` (`--palette-blue-500`/`--palette-orange-500`) para que `ProgressModal` y `BadaGraph` coincidan. Si se exige el tono exacto, hace falta una excepción explícita a la paleta congelada (decisión del owner, no del implementador).
+> **Delta de color documentado:** `badaColors` usa `#0ea5e9` y `#ec4899`, que **no existen** en la paleta congelada. ~~Se alinean con `.segment-v1`/`.segment-v2` (`--palette-blue-500`/`--palette-orange-500`) para que `ProgressModal` y `BadaGraph` coincidan.~~ **Propuesta superada:** descartado; el owner aprobó tokenizar los valores existentes como `--palette-sky-400` y `--palette-pink-500`, de modo que `ProgressModal` y `BadaGraph` conservan el tono original sin excepción a la paleta.
 
 ### 3.2 `BadaGraph.jsx` — 2 usos
 
-Dos segmentos `div` con `width: ${x}%` alineados a la derecha. Pasan a SVG con atributos (permitidos: son atributos, no `style`):
+Dos segmentos `div` con `width: ${x}%` alineados a la izquierda (el `display:flex` original no tenía `justify-content`; el SVG reproduce el mismo orden). Pasan a SVG con atributos (permitidos: son atributos, no `style`):
 
 ```jsx
 <svg className="bada-graph-bar" viewBox="0 0 100 12" preserveAspectRatio="none" role="img" aria-label="...">
@@ -412,14 +412,16 @@ Fecha: 2026-11-10. Alcance: `Input`, `LoadingOverlay`, `Modal` y `Button` (`P2-0
 | Clases muertas | 1 | **1** (`deployment-report`) | 0 |
 | Clases JSX sin regla | 32 | **32** | 0 |
 
-### 6.4 Clases nuevas (7)
+### 6.4 Clases nuevas (7 nombres / 6 reglas)
+
+`notifications.css` no define `.loading-overlay` sola: el fondo y el `z-index` viven en el selector compuesto `.loading-overlay .modal`, que modifica una clase ya existente. Por eso el listado son 7 nombres pero solo 6 reglas de clase nueva (3 en `forms.css`, 2 en `notifications.css` y 1 en `modal-base.css`); la séptima regla del grupo es la del compuesto sobre `.modal`.
 
 | Clase | Archivo | Consumidor |
 |---|---|---|
 | `.input-wrapper` | `forms.css` | `Input.jsx` |
 | `.input-icon` | `forms.css` | `Input.jsx` |
 | `.filter-input--with-icon` | `forms.css` | `Input.jsx` (condicional con `Icon`) |
-| `.loading-overlay` | `notifications.css` | `LoadingOverlay.jsx` |
+| `.loading-overlay` | `notifications.css` (selector compuesto `.loading-overlay .modal`) | `LoadingOverlay.jsx` |
 | `.loading-overlay-message` | `notifications.css` | `LoadingOverlay.jsx` |
 | `.loading-overlay-spinner` | `notifications.css` | `LoadingOverlay.jsx` |
 | `.modal-message--full` | `modal-base.css` | `Modal.jsx` (condicional sin icono) |
@@ -672,7 +674,7 @@ Fecha: 2026-11-10. Alcance: los 15 usos restantes. Resultado: **0 `style={{}}` y
 - **`<progress>`:** se mantiene `.progress-bar-container` como marco y `.progress-bar` se estiliza con `::-webkit-progress-bar`, `::-webkit-progress-value` y `::-moz-progress-bar`. Las variantes `.progress-low/mid/complete` se conservan en el elemento para el color del valor, con `background-color: transparent` para anular el fondo que esas reglas aplican al texto grande.
 - **DetailHeader — desviación justificada:** las reglas nuevas se añaden a `layouts/header.css`, que ya contiene `.version-header-buttons` y sí está importado. `layouts/detail-header.css` sigue sin importarse (bloqueo `P1-06.2`): escribir allí las clases habría eliminado el badge en producción. El archivo huérfano queda intacto y su importación sigue pendiente de `P0-04`.
 - **Tokenización de hex:** `#ef4444` → `--palette-red-500` (mismo valor, distinta caja). Los 9 colores de `ProgressModal` se mapean a tokens ya existentes con valores idénticos: `blue-500`, `amber-500`, `green-500`, `violet-500`, `green-500-alt`, `yellow-500`, `red-500`, y los dos nuevos `sky-400`/`pink-500`. Los mapas `status → clase` son constantes con slugs estables; ninguna clase se genera a partir del texto visible.
-- **`Icons.Info`:** `fill="#ffffff"` → `fill="white"`. Es el mismo color (`#FFFFFF`) sin hex en JSX; el icono sigue con relleno fijo, deuda de contraste ya registrada para `P4`.
+- **`Icons.Info`:** `fill="#ffffff"` → `fill="white"`. Es el mismo color (`#FFFFFF`) sin hex en JSX; el icono sigue con relleno fijo, deuda de contraste registrada en `P5-01.1` (`Icons.Info` → `currentColor`).
 
 ### 9.3 Deltas visuales asumidos, por riesgo
 
@@ -707,9 +709,9 @@ Se retira `.progress-bar-fill`: 36 nombres nuevos − 1 eliminado = +35.
 
 ### 9.6 P2-06 — fallback de portapapeles
 
-- **P2-06.1 ✅.** Solo hay dos copias: `DeploymentInfoModal.jsx:99-125` (asignaciones `textArea.style.*`) y `FullSummaryModal.jsx:113-127` (`Object.assign(ta.style, {...})`). Fuera del alcance de portapapeles, `validator.js:126` usa `parent.style.position = 'relative'` para anclar mensajes de validación.
-- **P2-06.2 ◐ — propuesta, no ejecutada.** Las dos copias son equivalentes (position fixed, 2em, opacity 0, z-index −1, `execCommand('copy')`), pero difieren en el manejo de errores y mensajes. Extraerlas a `src/utils/clipboard.js` tocaría 3 archivos (helper + 2 modales), por encima del límite de 2 fijado para esta tarea: queda como propuesta para una tarea propia.
-- **P2-06.3 ✅.** `grep 'style={{'` en `src/components` = 0; `.style.` solo aparece en los dos fallbacks documentados y en `validator.js`.
+- **P2-06.1 ✅.** Estado previo a la corrección: solo había dos copias — `DeploymentInfoModal.jsx:99-125` (asignaciones `textArea.style.*`) y `FullSummaryModal.jsx:113-127` (`Object.assign(ta.style, {...})`). Fuera del alcance de portapapeles, `validator.js:126` usa `parent.style.position = 'relative'` para anclar mensajes de validación (excepción conocida, fuera de F2).
+- **P2-06.2 ✅ — ejecutada.** `src/utils/clipboard.js` exporta `copyText(text): Promise<boolean>`: Clipboard API → fallback con `<textarea>` oculto dentro de `try/finally`, de modo que el nodo se elimina siempre (antes quedaba en el DOM si `execCommand` lanzaba). Es el único archivo con `element.style`; los dos modales delegan y conservan su flujo observable (mismo `alert` y mismo `setCopied`), aunque sus mensajes de consola se unifican en el helper.
+- **P2-06.3 ✅.** `grep 'style={{'` en `src/components` = 0; `.style.` en `src/components` = 0; `element.style` solo en `src/utils/clipboard.js` (1 asignación agrupada) y en `validator.js:126`.
 
 ### 9.7 P2-05.6 — verificación visual pendiente (`⛔ P0-04`)
 

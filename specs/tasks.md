@@ -243,8 +243,8 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P2-05.5 | Migrar barras y segmentos de `ProgressModal` | `modals/ProgressModal.jsx`, `modal-progress.css` | P2-04.5 | M | ✅ | Barra con `<progress>`; 3 tartas con `<circle pathLength="100">`; colores por `.legend-color--*`/`.status-heading--*` con slugs estables. 0 hex. |
 | P2-05.6 | Comparar gráficos y barras contra baseline | — | P2-05.1–5, P0-04.7 | S | ⛔ P0-04 | Lectura visual equivalente; sin dev server ni baseline. |
 | P2-06.1 | Localizar usos de `element.style` | `DeploymentInfoModal`, `FullSummaryModal` | P2-04 | XS | ✅ | Solo dos fallbacks de portapapeles (`textArea.style.*` y `Object.assign(ta.style)`); `validator.js:126` fuera del alcance. |
-| P2-06.2 | Aislar y documentar el fallback | `src/utils/` + doc | P2-06.1 | S | ◐ | Propuesta: helper en `src/utils/clipboard.js`; tocaría 3 archivos (>2) y los modales difieren en el manejo de errores. Documentado en el audit §9.6. |
-| P2-06.3 | Verificar `grep` final | — | P2-06.2 | XS | ✅ | `style={{` = 0; `.style.` solo en los dos fallbacks documentados. |
+| P2-06.2 | Aislar y documentar el fallback | `src/utils/` + doc | P2-06.1 | S | ✅ | Helper único `src/utils/clipboard.js` (`copyText`): Clipboard API → textarea en `try/finally` (se elimina siempre). Único archivo con `element.style`; los modales delegan y conservan sus mensajes. Documentado en el audit §9.6. |
+| P2-06.3 | Verificar `grep` final | — | P2-06.2 | XS | ✅ | `style={{` = 0; `.style.` = 0 en `src/components`; `element.style` solo en `src/utils/clipboard.js` (1 asignación agrupada). |
 
 **Gate G2:** 0 inline styles, solo el fallback documentado, gráficos equivalentes y diff visual sin cambios.
 
@@ -489,7 +489,7 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 |---|---|---|---|
 | C-00 | Regularización A-01…A-07 | Build restaurado, enlaces correctos, baseline definido | ◐ |
 | C-01 | F0 + F1 auditado | G0/G1, capturas o bloqueo explícito, commit | ☐ |
-| C-02 | F2 por grupos (UI, vistas, modales, gráficos) | 0 `style={{`, diff visual | ☐ |
+| C-02 | F2 por grupos (UI, vistas, modales, gráficos) | 0 `style={{`, diff visual. Commits `6a9fc14`, `1301831`, `34def04`, `5a1fdd0`; abiertas P2-03.11, P2-04.6 y P2-05.6 (P2-06.2 cerrada) | ◐ |
 | C-03 | F3 responsive | 320/768/1440 + táctil | ☐ |
 | C-04 | F4 accesibilidad | Teclado, axe, contraste | ☐ |
 | C-05 | F5 consistencia | Iconos, fechas, tipografía, motion | ☐ |

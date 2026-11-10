@@ -125,17 +125,19 @@
 
 | ID | Tarea | Dep. | Esf. | Estado | Evidencia |
 |---|---|---|---|---|---|
-| P2-01 | Inventariar los 79 inline styles por archivo y clasificarlos (estático, dinámico, variable CSS) | G1 | S | ☐ | |
-| P2-02 | Migrar estilos estáticos a clases CSS (`ui/`: Button, Input, Select, Modal, Toast, LoadingOverlay) y fijar `Button.type="button"` por defecto (R-CODE-02) | P2-01 | M | ☐ | |
-| P2-03 | Migrar estilos estáticos de vistas y layout (`Changelog*`, `Version*`, `Detail*`, `Header`, `WorkspaceSwitcher`, `Dashboard`, `Login`) | P2-01 | L | ☐ | Cubre los 22 archivos con inline styles; el desglose por archivo está en `tasks.md` |
-| P2-04 | Migrar estilos estáticos de modales (9 archivos) | P2-01 | L | ☐ | |
-| P2-05 | Reemplazar geometría dinámica por `<progress>`/SVG con atributos (`BadaGraph`, `ProgressModal`, barras de estadísticas) | P2-03, P2-04 | L | ☐ | |
-| P2-06 | Verificar y documentar el único caso permitido de manipulación DOM directa (fallback de portapapeles) | P2-04 | S | ☐ | |
+| P2-01 | Inventariar los 79 inline styles por archivo y clasificarlos (estático, dinámico, variable CSS) | G1 | S | ✅ | 78 usos, 22 archivos; `docs/audits/2026-11-10-inline-styles.md` |
+| P2-02 | Migrar estilos estáticos a clases CSS (`ui/`: Button, Input, Select, Modal, Toast, LoadingOverlay) y fijar `Button.type="button"` por defecto (R-CODE-02) | P2-01 | M | ✅ | UI base 0 `style`; commits `2bf7104` y `6a9fc14` |
+| P2-03 | Migrar estilos estáticos de vistas y layout (`Changelog*`, `Version*`, `Detail*`, `Header`, `WorkspaceSwitcher`, `Dashboard`, `Login`) | P2-01 | L | ✅ (P2-03.11 ⛔ P0-04) | Cubre los 22 archivos con inline styles; commit `1301831` |
+| P2-04 | Migrar estilos estáticos de modales (9 archivos) | P2-01 | L | ✅ (P2-04.6 ⛔ P0-04) | Commit `34def04` |
+| P2-05 | Reemplazar geometría dinámica por `<progress>`/SVG con atributos (`BadaGraph`, `ProgressModal`, barras de estadísticas) | P2-03, P2-04 | L | ✅ (P2-05.6 ⛔ P0-04) | Commit `5a1fdd0` |
+| P2-06 | Verificar y documentar el único caso permitido de manipulación DOM directa (fallback de portapapeles) | P2-04 | S | ✅ | Helper único `src/utils/clipboard.js`; commit `6dd748d` |
 
 ### Gate G2 — Cierre de fase
 
-- [ ] `grep -R "style={{" src/components` devuelve 0.
-- [ ] `grep -R "\.style\." src/components` solo devuelve el fallback documentado.
+> Código cerrado; el gate no cierra hasta A-05 (build) y P0-04 (baseline).
+
+- [x] `grep -R "style={{" src/components` devuelve 0.
+- [x] `grep -R "\.style\." src/components` devuelve 0; el fallback documentado vive en `src/utils/clipboard.js`.
 - [ ] Gráficos y barras conservan proporciones y colores.
 - [ ] Diff visual contra baseline: sin cambios perceptibles.
 

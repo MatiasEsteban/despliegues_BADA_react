@@ -60,7 +60,7 @@ Creados SPEC_TEMPLATE.md, docs/audits/2026-11-08-baseline.md y docs/audits/basel
 
 Rama de trabajo: feat/spec-001-design-hardening (el repo git es despliegues-bada-react/).
 
-G0 parcial: faltan 36 capturas visuales manuales; bloquean cambios visuales desde P1-05.
+G0 parcial: 0 capturas realizadas (P0-04.1–7 ☐); A-06 debe fijar el conteo (la cifra de 36 no cuadra con la matriz). Bloquea el cierre visual (G0/G2), no los cambios de código.
 
 Corrección del baseline: 4 variables CSS indefinidas reales (+1 con fallback) y 6 hojas no alcanzables desde main.css; detail-header.css no se importa.
 
@@ -70,5 +70,5 @@ Corrección del baseline: 4 variables CSS indefinidas reales (+1 con fallback) y
 
 5. Próximos Pasos Inmediatos
 A-05/A-06 pendientes: restaurar node_modules y build, y fijar la lista exacta de capturas baseline. P1-06 solo requiere importar detail-header.css tras las capturas.
-[2026-11-10] P2-05/P2-06: 0 inline styles y 0 hex en src/components; paleta 76 tokens (sky-400/pink-500 exactos desde BadaGraph). ProgressModal usa <progress> y 3 tartas SVG; BadaGraph, SVG; badge de DetailHeader en layouts/header.css porque detail-header.css no se importa. P2-05.6, P2-03.11, P2-04.6 y P1-06.2 esperan baseline P0-04; P2-06.2 (helper de portapapeles) queda como propuesta.
+[2026-11-10] P2-05/P2-06: 0 inline styles y 0 hex en src/components; paleta 76 tokens (sky-400/pink-500 exactos desde BadaGraph). ProgressModal usa <progress> y 3 tartas SVG; BadaGraph, SVG; badge de DetailHeader en layouts/header.css porque detail-header.css no se importa. P2-06.2 cerrada: helper único src/utils/clipboard.js (copyText, try/finally) y modales sin duplicación. P2-05.6, P2-03.11, P2-04.6 y P1-06.2 esperan baseline P0-04.
 Derivar SPEC-002 (fechas locales), SPEC-003 (auth y firestore.rules), SPEC-004 (testing/CI) y SPEC-005 (sanitización de importación).

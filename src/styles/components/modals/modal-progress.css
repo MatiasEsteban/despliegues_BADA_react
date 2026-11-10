@@ -163,7 +163,7 @@
 .chart-card {
     background: var(--bg-secondary);
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
 }
 
 /* Solo las tarjetas que se pueden expandir son clicables */

@@ -224,3 +224,21 @@ Es una corrección de defecto, no una regresión, pero **debe verificarse contra
 | 14 radios en uso frente a 8 de la escala | `P1-05` mapea intermedios con verificación visual |
 | 31 variantes de `box-shadow` | `P1-05`; requiere revisión caso a caso |
 | `detail-header.css` sin importar | `P1-06`, bloqueado por `P0-04` |
+
+---
+
+## 9. Literales pendientes de `P5-04.7–9`
+
+`F2` solo sustituyó literales cuando el token existía con el mismo valor exacto (`8px → var(--radius-md)` en `.chart-card`, `12px → var(--space-3)` en `.header-title`); en la misma pasada se quitó la clase redundante `icon-small` del spinner del header. El resto se deja intacto para no introducir deltas visuales sin baseline (`P0-04`).
+
+Medición del 2026-11-10 sobre `src/styles/**/*.css` excluyendo `variables.css` (declaraciones con literal numérico):
+
+| Grupo | Ejemplos en uso | Declaraciones |
+|---|---|---:|
+| Radios (`P5-04.7`) | `border-radius: 6px` (49), `8px` (40), `12px` (17) | 92 |
+| Espaciado (`P5-04.8`) | `gap: 6px` (10), `padding: 1px 7px` (5), `margin-bottom: 2rem` (15) | 344 |
+| Sombras (`P5-04.8`) | `0 4px 6px var(--shadow)` (9), `0 2px 4px var(--shadow)` (4) | 43 |
+| `z-index` (`P5-04.8`) | `10` (4), `1000` (1) | 8 |
+| **Total** | — | **487** |
+
+Quedan fuera de esta tabla los 147 `font-size` con literal, que pertenecen a `P5-04.2–4` (escala tipográfica). `P5-04.9` cierra el grupo cuando el recuento de las cuatro filas sea 0.
