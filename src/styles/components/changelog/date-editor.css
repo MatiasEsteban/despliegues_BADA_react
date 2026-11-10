@@ -1,0 +1,162 @@
+/* changelog/date-editor.css — chips de fecha y modal de edición de fechas */
+
+
+
+/* --- DATE QUICK EDITOR --- */
+.changelog-dates-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.date-quick-editor-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.date-quick-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.76rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.date-quick-chip:hover {
+    border-color: var(--accent-hover);
+    background: var(--bg-primary);
+    transform: translateY(-1px);
+}
+
+.date-quick-chip--empty {
+    border-style: dashed;
+    color: var(--text-secondary);
+    opacity: 0.75;
+}
+
+.date-quick-icon {
+    font-size: 0.85rem;
+}
+
+.date-quick-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.73rem;
+}
+
+.date-quick-value {
+    font-weight: 500;
+}
+
+.date-quick-time {
+    opacity: 0.7;
+    margin-left: 2px;
+}
+
+.date-quick-edit-icon {
+    opacity: 0.4;
+    transition: opacity 0.15s;
+}
+
+.date-quick-chip:hover .date-quick-edit-icon {
+    opacity: 0.9;
+}
+
+/* --- MODAL EDICIÓN DE FECHA (Nunca se corta) --- */
+.modal.modal-date-editor {
+    width: 90vw;
+    max-width: 440px;
+}
+
+.date-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.date-modal-hint {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.date-modal-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.date-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.date-modal-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.date-modal-input {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: inherit;
+    width: 100%;
+}
+
+.date-modal-input:focus {
+    border-color: var(--accent-hover);
+}
+
+.date-modal-shortcuts {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-date-shortcut {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.btn-date-shortcut:hover {
+    background: var(--bg-primary);
+    border-color: var(--accent-hover);
+    color: var(--accent-hover);
+}
+
+.btn-date-clear:hover {
+    border-color: var(--palette-red-500);
+    color: var(--palette-red-500);
+}

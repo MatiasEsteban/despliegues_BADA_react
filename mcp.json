@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/mcp-server-config.json",
+  "mcp": {
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
+    }
+  }
+}
+}

@@ -63,8 +63,8 @@
 
 /* === VALIDACIÓN DE CAMPOS === */
 .campo-invalido {
-    border-color: #f56565 !important; /* Rojo error */
-    background-color: color-mix(in srgb, #f56565 10%, var(--bg-primary)); /* Fondo ligeramente rojo */
+    border-color: var(--palette-red-400) !important; /* Rojo error */
+    background-color: color-mix(in srgb, var(--palette-red-400) 10%, var(--bg-primary)); /* Fondo ligeramente rojo */
     animation: shake 0.3s;
 }
 
@@ -79,7 +79,7 @@
     display: block; /* Mostrar como bloque debajo */
     margin-top: 0.2rem; /* Espacio sobre el mensaje */
     font-size: 0.75rem;
-    color: #c53030; /* Rojo más oscuro */
+    color: var(--palette-red-700); /* Rojo más oscuro */
     /* Estilos opcionales para visibilidad controlada por JS */
     /* opacity: 0; */
     /* transition: opacity 0.2s ease; */

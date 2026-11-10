@@ -6,11 +6,11 @@ import { Icons } from '../ui/Icons';
 import { normalizeComments } from '../../store/dataStore';
 
 const CATEGORIAS = [
-    { key: 'mejoras', label: 'Mejoras y Bugfix', color: 'var(--estado-desarrollo-border)', isCDU: false },
-    { key: 'salidas', label: 'A Producción', color: 'var(--estado-produccion-border)', isCDU: false },
-    { key: 'cambiosCaliente', label: 'Cambios en Caliente', color: '#ef4444', isCDU: false },
-    { key: 'observaciones', label: 'Observaciones', color: 'var(--estado-certificado-border)', isCDU: false },
-    { key: 'cambiosCDU', label: 'Cambios por CDU', color: '#8b5cf6', isCDU: true },
+    { key: 'mejoras', label: 'Mejoras y Bugfix', isCDU: false },
+    { key: 'salidas', label: 'A Producción', isCDU: false },
+    { key: 'cambiosCaliente', label: 'Cambios en Caliente', isCDU: false },
+    { key: 'observaciones', label: 'Observaciones', isCDU: false },
+    { key: 'cambiosCDU', label: 'Cambios por CDU', isCDU: true },
 ];
 
 const newEntry = (isCDU = false) => ({
@@ -108,9 +108,8 @@ export default function ChangelogEntriesModal({ isOpen, onClose, version, onSave
                         return (
                             <button
                                 key={cat.key}
-                                className={`changelog-modal-tab ${activeTab === cat.key ? 'active' : ''}`}
+                                className={`changelog-modal-tab changelog-modal-tab--${cat.key} ${activeTab === cat.key ? 'active' : ''}`}
                                 onClick={() => setActiveTab(cat.key)}
-                                style={{ '--tab-color': cat.color }}
                             >
                                 <span className="tab-label">{cat.label}</span>
                                 {count > 0 && <span className="tab-badge">{count}</span>}

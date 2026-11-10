@@ -63,13 +63,13 @@
 
 /* Variantes de color */
 .progress-low {
-    color: #F97316;
+    color: var(--palette-orange-500);
     /* Naranja */
-    background-color: #F97316;
+    background-color: var(--palette-orange-500);
 }
 
 .progress-bar-fill.progress-low {
-    background-color: #F97316;
+    background-color: var(--palette-orange-500);
 }
 
 .progress-big-text.progress-low {
@@ -77,13 +77,13 @@
 }
 
 .progress-mid {
-    color: #3B82F6;
+    color: var(--palette-blue-500);
     /* Azul */
-    background-color: #3B82F6;
+    background-color: var(--palette-blue-500);
 }
 
 .progress-bar-fill.progress-mid {
-    background-color: #3B82F6;
+    background-color: var(--palette-blue-500);
 }
 
 .progress-big-text.progress-mid {
@@ -91,13 +91,13 @@
 }
 
 .progress-complete {
-    color: #10B981;
+    color: var(--palette-green-500);
     /* Verde */
-    background-color: #10B981;
+    background-color: var(--palette-green-500);
 }
 
 .progress-bar-fill.progress-complete {
-    background-color: #10B981;
+    background-color: var(--palette-green-500);
 }
 
 .progress-big-text.progress-complete {

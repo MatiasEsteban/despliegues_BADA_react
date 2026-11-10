@@ -1,0 +1,303 @@
+/* modals/deployment-info.css — modal de información de despliegue */
+
+
+
+.dep-info-cdu-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 7px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: rgba(139, 92, 246, 0.12);
+    color: var(--palette-violet-500);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+/* ============================================
+   DEPLOYMENT INFO MODAL
+   ============================================ */
+.modal-deployment-info .modal-box {
+    max-width: 680px;
+    width: 95vw;
+    max-height: 90vh;
+}
+
+.dep-info-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Header */
+.dep-info-header {
+    padding: 14px 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.dep-info-version {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.dep-info-vnumber {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.dep-info-vtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.dep-info-badge-prod {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background: var(--estado-produccion-bg);
+    color: var(--estado-produccion-color);
+    border: 1px solid var(--estado-produccion-border);
+}
+
+.dep-info-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: right;
+}
+
+/* Body */
+.dep-info-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.dep-info-body::-webkit-scrollbar { width: 4px; }
+.dep-info-body::-webkit-scrollbar-track { background: transparent; }
+.dep-info-body::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+
+.dep-info-section {
+    padding: 0;
+}
+
+/* Categorías */
+.dep-info-cat {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dep-info-cat-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 7px;
+}
+
+.dep-info-cat--mejoras .dep-info-cat-title { color: var(--estado-desarrollo-color); }
+.dep-info-cat--salidas .dep-info-cat-title { color: var(--estado-produccion-color); }
+.dep-info-cat--cambiosCaliente .dep-info-cat-title { color: var(--palette-red-500); }
+.dep-info-cat--observaciones .dep-info-cat-title { color: var(--estado-certificado-color); }
+.dep-info-cat--cambiosCDU .dep-info-cat-title { color: var(--palette-violet-500); }
+
+.dep-info-cat-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.dep-info-cat-item {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    line-height: 1.45;
+}
+
+.dep-info-bullet {
+    color: var(--accent-hover);
+    flex-shrink: 0;
+}
+
+.dep-info-item-content {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dep-info-autor {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1px 7px;
+}
+
+/* Cambios por CDU */
+.dep-info-cdu-changes {
+    gap: 8px !important;
+}
+
+.dep-info-cdu-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 2px !important;
+    padding: 6px 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    border-left: 3px solid var(--palette-violet-500);
+}
+
+.dep-info-cdu-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--palette-violet-500);
+}
+
+.dep-info-cdu-desc {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    line-height: 1.45;
+}
+
+/* CDUs section */
+.dep-info-cdus-section {
+    border-top: 1px solid var(--border-color);
+    padding: 10px 16px !important;
+}
+
+.dep-info-cdus-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.dep-info-cdus-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dep-info-cdu-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.825rem;
+}
+
+.dep-info-cdu-row:last-child { border-bottom: none; }
+
+.dep-info-cdu-row-name {
+    color: var(--text-primary);
+    font-weight: 500;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dep-info-cdu-row-estado {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 2px 7px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.dep-info-cdu-row--en-desarrollo .dep-info-cdu-row-estado {
+    background: var(--estado-desarrollo-bg);
+    color: var(--estado-desarrollo-color);
+    border: 1px solid var(--estado-desarrollo-border);
+}
+.dep-info-cdu-row--pendiente-de-certificacion .dep-info-cdu-row-estado {
+    background: var(--estado-pendiente-bg);
+    color: var(--estado-pendiente-color);
+    border: 1px solid var(--estado-pendiente-border);
+}
+.dep-info-cdu-row--certificado-ok .dep-info-cdu-row-estado {
+    background: var(--estado-certificado-bg);
+    color: var(--estado-certificado-color);
+    border: 1px solid var(--estado-certificado-border);
+}
+.dep-info-cdu-row--en-produccion .dep-info-cdu-row-estado {
+    background: var(--estado-produccion-bg);
+    color: var(--estado-produccion-color);
+    border: 1px solid var(--estado-produccion-border);
+}
+
+.dep-info-empty {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* Preview copy/paste */
+.dep-info-preview {
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.dep-info-preview-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    padding: 8px 16px 4px;
+    font-weight: 600;
+}
+
+.dep-info-preview-text {
+    margin: 0;
+    padding: 8px 16px 14px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 160px;
+    overflow-y: auto;
+    line-height: 1.5;
+}
+
+.dep-info-preview-text::-webkit-scrollbar { width: 4px; }
+.dep-info-preview-text::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }

@@ -40,35 +40,35 @@
 
 /* === TIPOS DE TOAST === */
 .toast-success {
-    border-left-color: #10B981;
+    border-left-color: var(--palette-green-500);
 }
 
 .toast-success .toast-icon {
-    color: #10B981;
+    color: var(--palette-green-500);
 }
 
 .toast-error {
-    border-left-color: #EF4444;
+    border-left-color: var(--palette-red-500);
 }
 
 .toast-error .toast-icon {
-    color: #EF4444;
+    color: var(--palette-red-500);
 }
 
 .toast-warning {
-    border-left-color: #F59E0B;
+    border-left-color: var(--palette-amber-500);
 }
 
 .toast-warning .toast-icon {
-    color: #F59E0B;
+    color: var(--palette-amber-500);
 }
 
 .toast-info {
-    border-left-color: #3B82F6;
+    border-left-color: var(--palette-blue-500);
 }
 
 .toast-info .toast-icon {
-    color: #3B82F6;
+    color: var(--palette-blue-500);
 }
 
 /* === CONTENIDO DEL TOAST === */
@@ -123,14 +123,14 @@
 
 /* === TOAST DE CARGA === */
 .toast-loading {
-    border-left-color: #3B82F6;
+    border-left-color: var(--palette-blue-500);
 }
 
 .toast-spinner {
     width: 20px;
     height: 20px;
     border: 3px solid rgba(59, 130, 246, 0.2);
-    border-top-color: #3B82F6;
+    border-top-color: var(--palette-blue-500);
     border-radius: 50%;
     animation: toast-spin 0.8s linear infinite;
 }

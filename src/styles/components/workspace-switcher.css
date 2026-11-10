@@ -182,7 +182,7 @@
 
 .ws-item-delete:hover {
     background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    color: var(--palette-red-500);
     opacity: 1;
 }
 

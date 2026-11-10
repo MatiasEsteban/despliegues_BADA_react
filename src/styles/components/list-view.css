@@ -118,15 +118,15 @@
 }
 
 .version-list-row.version-en-produccion .badge-produccion {
-    background: #49aa19;
+    background: var(--palette-prod-500);
     /* Invertir colores del badge */
     color: white;
-    border-color: #49aa19;
+    border-color: var(--palette-prod-500);
 }
 
 .version-list-row.version-en-produccion:hover {
     /* Oscurecer ligeramente el fondo en hover */
-    background-color: #388114;
+    background-color: var(--palette-green-750);
     /* Usar color con opacidad */
 }
 
@@ -199,19 +199,19 @@
 
 /* Colores dots */
 .stat-desarrollo {
-    background: #F97316;
+    background: var(--palette-orange-500);
 }
 
 .stat-pendiente {
-    background: #EAB308;
+    background: var(--palette-yellow-500);
 }
 
 .stat-certificado {
-    background: #3B82F6;
+    background: var(--palette-blue-500);
 }
 
 .stat-produccion {
-    background: #10B981;
+    background: var(--palette-green-500);
 }
 
 /* Indicador si no hay CDUs */
@@ -432,18 +432,18 @@
 
 /* Botón Duplicar */
 .version-list-cell-prod .btn-duplicar-version {
-    background: #0056cf8f;
+    background: var(--palette-blue-700-alpha);
     ;
-    border-color: #1668dc;
+    border-color: var(--palette-blue-600);
     ;
     /* Morado */
     color: white;
 }
 
 .version-list-cell-prod .btn-duplicar-version:hover {
-    background: #0056cf;
+    background: var(--palette-blue-700);
     ;
-    border-color: #0056cf;
+    border-color: var(--palette-blue-700);
     ;
     color: white;
 }
@@ -451,14 +451,14 @@
 /* Botón Eliminar */
 .version-list-cell-prod .btn-eliminar-version {
     background: transparent;
-    border-color: #f56565;
+    border-color: var(--palette-red-400);
     /* Rojo */
-    color: #f56565;
+    color: var(--palette-red-400);
 }
 
 .version-list-cell-prod .btn-eliminar-version:hover {
-    background: #f56565;
-    border-color: #f56565;
+    background: var(--palette-red-400);
+    border-color: var(--palette-red-400);
     color: white;
 }
 
@@ -488,8 +488,8 @@
 
 .pagination-btn:hover:not(:disabled) {
     background: transparent;
-    color: #1668dc;
-    border: 1px solid #1668dc;
+    color: var(--palette-blue-600);
+    border: 1px solid var(--palette-blue-600);
 }
 
 .pagination-btn.active {

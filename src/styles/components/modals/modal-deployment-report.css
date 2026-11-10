@@ -179,7 +179,7 @@ flex: 0 0 auto; /* 👈 No crecer, no encoger, tamaño automático */
 .deployment-check-icon {
     min-width: 18px; /* Asegura que el icono no se encoja */
     height: 18px;
-    color: #22c55e; /* Verde de éxito */
+    color: var(--palette-green-500-alt); /* Verde de éxito */
     flex-shrink: 0; /* Asegura que el icono no se encoja */
     margin-top: 0.2em; /* Alineación con el texto */
 }

@@ -39,3 +39,19 @@
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
+
+/* Header view toggle (migrado desde changelog.css) */
+
+
+/* ============================================
+   HEADER VIEW TOGGLE (changelog / list)
+   ============================================ */
+.header-view-toggle {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 3px;
+}

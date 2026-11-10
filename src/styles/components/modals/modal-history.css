@@ -33,7 +33,7 @@
 }
 
 .history-item {
-    background: var(--bg-card);
+    background: var(--surface-raised);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     padding: 1rem;
@@ -48,7 +48,9 @@
     width: 0.8rem;
     height: 0.8rem;
     background: var(--bg-primary);
-    border: 2px solid var(--primary-color);
+    /* R-DS-04/G1: --text-secondary mantiene >= 3:1 en claro (#38393b) y oscuro (#e8edf3);
+       --accent-hover en oscuro cae a 2,67:1 y --border-color desaparece sobre fondo claro. */
+    border: 2px solid var(--text-secondary);
     border-radius: 50%;
 }
 
@@ -78,7 +80,7 @@
 
 .history-reason {
     font-size: 0.75rem;
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
     font-style: italic;
 }
 

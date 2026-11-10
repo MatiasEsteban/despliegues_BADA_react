@@ -3,7 +3,6 @@ import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { StatusBadge } from '../ui/Badge';
 import { Icons } from '../ui/Icons';
-import '../../styles/components/modals/modal-history.css';
 
 export default function CduHistoryModal({ isOpen, onClose, cdu }) {
 

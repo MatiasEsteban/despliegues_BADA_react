@@ -135,10 +135,10 @@ hr.card-separator {
 }
 
 /* Clases de color para los iconos */
-.stat-desarrollo { background: #F97316; }
-.stat-pendiente { background: #EAB308; }
-.stat-certificado { background: #3B82F6; }
-.stat-produccion { background: #10B981; }
+.stat-desarrollo { background: var(--palette-orange-500); }
+.stat-pendiente { background: var(--palette-yellow-500); }
+.stat-certificado { background: var(--palette-blue-500); }
+.stat-produccion { background: var(--palette-green-500); }
 
 .version-card-stat-label {
     font-size: 0.7rem; /* Etiqueta más pequeña */
@@ -221,23 +221,23 @@ hr.card-separator {
 }
 
 .stat-primary { 
-    color: #4a5568; 
+    color: var(--palette-neutral-600); 
 }
 
 .stat-success { 
-    color: #10B981; 
+    color: var(--palette-green-500); 
 }
 
 .stat-warning { 
-    color: #F97316; 
+    color: var(--palette-orange-500); 
 }
 
 .stat-danger { 
-    color: #EAB308; 
+    color: var(--palette-yellow-500); 
 }
 
 .stat-info { 
-    color: #3B82F6; 
+    color: var(--palette-blue-500); 
 } */
 
 /* === BADGES === */
@@ -257,7 +257,7 @@ hr.card-separator {
 
 .badge-produccion-inline {
     display: inline-block;
-    background: linear-gradient(135deg, #49aa19 0%, #059624 100%);
+    background: linear-gradient(135deg, var(--palette-prod-500) 0%, var(--palette-prod-600) 100%);
     color: white;
     font-size: 0.75rem;
     font-weight: 700;

@@ -76,8 +76,8 @@
 .filter-input:focus,
 .filter-select:focus { 
     background: transparent; 
-    color: #1668dc;
-    border: 1px solid #1668dc;
+    color: var(--palette-blue-600);
+    border: 1px solid var(--palette-blue-600);
 }
 
 .filters-stats {

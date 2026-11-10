@@ -156,11 +156,11 @@
 }
 
 .segment-v1 {
-    background-color: #3B82F6;
+    background-color: var(--palette-blue-500);
 }
 
 .segment-v2 {
-    background-color: #F97316;
+    background-color: var(--palette-orange-500);
 }
 
 .bada-graph-labels {
@@ -171,11 +171,11 @@
 }
 
 .label-v1 {
-    color: #3B82F6;
+    color: var(--palette-blue-500);
 }
 
 .label-v2 {
-    color: #F97316;
+    color: var(--palette-orange-500);
 }
 
 /* === PASOS (ACORDEÓN) === */
@@ -218,13 +218,13 @@
 }
 
 .pasos-percent-val.percent-progress {
-    color: #2563eb;
-    background: #dbeafe;
+    color: var(--palette-blue-650);
+    background: var(--palette-blue-100);
 }
 
 .pasos-percent-val.percent-success {
-    color: #059669;
-    background: #d1fae5;
+    color: var(--palette-green-600);
+    background: var(--palette-emerald-100);
 }
 
 .btn-toggle-pasos {
@@ -262,8 +262,8 @@
 }
 
 .paso-item.completed {
-    background: #f0fdf4;
-    border-color: #86efac;
+    background: var(--palette-green-50);
+    border-color: var(--palette-green-300);
 }
 
 .paso-item.completed .paso-titulo {
@@ -348,13 +348,13 @@
 }
 
 .btn-paso.btn-remove {
-    color: #ef4444;
-    border-color: #ef4444;
+    color: var(--palette-red-500);
+    border-color: var(--palette-red-500);
     background: transparent;
 }
 
 .btn-paso.btn-remove:hover {
-    background: #ef4444;
+    background: var(--palette-red-500);
     color: white;
 }
 
@@ -418,14 +418,14 @@
 
 .btn-responsable.btn-remove,
 .btn-observacion.btn-remove {
-    color: #ef4444;
-    border-color: #ef4444;
+    color: var(--palette-red-500);
+    border-color: var(--palette-red-500);
     background: transparent;
 }
 
 .btn-responsable.btn-remove:hover,
 .btn-observacion.btn-remove:hover {
-    background: #ef4444;
+    background: var(--palette-red-500);
     color: white;
 }
 

@@ -1,0 +1,410 @@
+/* changelog/card.css — tarjetas, cabecera, badges, categorías, entradas y footer */
+
+
+
+/* --- TIMELINE --- */
+.changelog-timeline {
+    position: relative;
+    padding-left: 32px;
+}
+
+.changelog-timeline-line {
+    position: absolute;
+    left: 10px;
+    top: 16px;
+    bottom: 16px;
+    width: 2px;
+    background: linear-gradient(
+        to bottom,
+        var(--estado-produccion-border),
+        var(--border-color) 30%,
+        var(--border-color) 70%,
+        transparent
+    );
+    border-radius: 2px;
+}
+
+.changelog-timeline-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* --- CHANGELOG CARD --- */
+.changelog-card {
+    position: relative;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.changelog-card:hover {
+    border-color: var(--accent-hover);
+    box-shadow: 0 4px 16px var(--shadow);
+}
+
+.changelog-card--produccion {
+    border-color: var(--estado-produccion-border);
+    box-shadow: 0 0 0 1px var(--estado-produccion-border), 0 4px 20px rgba(73, 170, 25, 0.1);
+}
+
+/* TIMELINE DOT */
+.changelog-dot {
+    position: absolute;
+    left: -27px;
+    top: 18px;
+    width: 12px;
+    height: 12px;
+    background: var(--border-color);
+    border: 2px solid var(--bg-primary);
+    border-radius: 50%;
+    z-index: 1;
+    transition: background 0.2s;
+}
+
+.changelog-dot--produccion {
+    background: var(--estado-produccion-border);
+    box-shadow: 0 0 0 3px rgba(73, 170, 25, 0.2);
+}
+
+/* --- CARD HEADER --- */
+.changelog-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+}
+
+.changelog-card-header:hover {
+    background: var(--bg-secondary);
+}
+
+.changelog-card-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.changelog-card-header-center {
+    flex: 1;
+    min-width: 0;
+}
+
+.changelog-card-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.changelog-version-number {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.changelog-version-title {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.changelog-date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.changelog-time {
+    opacity: 0.7;
+}
+
+.changelog-chevron {
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+}
+
+/* BADGES */
+.changelog-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 3px 7px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.changelog-badge--prod {
+    background: var(--estado-produccion-bg);
+    color: var(--estado-produccion-color);
+    border: 1px solid var(--estado-produccion-border);
+}
+
+.changelog-badge--entries {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+/* ACCIONES RÁPIDAS */
+.changelog-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.changelog-card-header:hover .changelog-card-actions {
+    opacity: 1;
+}
+
+.btn-cl-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0.8rem;
+}
+
+.btn-cl-action:hover { border-color: var(--accent-hover); color: var(--text-primary); background: var(--bg-secondary); }
+.btn-cl-changelog:hover { border-color: var(--palette-blue-500); color: var(--palette-blue-500); }
+.btn-cl-prod:hover { border-color: var(--estado-produccion-border); color: var(--estado-produccion-color); }
+.btn-cl-delete:hover { border-color: var(--palette-red-500); color: var(--palette-red-500); }
+.btn-cl-info:hover { border-color: var(--palette-violet-500); color: var(--palette-violet-500); }
+
+/* --- CARD BODY (colapsable) --- */
+.changelog-card-body {
+    border-top: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.25s ease;
+    max-height: 1000px;
+    opacity: 1;
+}
+
+.changelog-card-body--collapsed {
+    max-height: 0;
+    opacity: 0;
+    border-top: none;
+}
+
+/* --- CATEGORÍAS --- */
+.changelog-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.changelog-category {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.changelog-category:last-child {
+    border-bottom: none;
+}
+
+.changelog-category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.changelog-category-count {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1px 7px;
+    font-size: 0.7rem;
+}
+
+.changelog-entry-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.changelog-entry-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    line-height: 1.45;
+}
+
+.changelog-entry-bullet {
+    color: var(--accent-hover);
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+.changelog-entry-content {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+
+/* Color accent por categoría */
+.cat-mejoras .changelog-category-header { color: var(--estado-desarrollo-color); }
+.cat-produccion .changelog-category-header { color: var(--estado-produccion-color); }
+.cat-caliente .changelog-category-header { color: var(--palette-red-500); }
+.cat-observaciones .changelog-category-header { color: var(--estado-certificado-color); }
+.cat-cdu .changelog-category-header { color: var(--palette-violet-500); }
+
+/* CDU change entry — sin bullet, label negrita */
+.changelog-entry-item--cdu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--border-color);
+}
+.changelog-entry-item--cdu:last-child { border-bottom: none; }
+
+.changelog-cdu-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--palette-violet-500);
+    margin-right: 4px;
+}
+
+/* Estado vacío */
+.changelog-empty-entries {
+    padding: 20px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-changelog-add-inline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px dashed var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-changelog-add-inline:hover {
+    border-color: var(--accent-hover);
+    color: var(--text-primary);
+}
+
+/* --- CARD FOOTER --- */
+.changelog-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.changelog-cdu-stats {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.changelog-cdu-total {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.changelog-footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.changelog-fuente {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+.btn-cl-detail {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.btn-cl-detail:hover {
+    border-color: var(--accent-hover);
+    color: var(--text-primary);
+    background: var(--bg-primary);
+}
+
+/* --- CDU TAGS & BADGES --- */
+.changelog-cdu-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 7px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: rgba(139, 92, 246, 0.12);
+    color: var(--palette-violet-500);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    margin-right: 6px;
+    flex-shrink: 0;
+    line-height: 1.4;
+}
+
+/* Texto en empty state del card */
+.changelog-empty-entries-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-right: 12px;
+    opacity: 0.7;
+}

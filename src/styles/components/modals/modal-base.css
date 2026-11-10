@@ -105,23 +105,23 @@
 
 /* Iconos de tipo de modal */
 .modal-success .modal-icon {
-    background: #e6ffed;
-    color: #48bb78;
+    background: var(--palette-green-50-alt);
+    color: var(--palette-green-400);
 }
 
 .modal-warning .modal-icon {
-    background: #fff8e1;
-    color: #ed8936;
+    background: var(--palette-yellow-50-alt);
+    color: var(--palette-orange-400);
 }
 
 .modal-error .modal-icon {
-    background: #ffe6e6;
-    color: #f56565;
+    background: var(--palette-red-100);
+    color: var(--palette-red-400);
 }
 
 .modal-info .modal-icon {
-    background: #ebf8ff;
-    color: #4299e1;
+    background: var(--palette-sky-50);
+    color: var(--palette-sky-500);
 }
 
 /* Mensajes dentro del modal */
