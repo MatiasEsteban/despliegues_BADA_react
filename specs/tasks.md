@@ -5,7 +5,7 @@
 | Spec | [`SPEC-001-endurecimiento-diseno-accesibilidad.md`](SPEC-001-endurecimiento-diseno-accesibilidad.md) |
 | Plan | [`../plan.md`](../plan.md) |
 | Fecha de auditoría | 2026-11-10 |
-| Estado global | F0 parcial · F1 casi cerrada · F2 código cerrado (verificación visual pendiente) · F3–F7 pendientes |
+| Estado global | F0 parcial · F1 casi cerrada · F2 código cerrado (verificación visual pendiente) · F3 auditoría estática cerrada, correcciones pendientes · F4–F7 pendientes |
 | Rama | `feat/spec-001-design-hardening` |
 
 Este archivo divide cada tarea del plan en subtareas de **una sola sesión de revisión**. Una subtarea se cierra únicamente con evidencia reproducible. El plan conserva la visión por fases; este tablero es la unidad de ejecución.
@@ -254,34 +254,38 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 
 | ID | Tarea | Archivos | Dep. | Esf. | Estado | Criterio / evidencia |
 |---|---|---|---|---|---|---|
-| P3-01.1 | Auditar overflow en Changelog a 320/375/480 | — | G2 | S | ☐ | Informe con capturas o tabla |
-| P3-01.2 | Auditar overflow en Lista/Grid | — | G2 | S | ☐ | idem |
-| P3-01.3 | Auditar overflow en Detalle CDU | — | G2 | S | ☐ | idem |
-| P3-01.4 | Auditar overflow en modales | — | G2 | S | ☐ | idem |
-| P3-01.5 | Auditar overflow en Header y workspace switcher | — | G2 | S | ☐ | idem |
-| P3-01.6 | Consolidar hallazgos | `docs/audits/2026-11-10-responsive.md` | P3-01.1–5 | XS | ☐ | Lista priorizada por archivo |
-| P3-02.1 | Breakpoints en `changelog/timeline.css` | `timeline.css` | P3-01.1 | S | ☐ | 900/768/600 |
-| P3-02.2 | Breakpoints en `changelog/card.css` | `card.css` | P3-01.1 | M | ☐ | 900/768/600 |
-| P3-02.3 | Breakpoints en `changelog/modal-entries.css` | `modal-entries.css` | P3-01.4 | S | ☐ | 900/768/600 |
-| P3-02.4 | Breakpoints en `changelog/date-editor.css` | `date-editor.css` | P3-01.1 | S | ☐ | Al menos 600 |
-| P3-02.5 | Dropdown móvil en `workspace-switcher.css` | `workspace-switcher.css` | P3-01.5 | S | ☐ | Sin desbordamiento |
-| P3-02.6 | Verificar 0 scroll horizontal a 320 | — | P3-02.1–5 | S | ☐ | Capturas 320 |
-| P3-03.1 | Adaptar `modal-full-summary.css` a 320 | `modal-full-summary.css` | P3-01.4 | S | ☐ | Acciones visibles |
-| P3-03.2 | Adaptar `modal-base.css` a 320 | `modal-base.css` | P3-01.4 | S | ☐ | Cabecera y cierre utilizables |
-| P3-03.3 | Adaptar `modal-progress.css` a 320 | `modal-progress.css` | P3-01.4 | S | ☐ | Gráficos sin recorte |
+| P3-01.1 | Auditar overflow en Changelog a 320/375/480 | — | G2 | S | ✅ | Análisis estático (sin capturas por A-05/P0-04): 31 hallazgos (1 alta / 16 media / 14 baja) en `changelog/*` + `ChangelogCard.jsx` |
+| P3-01.2 | Auditar overflow en Lista/Grid | — | G2 | S | ✅ | Análisis estático: 11 hallazgos (1 alta / 4 media / 6 baja) |
+| P3-01.3 | Auditar overflow en Detalle CDU | — | G2 | S | ✅ | Análisis estático: 5 hallazgos (3 alta / 1 media / 1 baja) |
+| P3-01.4 | Auditar overflow en modales | — | G2 | S | ✅ | Análisis estático: 18 hallazgos (0 alta / 8 media / 10 baja) |
+| P3-01.5 | Auditar overflow en Header y workspace switcher | — | G2 | S | ✅ | Análisis estático: 15 hallazgos (0 alta / 6 media / 9 baja); toasts aparte (2) |
+| P3-01.6 | Consolidar hallazgos | `docs/audits/2026-11-10-responsive.md`, `scripts/audit-responsive.mjs` | P3-01.1–5 | XS | ✅ | Informe con 82 hallazgos (6 alta / 35 media / 41 baja; 74 automáticos + 8 manuales), 26 hojas sin `@media` (14 en `changelog/*` y `modals/*`) |
+| P3-02.1 | Breakpoints en `changelog/timeline.css` | `timeline.css` | P3-01.1 | S | ☐ | 900/768/600 — 3 media (M-08…M-10) |
+| P3-02.2 | Breakpoints en `changelog/card.css` | `card.css` | P3-01.1 | M | ☐ | 900/768/600 — 7 media + A-06 (header sin wrap) |
+| P3-02.3 | Breakpoints en `changelog/modal-entries.css` | `modal-entries.css` | P3-01.4 | S | ☐ | 900/768/600 — tabs 220 px fijos (M-12, M-15) |
+| P3-02.4 | Breakpoints en `changelog/date-editor.css` | `date-editor.css` | P3-01.1 | S | ☐ | Al menos 600 (0 hallazgos; grid 2 columnas) |
+| P3-02.5 | Dropdown móvil en `workspace-switcher.css` | `workspace-switcher.css` | P3-01.5 | S | ☐ | Sin desbordamiento — M-34/M-35; 0 `@media` |
+| P3-02.6 | Verificar 0 scroll horizontal a 320 | — | P3-02.1–5 | S | ☐ | ⛔ A-05/P0-04: capturas 320 no disponibles |
+| P3-02.7 | Breakpoints en `cards.css` (estadísticas de tarjeta) | `cards.css` | P3-01.2 | S | ☐ | 900/768/600; A-01 `repeat(4,1fr)` |
+| P3-02.8 | Breakpoints en `layouts/header.css` y `view-toggle.css` | `header.css`, `view-toggle.css` | P3-01.5 | S | ☐ | 900/768/600; M-30…M-33 sin wrap |
+| P3-03.1 | Adaptar `modal-full-summary.css` a 320 | `modal-full-summary.css` | P3-01.4 | S | ☐ | Acciones visibles; texto `pre` sin reflow (M-26) |
+| P3-03.2 | Adaptar `modal-base.css` a 320 | `modal-base.css` | P3-01.4 | S | ☐ | Cabecera y cierre utilizables; `.modal-login min-width:300` (M-27) |
+| P3-03.3 | Adaptar `modal-progress.css` a 320 | `modal-progress.css` | P3-01.4 | S | ☐ | Gráficos sin recorte; `column-width:300px` |
 | P3-03.4 | Adaptar `export-modal.css` a 320 | `export-modal.css` | P3-01.4 | S | ☐ | Opciones legibles |
 | P3-03.5 | Adaptar `deployment-info.css` a 320 | `deployment-info.css` | P3-01.4 | S | ☐ | Contenido sin recorte |
-| P3-04.1 | Permitir envoltura de metadatos en `DetailHeader` | `detail-header.css` | P3-01.3 | S | ☐ | `flex-wrap` sin romper layout |
+| P3-03.6 | Adaptar `modal-comentarios.css` a 320 | `modal-comentarios.css` | P3-01.4 | S | ☐ | M-28: `width:51%` → 100% |
+| P3-03.7 | Adaptar `modal-deployment-report.css` a 320 | `modal-deployment-report.css` | P3-01.4 | S | ☐ | M-22/M-23: columna `min-width:280px` |
+| P3-04.1 | Permitir envoltura de metadatos en `DetailHeader` | `layouts/header.css` (o importar `detail-header.css`) | P3-01.3 | S | ☐ | `flex-wrap` sin romper layout — A-05: la regla viva está en `header.css:106` |
 | P3-04.2 | Verificar `DetailHeader` a 320/768 | — | P3-04.1 | XS | ☐ | Captura |
 | P3-05.1 | Objetivos 44×44 en puntero grueso | `buttons.css`, `forms.css` | P3-02.6 | M | ☐ | `@media (pointer: coarse)` |
-| P3-05.2 | Acciones de tarjeta/fila visibles sin hover | `changelog/card.css`, `list-view.css` | P3-05.1 | S | ☐ | Sin `opacity: 0` permanente |
-| P3-05.3 | Verificar en emulación táctil | — | P3-05.1–2 | S | ☐ | Captura o grabación |
+| P3-05.2 | Acciones de tarjeta/fila visibles sin hover | `changelog/card.css`, `list-view.css`, `workspace-switcher.css` | P3-05.1 | S | ☐ | Sin `opacity: 0` permanente — M-16; `list-view.css` no tiene acciones ocultas |
+| P3-05.3 | Verificar en emulación táctil | — | P3-05.1–2 | S | ☐ | ⛔ A-05/P0-04: captura o grabación no disponibles |
 | P3-05.4 | Mínimo 24×24 en puntero fino | `buttons.css`, `forms.css` | P3-05.1 | S | ☐ | Separación suficiente |
-| P3-06.1 | Scroll horizontal contenido en tablas | `table.css` | P3-01.2 | S | ☐ | Contenedor con `overflow-x: auto` |
+| P3-06.1 | Scroll horizontal contenido en tablas y lista | `table.css`, `list-view.css` | P3-01.2 | S | ☐ | Contenedor con `overflow-x: auto` — tabla ya lo tiene vía `.table-wrapper`; la lista no (M-20) |
 | P3-06.2 | Indicio visual de desplazamiento | `table.css` | P3-06.1 | XS | ☐ | Sombra o borde visible |
 | P3-06.3 | Ocultar columnas secundarias en móvil | `table.css`, `list-view.css` | P3-06.1 | S | ☐ | Criterio consistente |
 | P3-06.4 | Verificar tabla de CDUs | — | P3-06.1–3 | XS | ☐ | No rompe layout |
-| P3-07.1 | Verificar 200 % de zoom en 5 vistas | — | P3-02–06 | M | ☐ | Matriz registrada |
+| P3-07.1 | Verificar 200 % de zoom en 5 vistas | — | P3-02–06 | M | ☐ | ⛔ A-05/P0-04: matriz pendiente de render |
 | P3-07.2 | Cerrar G3 | `plan.md`, este archivo | P3-07.1 | XS | ☐ | Checklist G3 |
 
 **Gate G3:** 0 scroll horizontal a 320 salvo tablas, tablas con indicio, 200 % usable, acciones táctiles visibles y matriz registrada.
@@ -570,6 +574,7 @@ spec-001(P2-03.1): migrar estilos inline de ChangelogCard
 | 2026-11-10 | P1-08.3 y P1-10.1 cerradas: 4 desvíos del split documentados y auditoría de selectores (56 muertas, 21 dinámicas, 31 clases JSX sin regla). §6.3 y §6.4 corregidos a 27 y 36 usos (suma 78). |
 | 2026-11-10 | P1-10.2/P1-10.3 cerradas: 14 clases y 25 reglas muertas eliminadas en base/layouts/components. Script 56→42 muertas (quedan solo P1-10.4), 21 dinámicas intactas, 0 imports rotos. |
 | 2026-11-10 | P1-10.4/P1-10.5 cerradas: 41 clases y 59 reglas eliminadas en modales/changelog; `modal-changes-summary.css` (28 reglas) y su import retirados. Script 42→1 muerta (solo `deployment-report`, excluida por descendiente vivo), 21 dinámicas intactas, 29 imports y 0 rotos. Discrepancia P1-07.3 corregida: los selectores existían desde el primer commit; «ausentes» se refería a consumidores. |
+| 2026-11-10 | P3-01.1–6 cerradas con auditoría estática (`scripts/audit-responsive.mjs`, 32 hojas, 760 reglas): 82 hallazgos (6 alta / 35 media / 41 baja), 26 hojas de layout sin `@media`. Nuevas tareas: P3-02.7, P3-02.8, P3-03.6, P3-03.7. Corregido el alcance de P3-04.1 (`layouts/header.css`, porque `detail-header.css` no se importa), P3-05.2 (añade `workspace-switcher.css`) y P3-06.1 (añade `list-view.css`). P3-02.6, P3-05.3 y P3-07.1 marcadas ⛔ A-05/P0-04. |
 
 
 
