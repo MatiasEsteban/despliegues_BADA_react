@@ -423,3 +423,104 @@ Fecha: 2026-11-10. Alcance: `Input`, `LoadingOverlay`, `Modal` y `Button` (`P2-0
 | `.loading-overlay-message` | `notifications.css` | `LoadingOverlay.jsx` |
 | `.loading-overlay-spinner` | `notifications.css` | `LoadingOverlay.jsx` |
 | `.modal-message--full` | `modal-base.css` | `Modal.jsx` (condicional sin icono) |
+
+---
+
+## 7. Ejecución P2-03 — Vistas, layout y raíz
+
+Fecha: 2026-11-10. Alcance: los 27 usos de §6.3 repartidos en 10 archivos. Ningún componente cambió su API ni su comportamiento; solo se sustituyeron atributos `style` por clases.
+
+### 7.1 Uso → destino
+
+| # | Uso | Archivo:línea | Antes | Destino | Clase | Delta visual conocido |
+|---:|---|---|---|---|---|---|
+| 1 | Icono editar changelog | `views/ChangelogCard.jsx:135` | `width/height: 14px` | `changelog/card.css` | `.icon-md` | Ninguno |
+| 2 | Icono producción activa | `views/ChangelogCard.jsx:150` | `width/height: 14px` | `changelog/card.css` | `.icon-md` | Ninguno |
+| 3 | Icono marcar producción | `views/ChangelogCard.jsx:151` | `width/height: 14px` | `changelog/card.css` | `.icon-md` | Ninguno |
+| 4 | Icono eliminar | `views/ChangelogCard.jsx:169` | `width/height: 14px` | `changelog/card.css` | `.icon-md` | Ninguno |
+| 5 | Chevron expandir | `views/ChangelogCard.jsx:174` | `16px` + `transform` + `transition` | `changelog/card.css` | `.changelog-expand-icon` + `.changelog-expand-icon--open` | Ninguno; se omite `.icon-small` por su `stroke` forzado |
+| 6 | Icono agregar entradas | `views/ChangelogCard.jsx:194` | `width/height: 13px` | `changelog/card.css` | `.icon-sm` | Ninguno |
+| 7 | Lupa del buscador | `views/ChangelogView.jsx:74` | `15px` + `opacity: .5` + `flexShrink: 0` | `changelog/timeline.css` | `.changelog-search-icon` | Ninguno; no hay tamaño 15px en la escala |
+| 8 | Limpiar búsqueda | `views/ChangelogView.jsx:88` | `width/height: 13px` | `changelog/timeline.css` | `.icon-sm` | Ninguno |
+| 9 | Lápiz de fecha rápida | `views/DateQuickEditor.jsx:81` | `11px` + `opacity: .6` | `changelog/date-editor.css` | `.date-quick-edit-icon` + `.icon-xs` | **+1px** (11→12px); opacidad base `.6 → .4` y **hover `.4 → .9` recuperado** |
+| 10 | Separador del paginador | `views/VersionList.jsx:128` | `margin: 0 10px` | `list-view.css` | `.pagination-container span` (regla existente) | Ninguno; el `gap` del contenedor se mantiene |
+| 11 | Hora de creación | `views/VersionRow.jsx:58` | `opacity: .7` | `list-view.css` | `.version-time` | Ninguno |
+| 12 | Hora de despliegue | `views/VersionRow.jsx:62` | `opacity: .7` | `list-view.css` | `.version-time` | Ninguno |
+| 13 | Celda vacía de CDUs | `views/DetailView.jsx:181` | `textAlign`, `padding: 3rem`, `color` | `table.css` | `.table-empty-cell` | Ninguno; `colSpan` sigue como atributo |
+| 14 | Input file oculto | `layout/Header.jsx:93` | `display: none` | `layouts/header.css` | `.header-file-input` | Ninguno; se descarta `.visually-hidden` para no añadir un tab stop |
+| 15 | Título con badge | `layout/Header.jsx:104` | `display:flex`, `alignItems`, `gap: 12px`, `flexWrap` | `layouts/header.css` | `.header-title` | Ninguno |
+| 16 | Badge «Guardando…» | `layout/Header.jsx:107` | `fontSize .75rem`, color, `fontWeight`, flex, gap, fondo, padding, radius, borde | `layouts/header.css` | `.header-status-badge` | Ninguno; `--font-size-xs` y `--radius-lg` coinciden exactamente |
+| 17 | Icono de sincronización | `layout/Header.jsx:108` | `width/height: 12px` | `reset.css` + `header.css` | `.icon-xs` + `.header-status-badge .icon-xs` | Ninguno; `.toast-spinner` fija 20px y exige la regla con dos clases |
+| 18 | Estado «Sincronizado» | `layout/Header.jsx:112` | `color: #10B981` + resto | `layouts/header.css` | `.header-sync-status` | Ninguno; hex → `var(--palette-green-500)` (mismo valor) |
+| 19 | Icono nube OK | `layout/Header.jsx:113` | `width/height: 16px` | `reset.css` | `.icon-small` (ya aplicada) | Ninguno |
+| 20 | Chevron del workspace | `layout/WorkspaceSwitcher.jsx:97` | `transform: rotate(180deg｜0deg)` | `workspace-switcher.css` | `.ws-trigger-chevron--open` | Ninguno; sin modificador no se aplica `transform` (= `rotate(0deg)`) |
+| 21 | Check de workspace activo | `layout/WorkspaceSwitcher.jsx:115` | `width/height: 14px` | `reset.css` | `.icon-md` | Ninguno |
+| 22 | Papelera de workspace | `layout/WorkspaceSwitcher.jsx:129` | `width/height: 13px` | `reset.css` | `.icon-sm` | Ninguno |
+| 23 | Cancelar nuevo workspace | `layout/WorkspaceSwitcher.jsx:161` | `width/height: 13px` | `reset.css` | `.icon-sm` | Ninguno |
+| 24 | Nuevo workspace | `layout/WorkspaceSwitcher.jsx:169` | `width/height: 14px` | `reset.css` | `.icon-md` | Ninguno |
+| 25 | Error de sincronización | `Dashboard.jsx:46` | `display: block` + `marginBottom: 1rem` | `modal-login.css` + `container.css` | `.login-error--visible` + `.view-container > .login-error` | Ninguno |
+| 26 | Título de Login | `Login.jsx:33` | `display:flex`, `alignItems`, `gap: 10px` | `modal-login.css` | `.login-title` | Ninguno |
+| 27 | Error de Login | `Login.jsx:64` | `display: block` | `modal-login.css` | `.login-error--visible` | Ninguno |
+
+### 7.2 Decisiones de implementación
+
+- **Escala de iconos:** `.icon-xs` (12px), `.icon-sm` (13px) y `.icon-md` (14px) se añaden una sola vez en `base/reset.css`, junto a `.icon` y `.icon-small`. Se usan `px` porque `.icon-small` (16px) ya está en `px`; equivalencias exactas: 12px = 0.75rem, 13px = 0.8125rem, 14px = 0.875rem.
+- **Chevron de `ChangelogCard`:** no se reutiliza `.icon-small` porque esa clase impone `stroke: var(--text-primary)` y el chevron hereda `var(--text-secondary)` de `.changelog-chevron`; usarla habría cambiado el color. Se crea `.changelog-expand-icon` con el tamaño de 16px y la transición, más el modificador de rotación.
+- **Lupa de `ChangelogView`:** no existe un tamaño de 15px en la escala y `.icon-md` lo habría reducido a 14px; se crea `.changelog-search-icon` con tamaño, opacidad y `flex-shrink` exactos.
+- **Icono `Sync` de `Header`:** `.toast-spinner` (notifications.css) fija `width/height: 20px` y se importa después de `reset.css`; una sola clase no basta. Se añade `.header-status-badge .icon-xs` (especificidad 0,2,0) para conservar los 12px.
+- **Input file de `Header`:** se mantiene `display: none` en `.header-file-input`. No se usa un patrón `.visually-hidden`/`.sr-only` porque el input se abre por JS (`fileInputRef.click()`) y hacerlo visible para lectores lo añadiría al orden de tabulación: sería un cambio de comportamiento, no de estilo. No existían `.visually-hidden` ni `.sr-only` en el proyecto.
+- **Badge de `Header`:** `--font-size-xs` (0.75rem) y `--radius-lg` (12px) coinciden exactamente con el inline, por lo que se usan tokens. `gap: 6px` y el padding vertical de `2px` no tienen token exacto y quedan literales (deuda menor para P5-04).
+- **Hex `#10B981`:** sustituido por `var(--palette-green-500)`, que vale exactamente `#10B981`. No se usa `--estado-certificado-color` porque es azul.
+- **Paginador:** el margen se incorpora a la regla existente `.pagination-container span` para no crear una clase para un único nodo.
+- **Errores `.login-error`:** la clase base no está oculta por defecto, así que `display: block` es redundante pero se conserva vía `.login-error--visible`. El `margin-bottom: 1rem` del Dashboard se aplica contextualmente con `.view-container > .login-error` para no alterar la separación del formulario de Login (que ya tiene `margin-top: 1rem` en `.login-actions`).
+- **Chevron de `WorkspaceSwitcher`:** sin modificador no se declara `transform`, lo que equivale al antiguo `rotate(0deg)`.
+
+### 7.3 Conteos antes / después
+
+| Métrica | Antes | Después | Delta |
+|---|---:|---:|---:|
+| `style={{` globales | 71 (19 archivos) | **44 (9 archivos)** | −27 |
+| `style={{` en los 10 archivos de §6.3 | 27 | **0** | −27 |
+| `ESTÁTICO` / `GEOMETRÍA` / `COLOR` / `VAR-CSS` | 58 / 10 / 3 / 0 | **31 / 10 / 3 / 0** | −27 / 0 / 0 / 0 |
+| Clases CSS (`audit-selectors`) | 431 | **446** | +15 |
+| Clases consumidas | 409 | **424** | +15 |
+| Clases dinámicas | 21 | **21** | 0 |
+| Clases muertas | 1 (`deployment-report`) | **1 (`deployment-report`)** | 0 |
+| Clases JSX sin regla | 32 | **32** | 0 |
+| Hex en `src/components` (JSX/JS) | 12 coincidencias / 4 archivos | **11 / 3 archivos** | −1 (`Header.jsx:112`) |
+
+Nota sobre el chequeo de hex: el encargo esperaba 10 → 9 excluyendo el `fill` del SVG de `ui/Icons.jsx` y el objeto de color de `views/detail/DetailHeader.jsx`. El conteo real con `#[0-9a-fA-F]{3,8}` sobre todo `src/components` es **12 → 11**; desaparece la única coincidencia de `Header.jsx`, y las restantes están en `ProgressModal.jsx` (9), `Icons.jsx` (1) y `DetailHeader.jsx` (1).
+
+### 7.4 Clases nuevas (15)
+
+| Clase | Archivo | Consumidor |
+|---|---|---|
+| `.icon-xs` | `base/reset.css` | `Header.jsx`, `DateQuickEditor.jsx` |
+| `.icon-sm` | `base/reset.css` | `ChangelogCard.jsx`, `ChangelogView.jsx`, `WorkspaceSwitcher.jsx` |
+| `.icon-md` | `base/reset.css` | `ChangelogCard.jsx`, `WorkspaceSwitcher.jsx` |
+| `.changelog-expand-icon` | `changelog/card.css` | `ChangelogCard.jsx` |
+| `.changelog-expand-icon--open` | `changelog/card.css` | `ChangelogCard.jsx` |
+| `.changelog-search-icon` | `changelog/timeline.css` | `ChangelogView.jsx` |
+| `.version-time` | `list-view.css` | `VersionRow.jsx` |
+| `.table-empty-cell` | `table.css` | `DetailView.jsx` |
+| `.header-file-input` | `layouts/header.css` | `Header.jsx` |
+| `.header-title` | `layouts/header.css` | `Header.jsx` |
+| `.header-status-badge` | `layouts/header.css` | `Header.jsx` |
+| `.header-sync-status` | `layouts/header.css` | `Header.jsx` |
+| `.ws-trigger-chevron--open` | `workspace-switcher.css` | `WorkspaceSwitcher.jsx` |
+| `.login-error--visible` | `modals/modal-login.css` | `Dashboard.jsx`, `Login.jsx` |
+| `.login-title` | `modals/modal-login.css` | `Login.jsx` |
+
+### 7.5 P2-03.11 — verificación visual pendiente
+
+`P2-03.11` queda en `◐` (no cerrada): sin `node_modules` no hay dev server ni capturas, y la baseline de `P0-04` todavía no existe. Lo que **no** se puede verificar y debe revisarse en G2:
+
+- Rotación del chevron de `ChangelogCard` y transición de 0.25s.
+- Lápiz de `DateQuickEditor`: +1px de tamaño, opacidad base más tenue y hover recuperado (`.4 → .9`).
+- Chevron de `WorkspaceSwitcher` a 180° con el dropdown abierto.
+- Badge «Guardando…»/«Sincronizado»: separación, radio y color verde en ambos temas.
+- Paginador: separación real entre botones y texto (gap + margen).
+- Tabla de CDUs sin datos: centrado, padding de 3rem y color secundario.
+- Error de Login y de Dashboard en sus dos contextos (formulario y vista).
+- Input file oculto: la importación debe seguir funcionando.
+- De P2-02: overlay de carga más claro y `Button.type` por defecto (submit de Login).

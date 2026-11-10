@@ -125,7 +125,7 @@ export default function VersionList() {
                             {totalPages > 1 && (
                                 <div className="pagination-container">
                                     <button className="pagination-btn" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>«</button>
-                                    <span style={{ margin: '0 10px' }}>Página {currentPage} de {totalPages}</span>
+                                    <span>Página {currentPage} de {totalPages}</span>
                                     <button className="pagination-btn" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>»</button>
                                 </div>
                             )}

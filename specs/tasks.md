@@ -209,17 +209,17 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 
 | ID | Tarea | Archivo | Dep. | Esf. | Estado | Criterio |
 |---|---|---|---|---|---|---|
-| P2-03.1 | Migrar 6 estilos de `ChangelogCard` | `views/ChangelogCard.jsx`, `changelog/card.css` | P2-01.3 | M | ☐ | 0 `style` |
-| P2-03.2 | Migrar 2 estilos de `ChangelogView` | `views/ChangelogView.jsx`, `changelog/timeline.css` | P2-01.3 | S | ☐ | 0 `style` |
-| P2-03.3 | Migrar 1 estilo de `DateQuickEditor` | `views/DateQuickEditor.jsx`, `changelog/date-editor.css` | P2-01.3 | XS | ☐ | 0 `style` |
-| P2-03.4 | Migrar 1 estilo de `VersionList` | `views/VersionList.jsx`, `list-view.css` | P2-01.3 | S | ☐ | 0 `style` |
-| P2-03.5 | Migrar 2 estilos de `VersionRow` | `views/VersionRow.jsx`, `table.css`/`list-view.css` | P2-01.3 | S | ☐ | 0 `style` |
-| P2-03.6 | Migrar 1 estilo de `DetailView` | `views/DetailView.jsx`, `detail-header.css`/`container.css` | P2-01.3 | S | ☐ | 0 `style` |
-| P2-03.7 | Migrar 6 estilos de `Header` | `layout/Header.jsx`, `header.css` | P2-01.3 | M | ☐ | 0 `style` |
-| P2-03.8 | Migrar 5 estilos de `WorkspaceSwitcher` | `layout/WorkspaceSwitcher.jsx`, `workspace-switcher.css` | P2-01.3 | M | ☐ | 0 `style` |
-| P2-03.9 | Migrar 1 estilo de `Dashboard` | `Dashboard.jsx`, `cards.css`/`grid.css` | P2-01.3 | XS | ☐ | 0 `style` |
-| P2-03.10 | Migrar 2 estilos de `Login` | `Login.jsx`, `modal-login.css` | P2-01.3 | S | ☐ | 0 `style` (aunque Login no esté montado) |
-| P2-03.11 | Revisión visual de vistas y layout | — | P2-03.1–10 | M | ☐ | Sin diferencias |
+| P2-03.1 | Migrar 6 estilos de `ChangelogCard` | `views/ChangelogCard.jsx`, `changelog/card.css` | P2-01.3 | M | ✅ | 0 `style`; `.icon-md` ×4, `.icon-sm`, `.changelog-expand-icon(--open)` para el chevron. |
+| P2-03.2 | Migrar 2 estilos de `ChangelogView` | `views/ChangelogView.jsx`, `changelog/timeline.css` | P2-01.3 | S | ✅ | 0 `style`; `.changelog-search-icon` (15px propio) y `.icon-sm`. |
+| P2-03.3 | Migrar 1 estilo de `DateQuickEditor` | `views/DateQuickEditor.jsx`, `changelog/date-editor.css` | P2-01.3 | XS | ✅ | 0 `style`; `.date-quick-edit-icon` + `.icon-xs` (11px→12px, hover restaurado). |
+| P2-03.4 | Migrar 1 estilo de `VersionList` | `views/VersionList.jsx`, `list-view.css` | P2-01.3 | S | ✅ | 0 `style`; margen del paginador en `.pagination-container span`. |
+| P2-03.5 | Migrar 2 estilos de `VersionRow` | `views/VersionRow.jsx`, `table.css`/`list-view.css` | P2-01.3 | S | ✅ | 0 `style`; `.version-time` (`opacity: .7`) en `list-view.css`. |
+| P2-03.6 | Migrar 1 estilo de `DetailView` | `views/DetailView.jsx`, `detail-header.css`/`container.css` | P2-01.3 | S | ✅ | 0 `style`; `.table-empty-cell` en `table.css`; `colSpan` sigue como atributo. |
+| P2-03.7 | Migrar 6 estilos de `Header` | `layout/Header.jsx`, `header.css` | P2-01.3 | M | ✅ | 0 `style`; `.header-file-input`, `.header-title`, `.header-status-badge`, `.header-sync-status`, `.icon-xs` y `.icon-small`. Hex `#10B981` → `var(--palette-green-500)`. |
+| P2-03.8 | Migrar 5 estilos de `WorkspaceSwitcher` | `layout/WorkspaceSwitcher.jsx`, `workspace-switcher.css` | P2-01.3 | M | ✅ | 0 `style`; `.ws-trigger-chevron--open`, `.icon-md` ×2 y `.icon-sm` ×2. |
+| P2-03.9 | Migrar 1 estilo de `Dashboard` | `Dashboard.jsx`, `cards.css`/`grid.css` | P2-01.3 | XS | ✅ | 0 `style`; `.login-error--visible` + `.view-container > .login-error` para el margen. |
+| P2-03.10 | Migrar 2 estilos de `Login` | `Login.jsx`, `modal-login.css` | P2-01.3 | S | ✅ | 0 `style`; `.login-title` y `.login-error--visible` (misma clase que Dashboard). |
+| P2-03.11 | Revisión visual de vistas y layout | — | P2-03.1–10 | M | ◐ | Pendiente de baseline P0-04: sin `node_modules` no hay dev server. Deltas a validar: chevron 16px, lápiz 11→12px, hover del lápiz, overlay de carga (P2-02) y `Button.type` de Login. |
 
 ### 6.4 Modales (36 usos)
 

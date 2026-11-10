@@ -78,7 +78,7 @@ export default function DateQuickEditor({
                     {formatDate(dateValue)}
                     {timeValue && <span className="date-quick-time"> {timeValue}hs</span>}
                 </span>
-                <Icons.Edit className="date-quick-edit-icon" style={{ width: '11px', height: '11px', opacity: 0.6 }} />
+                <Icons.Edit className="date-quick-edit-icon icon-xs" />
             </button>
 
             <Modal

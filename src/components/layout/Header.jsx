@@ -90,7 +90,7 @@ export default function Header({ workspaceType = 'full' }) {
             <input
                 type="file"
                 ref={fileInputRef}
-                style={{ display: 'none' }}
+                className="header-file-input"
                 accept=".xlsx,.xls"
                 onChange={handleFileChange}
             />
@@ -101,16 +101,16 @@ export default function Header({ workspaceType = 'full' }) {
                     <div className="header-info">
                         <WorkspaceSwitcher />
                         <div className="header-title-block">
-                            <h1 style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                            <h1 className="header-title">
                                 Changelog
                                 {isSaving ? (
-                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg-secondary)', padding: '2px 8px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                                        <Icons.Sync className="icon-small toast-spinner" style={{ width: '12px', height: '12px' }} />
+                                    <span className="header-status-badge">
+                                        <Icons.Sync className="icon-small icon-xs toast-spinner" />
                                         Guardando...
                                     </span>
                                 ) : (
-                                    <span style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px', opacity: 0.8 }}>
-                                        <Icons.CloudCheck className="icon-small" style={{ width: '16px', height: '16px' }} />
+                                    <span className="header-sync-status">
+                                        <Icons.CloudCheck className="icon-small" />
                                         Sincronizado
                                     </span>
                                 )}

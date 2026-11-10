@@ -70,5 +70,5 @@ Corrección del baseline: 4 variables CSS indefinidas reales (+1 con fallback) y
 
 5. Próximos Pasos Inmediatos
 A-05/A-06 pendientes: restaurar node_modules y build, y fijar la lista exacta de capturas baseline. P1-06 solo requiere importar detail-header.css tras las capturas.
-F2: P2-01 cerrada (78 usos en 22 archivos; docs/audits/2026-11-10-inline-styles.md) y P2-02 cerrada (71 usos en 19 archivos; Button.type='button' por defecto); siguiente P2-03.
+F2: P2-01/P2-02 cerradas y P2-03 migrada (44 usos en 9 archivos; escala .icon-xs/sm/md); P2-03.11 pendiente de baseline P0-04; siguiente P2-04 modales.
 Derivar SPEC-002 (fechas locales), SPEC-003 (auth y firestore.rules), SPEC-004 (testing/CI) y SPEC-005 (sanitización de importación).

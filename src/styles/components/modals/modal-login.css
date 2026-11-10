@@ -36,6 +36,18 @@
     text-align: center;
 }
 
+/* `.login-error` no está oculta por defecto; el modificador mantiene el
+   `display: block` explícito sin alterar el espaciado del formulario de Login. */
+.login-error--visible {
+    display: block;
+}
+
+.login-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .login-actions {
     padding: 0 !important; /* Reset del padding del footer modal base */
     margin-top: 1rem;

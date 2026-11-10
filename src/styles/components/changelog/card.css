@@ -126,6 +126,18 @@
     align-items: center;
 }
 
+/* No se reutiliza .icon-small porque fuerza `stroke: var(--text-primary)` y aquí
+   el chevron debe heredar el color secundario del contenedor. */
+.changelog-expand-icon {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.25s ease;
+}
+
+.changelog-expand-icon--open {
+    transform: rotate(180deg);
+}
+
 /* BADGES */
 .changelog-badge {
     display: inline-flex;

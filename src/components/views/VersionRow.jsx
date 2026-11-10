@@ -55,11 +55,11 @@ export default function VersionRow({ version, isProduccion, onClick }) {
                 <td className="version-list-cell-fuente">{version.fuente || 'N/A'}</td>
 
                 <td className="version-list-cell-fecha-creacion">
-                    {version.fechaCreacion} <span style={{ opacity: 0.7 }}>{version.horaCreacion}</span>
+                    {version.fechaCreacion} <span className="version-time">{version.horaCreacion}</span>
                 </td>
 
                 <td className="version-list-cell-fecha-despliegue">
-                    {version.fechaDespliegue} <span style={{ opacity: 0.7 }}>{version.horaDespliegue}</span>
+                    {version.fechaDespliegue} <span className="version-time">{version.horaDespliegue}</span>
                 </td>
 
                 <td className="version-list-cell-info">

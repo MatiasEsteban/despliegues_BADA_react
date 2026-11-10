@@ -53,6 +53,10 @@
     flex-shrink: 0;
 }
 
+.ws-trigger-chevron--open {
+    transform: rotate(180deg);
+}
+
 /* DROPDOWN */
 .ws-dropdown {
     position: absolute;

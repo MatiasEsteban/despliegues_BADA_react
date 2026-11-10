@@ -178,7 +178,7 @@ export default function DetailView() {
                         <tbody id="tabla-body">
                             {filteredCDUs.length === 0 ? (
                                 <tr>
-                                    <td colSpan="9" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+                                    <td colSpan="9" className="table-empty-cell">
                                         {activeCDUs.length === 0
                                             ? "Esta versión no tiene CDUs asociados."
                                             : "Ningún CDU coincide con los filtros aplicados."}

@@ -71,7 +71,7 @@ export default function ChangelogView() {
             <div className="changelog-toolbar">
                 <div className="changelog-toolbar-left">
                     <div className="changelog-search-wrap">
-                        <Icons.Search style={{ width: '15px', height: '15px', opacity: 0.5, flexShrink: 0 }} />
+                        <Icons.Search className="changelog-search-icon" />
                         <input
                             className="changelog-search-input"
                             type="text"
@@ -85,7 +85,7 @@ export default function ChangelogView() {
                                 onClick={() => { setSearchText(''); setFilter(''); }}
                                 title="Limpiar"
                             >
-                                <Icons.X style={{ width: '13px', height: '13px' }} />
+                                <Icons.X className="icon-sm" />
                             </button>
                         )}
                     </div>

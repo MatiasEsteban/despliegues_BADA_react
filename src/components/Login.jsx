@@ -30,7 +30,7 @@ export default function Login() {
             {/* Usamos la estructura de modal para que sea visualmente consistente y pequeño */}
             <div className="modal modal-info modal-login">
                 <div className="modal-header">
-                    <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <h2 className="modal-title login-title">
                         <Icons.Lock className="icon" />
                         Iniciar Sesión
                     </h2>
@@ -61,7 +61,7 @@ export default function Login() {
                         />
 
                         {error && (
-                            <div className="login-error" style={{ display: 'block' }}>
+                            <div className="login-error login-error--visible">
                                 {error}
                             </div>
                         )}

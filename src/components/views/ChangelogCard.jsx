@@ -132,7 +132,7 @@ export default function ChangelogCard({ version, isProduccion }) {
                                 title="Editar changelog"
                                 onClick={() => setShowChangelog(true)}
                             >
-                                <Icons.Edit style={{ width: '14px', height: '14px' }} />
+                                <Icons.Edit className="icon-md" />
                             </button>
                             <button
                                 className="btn-cl-action btn-cl-info"
@@ -147,8 +147,8 @@ export default function ChangelogCard({ version, isProduccion }) {
                                 onClick={() => setVersionEnProduccion(isProduccion ? null : version.id)}
                             >
                                 {isProduccion
-                                    ? <Icons.Check style={{ width: '14px', height: '14px' }} />
-                                    : <Icons.Produccion style={{ width: '14px', height: '14px' }} />
+                                    ? <Icons.Check className="icon-md" />
+                                    : <Icons.Produccion className="icon-md" />
                                 }
                             </button>
                             <button
@@ -166,16 +166,14 @@ export default function ChangelogCard({ version, isProduccion }) {
                                 title="Eliminar versión"
                                 onClick={handleDelete}
                             >
-                                <Icons.Trash style={{ width: '14px', height: '14px' }} />
+                                <Icons.Trash className="icon-md" />
                             </button>
                         </div>
 
                         <div className="changelog-chevron">
-                            <Icons.ChevronDown style={{
-                                width: '16px', height: '16px',
-                                transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                                transition: 'transform 0.25s ease',
-                            }} />
+                            <Icons.ChevronDown
+                                className={clsx('changelog-expand-icon', expanded && 'changelog-expand-icon--open')}
+                            />
                         </div>
                     </div>
                 </div>
@@ -191,7 +189,7 @@ export default function ChangelogCard({ version, isProduccion }) {
                                 className="btn-changelog-add-inline"
                                 onClick={(e) => { e.stopPropagation(); setShowChangelog(true); }}
                             >
-                                <Icons.Plus style={{ width: '13px', height: '13px' }} />
+                                <Icons.Plus className="icon-sm" />
                                 Agregar entradas
                             </button>
                         </div>

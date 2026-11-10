@@ -28,6 +28,48 @@
     font-size: 0.95rem;
 }
 
+/* === TÍTULO Y ESTADO DE SINCRONIZACIÓN === */
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.header-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    padding: 2px var(--space-2);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+/* `.toast-spinner` (notifications.css) fija 20px; el icono debe seguir a 12px */
+.header-status-badge .icon-xs {
+    width: 12px;
+    height: 12px;
+}
+
+.header-sync-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--palette-green-500);
+    opacity: 0.8;
+}
+
+/* Input file disparado por JS: no debe ocupar espacio ni entrar en el tab order */
+.header-file-input {
+    display: none;
+}
+
 .header-actions {
     display: flex;
     align-items: center;

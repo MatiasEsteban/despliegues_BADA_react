@@ -43,7 +43,7 @@ export default function Dashboard() {
 
             <div className="view-container active">
                 {error && (
-                    <div className="login-error" style={{ display: 'block', marginBottom: '1rem' }}>
+                    <div className="login-error login-error--visible">
                         {error}
                     </div>
                 )}

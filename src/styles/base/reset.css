@@ -32,6 +32,23 @@ h1 {
     stroke: var(--text-primary);
 }
 
+/* Escala de iconos (P2-03). Se usa px para mantener exactitud con `.icon-small`;
+   equivalencias: 12px = 0.75rem, 13px = 0.8125rem, 14px = 0.875rem. */
+.icon-xs {
+    width: 12px;
+    height: 12px;
+}
+
+.icon-sm {
+    width: 13px;
+    height: 13px;
+}
+
+.icon-md {
+    width: 14px;
+    height: 14px;
+}
+
 /* === SCROLLBARS === */
 ::-webkit-scrollbar {
     width: 10px;

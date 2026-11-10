@@ -14,3 +14,8 @@
 .view-container.active {
     display: block;
 }
+
+/* Error de sincronización mostrado sobre la vista activa (Dashboard) */
+.view-container > .login-error {
+    margin-bottom: var(--space-4);
+}

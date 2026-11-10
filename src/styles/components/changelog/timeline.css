@@ -68,6 +68,15 @@
     opacity: 0.6;
 }
 
+/* No existe un tamaño de 15px en la escala de iconos: clase propia para no
+   alterar el tamaño ni el peso visual del buscador. */
+.changelog-search-icon {
+    width: 15px;
+    height: 15px;
+    opacity: 0.5;
+    flex-shrink: 0;
+}
+
 .changelog-search-clear {
     background: none;
     border: none;

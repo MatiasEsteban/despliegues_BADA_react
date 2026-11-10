@@ -93,8 +93,7 @@ export default function WorkspaceSwitcher() {
                 </span>
                 <span className="ws-trigger-name">{activeWorkspace?.name || 'Workspace'}</span>
                 <Icons.ChevronDown
-                    className="ws-trigger-chevron"
-                    style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                    className={`ws-trigger-chevron ${isDropdownOpen ? 'ws-trigger-chevron--open' : ''}`}
                 />
             </button>
 
@@ -112,7 +111,7 @@ export default function WorkspaceSwitcher() {
                                 >
                                     <span className="ws-item-check">
                                         {ws.id === activeWorkspaceId && (
-                                            <Icons.Check style={{ width: '14px', height: '14px' }} />
+                                            <Icons.Check className="icon-md" />
                                         )}
                                     </span>
                                     <span className="ws-item-name">{ws.name}</span>
@@ -126,7 +125,7 @@ export default function WorkspaceSwitcher() {
                                         onClick={(e) => handleDelete(e, ws)}
                                         title={`Eliminar "${ws.name}"`}
                                     >
-                                        <Icons.Trash style={{ width: '13px', height: '13px' }} />
+                                        <Icons.Trash className="icon-sm" />
                                     </button>
                                 )}
                             </li>
@@ -158,7 +157,7 @@ export default function WorkspaceSwitcher() {
                                     className="ws-new-cancel"
                                     onClick={() => { setShowInput(false); setNewName(''); }}
                                 >
-                                    <Icons.X style={{ width: '13px', height: '13px' }} />
+                                    <Icons.X className="icon-sm" />
                                 </button>
                             </div>
                         ) : (
@@ -166,7 +165,7 @@ export default function WorkspaceSwitcher() {
                                 className="ws-new-btn"
                                 onClick={() => setShowInput(true)}
                             >
-                                <Icons.Plus style={{ width: '14px', height: '14px' }} />
+                                <Icons.Plus className="icon-md" />
                                 Nuevo workspace
                             </button>
                         )}
