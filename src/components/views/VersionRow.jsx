@@ -40,7 +40,19 @@ export default function VersionRow({ version, isProduccion, onClick }) {
                 onClick={() => onClick(version.id)}
             >
                 <td className="version-list-cell-numero">
-                    V{version.numero}
+                    {/* P4-04.3: apertura accesible sin convertir el tr en control
+                        (se conserva la semántica de tabla y el click de ratón). */}
+                    <button
+                        type="button"
+                        className="version-list-open"
+                        aria-label={`Abrir detalle de la versión ${version.numero}`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onClick(version.id);
+                        }}
+                    >
+                        V{version.numero}
+                    </button>
                     {isProduccion && <span className="badge-produccion">PROD</span>}
                 </td>
 
@@ -68,6 +80,7 @@ export default function VersionRow({ version, isProduccion, onClick }) {
                         className="btn-action-list btn-version-info"
                         onClick={(e) => handleAction(e, () => setShowReport(true))}
                         title="Ver reporte de despliegue"
+                        aria-label={`Ver reporte de la versión ${version.numero}`}
                     >
                         <Icons.Info />
                     </button>
@@ -77,6 +90,9 @@ export default function VersionRow({ version, isProduccion, onClick }) {
                     <button
                         className="btn-action-list btn-marcar-produccion"
                         title={isProduccion ? "Desmarcar Prod" : "Marcar Prod"}
+                        aria-label={isProduccion
+                            ? `Desmarcar la versión ${version.numero} de producción`
+                            : `Marcar la versión ${version.numero} como en producción`}
                         onClick={(e) => handleAction(e, () => setVersionEnProduccion(isProduccion ? null : version.id))}
                     >
                         <Icons.Produccion />
@@ -85,14 +101,16 @@ export default function VersionRow({ version, isProduccion, onClick }) {
                     <button
                         className="btn-action-list btn-duplicar-version"
                         title="Duplicar"
+                        aria-label={`Duplicar la versión ${version.numero}`}
                         onClick={(e) => handleAction(e, () => duplicateVersion(version.id))}
                     >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" aria-hidden="true" focusable="false"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                     </button>
 
                     <button
                         className="btn-action-list btn-eliminar-version"
                         title="Eliminar"
+                        aria-label={`Eliminar la versión ${version.numero}`}
                         onClick={(e) => handleAction(e, handleDelete)}
                     >
                         <Icons.Trash />

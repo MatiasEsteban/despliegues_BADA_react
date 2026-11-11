@@ -183,6 +183,7 @@ export default function ChangelogEntriesModal({ isOpen, onClose, version, onSave
                                         className="btn-changelog-remove"
                                         onClick={() => handleRemove(item.id)}
                                         title="Eliminar este cambio"
+                                        aria-label="Eliminar este cambio"
                                     >
                                         <Icons.X className="icon-md" />
                                     </button>

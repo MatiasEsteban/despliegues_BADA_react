@@ -128,8 +128,9 @@ export default function Header({ workspaceType = 'full' }) {
                                         className={`btn-view-toggle ${viewMode === 'changelog' ? 'active' : ''}`}
                                         onClick={() => setViewMode('changelog')}
                                         title="Vista Changelog"
+                                        aria-label="Vista changelog"
                                     >
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="icon" aria-hidden="true" focusable="false">
                                             <line x1="3" y1="6" x2="21" y2="6"/>
                                             <line x1="3" y1="12" x2="15" y2="12"/>
                                             <line x1="3" y1="18" x2="18" y2="18"/>
@@ -143,8 +144,9 @@ export default function Header({ workspaceType = 'full' }) {
                                             className={`btn-view-toggle ${viewMode === 'list' ? 'active' : ''}`}
                                             onClick={() => setViewMode('list')}
                                             title="Vista Lista/Grid"
+                                            aria-label="Vista lista"
                                         >
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="icon">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="icon" aria-hidden="true" focusable="false">
                                                 <rect x="3" y="3" width="7" height="7"/>
                                                 <rect x="14" y="3" width="7" height="7"/>
                                                 <rect x="14" y="14" width="7" height="7"/>
@@ -156,7 +158,12 @@ export default function Header({ workspaceType = 'full' }) {
                             )}
                         </div>
 
-                        <button className="theme-toggle" title={`Cambiar a tema ${theme === 'dark' ? 'claro' : 'oscuro'}`} onClick={toggleTheme}>
+                        <button
+                            className="theme-toggle"
+                            title={`Cambiar a tema ${theme === 'dark' ? 'claro' : 'oscuro'}`}
+                            aria-label={`Cambiar a tema ${theme === 'dark' ? 'claro' : 'oscuro'}`}
+                            onClick={toggleTheme}
+                        >
                             {theme === 'dark' ? <Icons.Sun className="icon" /> : <Icons.Moon className="icon" />}
                         </button>
 

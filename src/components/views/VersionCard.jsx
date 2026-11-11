@@ -43,10 +43,20 @@ export default function VersionCard({ version, isProduccion, onClick }) {
             >
                 {/* HEADER */}
                 <div className="version-card-header">
-                    <div className="version-card-number">
+                    {/* P4-04.2: control de teclado específico; el div.version-card
+                        conserva onClick de ratón y no añade tab stop. */}
+                    <button
+                        type="button"
+                        className="version-card-number"
+                        aria-label={`Abrir detalle de la versión ${version.numero || '?'}`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onClick(version.id);
+                        }}
+                    >
                         V{version.numero || '?'}
                         {isProduccion && <span className="badge-produccion">EN PRODUCCIÓN</span>}
-                    </div>
+                    </button>
                     <div className="version-card-cdus-count">
                         {cdus.length} CDU{cdus.length !== 1 ? 's' : ''}
                     </div>
@@ -54,6 +64,9 @@ export default function VersionCard({ version, isProduccion, onClick }) {
                     <button
                         className="btn-marcar-produccion"
                         title={isProduccion ? "Desmarcar de producción" : "Marcar como en producción"}
+                        aria-label={isProduccion
+                            ? `Desmarcar la versión ${version.numero} de producción`
+                            : `Marcar la versión ${version.numero} como en producción`}
                         onClick={handleProduccionClick}
                     >
                         {isProduccion ? <Icons.Check /> : <Icons.Produccion />}
@@ -63,6 +76,7 @@ export default function VersionCard({ version, isProduccion, onClick }) {
                     <button
                         className="btn-version-info"
                         title="Ver reporte de despliegue"
+                        aria-label={`Ver reporte de la versión ${version.numero}`}
                         onClick={handleInfoClick}
                     >
                         <Icons.Info />

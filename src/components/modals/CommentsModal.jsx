@@ -47,7 +47,14 @@ export default function CommentsModal({ isOpen, onClose, version, onSave }) {
         <div className="comentario-categoria" key={key}>
             <div className="comentario-categoria-header">
                 <span className="comentario-categoria-titulo">{title}</span>
-                <button className="btn-comentario-cat btn-add" onClick={() => handleAdd(key)}>+</button>
+                <button
+                    type="button"
+                    className="btn-comentario-cat btn-add"
+                    onClick={() => handleAdd(key)}
+                    aria-label={`Agregar elemento en ${title}`}
+                >
+                    +
+                </button>
             </div>
             <div className="comentario-categoria-items">
                 {localComments[key].length === 0 && <div className="comentario-empty">Sin elementos</div>}
@@ -60,7 +67,14 @@ export default function CommentsModal({ isOpen, onClose, version, onSave }) {
                             rows={2}
                             placeholder="Escribe aquí..."
                         />
-                        <button className="btn-comentario-cat btn-remove" onClick={() => handleRemove(key, idx)}>×</button>
+                        <button
+                            type="button"
+                            className="btn-comentario-cat btn-remove"
+                            onClick={() => handleRemove(key, idx)}
+                            aria-label={`Eliminar elemento de ${title}`}
+                        >
+                            ×
+                        </button>
                     </div>
                 ))}
             </div>

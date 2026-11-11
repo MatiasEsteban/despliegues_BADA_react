@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import { clsx } from 'clsx';
 import { Icons } from '../ui/Icons';
 import { useDataStore } from '../../store/dataStore';
@@ -29,6 +29,7 @@ export default function ChangelogCard({ version, isProduccion }) {
     const { confirm } = useModal();
     const workspaceType = getActiveWorkspace()?.type || 'full';
     const isFullWorkspace = workspaceType === 'full';
+    const bodyId = useId();
 
     // Producción → expandido por defecto; el resto → colapsado
     const [expanded, setExpanded] = useState(isProduccion);
@@ -84,25 +85,39 @@ export default function ChangelogCard({ version, isProduccion }) {
 
                 {/* ── CARD HEADER ── */}
                 <div className="changelog-card-header" onClick={() => setExpanded(v => !v)}>
-                    {/* Left: versión + badges */}
-                    <div className="changelog-card-header-left">
-                        <span className="changelog-version-number">V{version.numero}</span>
-                        {isProduccion && (
-                            <span className="changelog-badge changelog-badge--prod">EN PRODUCCIÓN</span>
-                        )}
-                        {totalEntries > 0 && (
-                            <span className="changelog-badge changelog-badge--entries">
-                                {totalEntries} {totalEntries !== 1 ? 'entradas' : 'entrada'}
-                            </span>
-                        )}
-                    </div>
+                    {/* P4-04.1: un único control de teclado para expandir/colapsar.
+                        Envuelve solo metadatos (span, contenido de frase); fechas y
+                        acciones quedan como hermanas, nunca anidadas. */}
+                    <button
+                        type="button"
+                        className="changelog-card-toggle"
+                        aria-expanded={expanded}
+                        aria-controls={bodyId}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setExpanded(v => !v);
+                        }}
+                    >
+                        {/* Left: versión + badges */}
+                        <span className="changelog-card-header-left">
+                            <span className="changelog-version-number">V{version.numero}</span>
+                            {isProduccion && (
+                                <span className="changelog-badge changelog-badge--prod">EN PRODUCCIÓN</span>
+                            )}
+                            {totalEntries > 0 && (
+                                <span className="changelog-badge changelog-badge--entries">
+                                    {totalEntries} {totalEntries !== 1 ? 'entradas' : 'entrada'}
+                                </span>
+                            )}
+                        </span>
 
-                    {/* Center: título opcional */}
-                    <div className="changelog-card-header-center">
-                        {version.titulo && (
-                            <span className="changelog-version-title">{version.titulo}</span>
-                        )}
-                    </div>
+                        {/* Center: título opcional */}
+                        <span className="changelog-card-header-center">
+                            {version.titulo && (
+                                <span className="changelog-version-title">{version.titulo}</span>
+                            )}
+                        </span>
+                    </button>
 
                     {/* Right: fecha + acciones + chevron */}
                     <div className="changelog-card-header-right">
@@ -130,6 +145,7 @@ export default function ChangelogCard({ version, isProduccion }) {
                             <button
                                 className="btn-cl-action btn-cl-changelog"
                                 title="Editar changelog"
+                                aria-label={`Editar changelog de la versión ${version.numero}`}
                                 onClick={() => setShowChangelog(true)}
                             >
                                 <Icons.Edit className="icon-md" />
@@ -137,6 +153,7 @@ export default function ChangelogCard({ version, isProduccion }) {
                             <button
                                 className="btn-cl-action btn-cl-info"
                                 title="Info despliegue (copiar)"
+                                aria-label={`Copiar info de despliegue de la versión ${version.numero}`}
                                 onClick={() => setShowInfo(true)}
                             >
                                 <Icons.Info />
@@ -144,6 +161,9 @@ export default function ChangelogCard({ version, isProduccion }) {
                             <button
                                 className="btn-cl-action btn-cl-prod"
                                 title={isProduccion ? 'Desmarcar producción' : 'Marcar como producción'}
+                                aria-label={isProduccion
+                                    ? `Desmarcar la versión ${version.numero} de producción`
+                                    : `Marcar la versión ${version.numero} como en producción`}
                                 onClick={() => setVersionEnProduccion(isProduccion ? null : version.id)}
                             >
                                 {isProduccion
@@ -154,9 +174,10 @@ export default function ChangelogCard({ version, isProduccion }) {
                             <button
                                 className="btn-cl-action btn-cl-duplicate"
                                 title="Duplicar versión"
+                                aria-label={`Duplicar la versión ${version.numero}`}
                                 onClick={() => duplicateVersion(version.id)}
                             >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" aria-hidden="true" focusable="false">
                                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                                 </svg>
@@ -164,6 +185,7 @@ export default function ChangelogCard({ version, isProduccion }) {
                             <button
                                 className="btn-cl-action btn-cl-delete"
                                 title="Eliminar versión"
+                                aria-label={`Eliminar la versión ${version.numero}`}
                                 onClick={handleDelete}
                             >
                                 <Icons.Trash className="icon-md" />
@@ -179,7 +201,7 @@ export default function ChangelogCard({ version, isProduccion }) {
                 </div>
 
                 {/* ── CARD BODY (colapsable) ── */}
-                <div className={clsx('changelog-card-body', !expanded && 'changelog-card-body--collapsed')}>
+                <div id={bodyId} className={clsx('changelog-card-body', !expanded && 'changelog-card-body--collapsed')}>
 
                     {totalEntries === 0 ? (
                         /* Estado vacío — un solo botón centrado, claro */

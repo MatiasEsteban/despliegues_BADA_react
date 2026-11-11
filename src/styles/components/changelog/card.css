@@ -84,6 +84,24 @@
     background: var(--bg-secondary);
 }
 
+/* P4-04.1: reset local del botón de cabecera. Mantiene el aspecto del header
+   y deja el foco visible (no se toca `outline`; P4-07 añadirá la regla global). */
+.changelog-card-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
 .changelog-card-header-left {
     display: flex;
     align-items: center;
@@ -451,6 +469,11 @@
     .changelog-card-header {
         gap: 8px;
         padding: 12px;
+    }
+
+    .changelog-card-toggle {
+        flex-wrap: wrap;
+        gap: 8px;
     }
 
     .changelog-card-header-left {

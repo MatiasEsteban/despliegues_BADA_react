@@ -16,7 +16,14 @@ export function Toast({ message, type = 'info', onClose }) {
             <div className="toast-content">
                 <div className="toast-message">{message}</div>
             </div>
-            <button className="toast-close" onClick={onClose}>×</button>
+            <button
+                type="button"
+                className="toast-close"
+                onClick={onClose}
+                aria-label="Cerrar notificación"
+            >
+                <span aria-hidden="true">×</span>
+            </button>
         </div>
     );
 }

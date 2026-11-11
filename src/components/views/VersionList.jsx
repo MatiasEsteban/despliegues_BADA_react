@@ -49,15 +49,17 @@ export default function VersionList() {
                         className={`btn-view-toggle ${displayMode === 'grid' ? 'active' : ''}`}
                         onClick={() => setDisplayMode('grid')}
                         title="Vista Cuadrícula"
+                        aria-label="Vista cuadrícula"
                     >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="icon"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="icon" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                     </button>
                     <button
                         className={`btn-view-toggle ${displayMode === 'list' ? 'active' : ''}`}
                         onClick={() => setDisplayMode('list')}
                         title="Vista Lista"
+                        aria-label="Vista lista"
                     >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="icon"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="icon" aria-hidden="true" focusable="false"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                     </button>
                 </div>
 
@@ -124,9 +126,9 @@ export default function VersionList() {
                             {/* Paginación Simple */}
                             {totalPages > 1 && (
                                 <div className="pagination-container">
-                                    <button className="pagination-btn" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>«</button>
+                                    <button className="pagination-btn" aria-label="Página anterior" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>«</button>
                                     <span>Página {currentPage} de {totalPages}</span>
-                                    <button className="pagination-btn" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>»</button>
+                                    <button className="pagination-btn" aria-label="Página siguiente" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>»</button>
                                 </div>
                             )}
                         </div>

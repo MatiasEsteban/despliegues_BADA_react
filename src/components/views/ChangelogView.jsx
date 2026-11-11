@@ -84,6 +84,7 @@ export default function ChangelogView() {
                                 className="changelog-search-clear"
                                 onClick={() => { setSearchText(''); setFilter(''); }}
                                 title="Limpiar"
+                                aria-label="Limpiar búsqueda"
                             >
                                 <Icons.X className="icon-sm" />
                             </button>

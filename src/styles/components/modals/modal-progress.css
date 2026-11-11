@@ -160,15 +160,31 @@
     color: var(--text-secondary);
 }
 
+/* P4-04.5: el título de la tarjeta es el botón que expande/colapsa. El reset
+   conserva el aspecto de `.chart-subtitle`; el cursor pasa del contenedor al
+   control real. */
+.chart-toggle {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    width: 100%;
+    margin: 0 0 0.5rem;
+    padding: 0;
+    background: none;
+    border: 0;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
 .chart-card {
     background: var(--bg-secondary);
     padding: 1rem;
     border-radius: var(--radius-md);
 }
 
-/* Solo las tarjetas que se pueden expandir son clicables */
+/* Solo las tarjetas que se pueden expandir; el cursor lo aporta `.chart-toggle`. */
 .chart-card--expandable {
-    cursor: pointer;
     transition: all 0.3s ease;
 }
 

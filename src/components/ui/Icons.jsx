@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const Icons = {
+const RAW_ICONS = {
     // --- ICONO NUEVO ---
     Lock: (props) => (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
@@ -58,3 +58,27 @@ export const Icons = {
     Warning: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
     Error: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>,
 };
+
+/**
+ * Envuelve un icono para que sea decorativo por defecto (R-A11Y-03 / P4-05.5):
+ * `aria-hidden="true"` y `focusable="false"` salvo que el consumidor lo declare
+ * anunciable con `aria-label`, `aria-labelledby` o `role="img"`.
+ *
+ * Los props del consumidor se aplican al final, por lo que siempre pueden
+ * sobrescribir los valores por defecto.
+ */
+function withIconA11y(Icon) {
+    const AccessibleIcon = (props) => {
+        const isLabelled = Boolean(
+            props['aria-label'] || props['aria-labelledby'] || props.role === 'img'
+        );
+        const a11yProps = isLabelled ? {} : { 'aria-hidden': 'true', focusable: 'false' };
+        return <Icon {...a11yProps} {...props} />;
+    };
+    AccessibleIcon.displayName = `Icon(${Icon.displayName || Icon.name || 'anon'})`;
+    return AccessibleIcon;
+}
+
+export const Icons = Object.fromEntries(
+    Object.entries(RAW_ICONS).map(([name, Icon]) => [name, withIconA11y(Icon)])
+);

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useId, useMemo, useState } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { calculateVersionStats } from '../../store/statsCalculator';
@@ -80,11 +80,14 @@ function RenderLegend({ data, classes }) {
 }
 
 export default function ProgressModal({ isOpen, onClose, version }) {
-    if (!version) return null;
-
-    const stats = useMemo(() => calculateVersionStats(version), [version]);
+    // R-CODE-01: hooks antes de los returns condicionales (el guard de
+    // `version` vivía antes de useMemo/useState y rompía el orden de hooks).
+    const stats = useMemo(() => (version ? calculateVersionStats(version) : null), [version]);
     const [expandedChart, setExpandedChart] = useState(null);
+    const statusDetailsId = useId();
+    const badaDetailsId = useId();
 
+    if (!version) return null;
     if (!stats) return null;
 
     const { finalProgress, validCdus, statusCounts, difficultyCounts, badaVersionCounts } = stats;
@@ -128,13 +131,18 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                 <div className="charts-grid">
 
                     {/* 2. ESTADOS CDUS */}
-                    <div
-                        className={`chart-card chart-card--expandable ${expandedChart === 'status' ? 'expanded' : ''}`}
-                        onClick={() => setExpandedChart(expandedChart === 'status' ? null : 'status')}
-                    >
-                        <h4 className="chart-subtitle">Estados CDUs {expandedChart === 'status' && '(Click para contraer)'}</h4>
+                    <div className={`chart-card chart-card--expandable ${expandedChart === 'status' ? 'expanded' : ''}`}>
+                        <button
+                            type="button"
+                            className="chart-subtitle chart-toggle"
+                            aria-expanded={expandedChart === 'status'}
+                            aria-controls={statusDetailsId}
+                            onClick={() => setExpandedChart(expandedChart === 'status' ? null : 'status')}
+                        >
+                            Estados CDUs {expandedChart === 'status' && '(Click para contraer)'}
+                        </button>
 
-                        <div className={`chart-content-wrapper ${expandedChart === 'status' ? 'expanded' : ''}`}>
+                        <div id={statusDetailsId} className={`chart-content-wrapper ${expandedChart === 'status' ? 'expanded' : ''}`}>
                             {/* Gráfico */}
                             <div className="pie-chart-container pie-chart-container--fixed">
                                 <PieChart data={statusCounts} classes={STATUS_CLASSES} />
@@ -176,13 +184,18 @@ export default function ProgressModal({ isOpen, onClose, version }) {
                     </div>
 
                     {/* 4. VERSION BADA */}
-                    <div
-                        className={`chart-card chart-card--expandable ${expandedChart === 'bada' ? 'expanded' : ''}`}
-                        onClick={() => setExpandedChart(expandedChart === 'bada' ? null : 'bada')}
-                    >
-                        <h4 className="chart-subtitle">Versión Bada (Pasos) {expandedChart === 'bada' && '(Click para contraer)'}</h4>
+                    <div className={`chart-card chart-card--expandable ${expandedChart === 'bada' ? 'expanded' : ''}`}>
+                        <button
+                            type="button"
+                            className="chart-subtitle chart-toggle"
+                            aria-expanded={expandedChart === 'bada'}
+                            aria-controls={badaDetailsId}
+                            onClick={() => setExpandedChart(expandedChart === 'bada' ? null : 'bada')}
+                        >
+                            Versión Bada (Pasos) {expandedChart === 'bada' && '(Click para contraer)'}
+                        </button>
 
-                        <div className={`chart-content-wrapper ${expandedChart === 'bada' ? 'expanded' : ''}`}>
+                        <div id={badaDetailsId} className={`chart-content-wrapper ${expandedChart === 'bada' ? 'expanded' : ''}`}>
                             <div className="pie-chart-container pie-chart-container--fixed">
                                 <PieChart data={badaVersionCounts} classes={BADA_CLASSES} />
                                 <RenderLegend data={badaVersionCounts} classes={BADA_CLASSES} />

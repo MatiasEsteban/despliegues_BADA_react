@@ -165,6 +165,19 @@
     color: var(--text-primary);
 }
 
+/* P4-04.3: botón de apertura dentro de la celda; el tr no es interactivo por
+   teclado. Reset local para no alterar la tipografía de la celda. */
+.version-list-open {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
 .version-list-cell-numero .badge-produccion {
     font-size: 0.6rem;
     padding: 0.2rem 0.4rem;

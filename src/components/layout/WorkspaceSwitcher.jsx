@@ -84,7 +84,7 @@ export default function WorkspaceSwitcher() {
                 title="Cambiar workspace"
             >
                 <span className="ws-trigger-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" aria-hidden="true" focusable="false">
                         <rect x="2" y="3" width="9" height="9" rx="1.5"/>
                         <rect x="13" y="3" width="9" height="9" rx="1.5"/>
                         <rect x="2" y="14" width="9" height="9" rx="1.5"/>
@@ -124,6 +124,7 @@ export default function WorkspaceSwitcher() {
                                         className="ws-item-delete"
                                         onClick={(e) => handleDelete(e, ws)}
                                         title={`Eliminar "${ws.name}"`}
+                                        aria-label={`Eliminar workspace ${ws.name}`}
                                     >
                                         <Icons.Trash className="icon-sm" />
                                     </button>
@@ -156,6 +157,7 @@ export default function WorkspaceSwitcher() {
                                 <button
                                     className="ws-new-cancel"
                                     onClick={() => { setShowInput(false); setNewName(''); }}
+                                    aria-label="Cancelar creación de workspace"
                                 >
                                     <Icons.X className="icon-sm" />
                                 </button>

@@ -318,23 +318,23 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 
 | ID | Tarea | Archivos | Dep. | Esf. | Estado | Criterio |
 |---|---|---|---|---|---|---|
-| P4-04.1 | `ChangelogCard`: header como botón | `views/ChangelogCard.jsx` | P4-03.4 | S | ☐ | `aria-expanded` |
-| P4-04.2 | `VersionCard`: apertura como control | `views/VersionCard.jsx` | P4-03.4 | S | ☐ | Enter/Espacio |
-| P4-04.3 | `VersionRow`: fila como control | `views/VersionRow.jsx` | P4-03.4 | S | ☐ | Sin `tr onClick` |
-| P4-04.4 | `ExportModal`: opciones como radiogroup | `modals/ExportModal.jsx` | P4-03.4 | M | ☐ | Flechas + Enter |
-| P4-04.5 | `ProgressModal`: toggle como botón | `modals/ProgressModal.jsx` | P4-03.4 | S | ☐ | `aria-pressed` |
-| P4-04.6 | Verificar 0 controles anidados | — | P4-04.1–5 | XS | ☐ | `grep` y revisión |
-| P4-04.7 | Prueba de teclado por componente | — | P4-04.1–5 | M | ☐ | Evidencia por caso |
+| P4-04.1 | `ChangelogCard`: header como botón | `views/ChangelogCard.jsx` | P4-03.4 | S | ✅ | `.changelog-card-toggle` (span de metadatos) con `aria-expanded` + `aria-controls` al body; acciones y fechas hermanas; `div` exterior conserva `onClick` sin `tabIndex`; T-07 |
+| P4-04.2 | `VersionCard`: apertura como control | `views/VersionCard.jsx` | P4-03.4 | S | ✅ | Botón `.version-card-number` con `aria-label` «Abrir detalle de la versión X»; `div` conserva `onClick`; T-08 |
+| P4-04.3 | `VersionRow`: fila como control | `views/VersionRow.jsx` | P4-03.4 | S | ✅ | Botón `.version-list-open` en la 1.ª celda; `tr` sin `role`/`tabIndex` y con `onClick` de ratón; T-08 |
+| P4-04.4 | `ExportModal`: opciones como radiogroup | `modals/ExportModal.jsx` | P4-03.4 | M | ✅ | `role="radiogroup"` + `role="radio"`/`aria-checked` y roving tabindex; flechas/Home/End mueven selección y foco, Enter/Espacio confirman; T-09 |
+| P4-04.5 | `ProgressModal`: toggle como botón | `modals/ProgressModal.jsx` | P4-03.4 | S | ✅ | `.chart-toggle` es `<button>` con `aria-expanded` + `aria-controls`; hooks de `ProgressModal` antes de los returns (R-CODE-01); test propio |
+| P4-04.6 | Verificar 0 controles anidados | `scripts/audit-nested-controls.mjs` | P4-04.1–5 | XS | ✅ | 0 botón/botón, 0 `role="button"` con botón, 0 `div`/`tr` onClick+tabIndex sin rol interactivo (40 archivos) |
+| P4-04.7 | Prueba de teclado por componente | tests de vistas/modales | P4-04.1–5 | M | ◐ | Evidencia jsdom: T-07 (`ChangelogCard`), T-08 (`VersionCard`/`VersionRow`), T-09 (`ExportModal`) y `ProgressModal`; falta navegador real |
 
 ### 8.3 Nombres accesibles y formularios
 
 | ID | Tarea | Archivos | Dep. | Esf. | Estado | Criterio |
 |---|---|---|---|---|---|---|
-| P4-05.1 | Inventariar botones de solo icono | — | P4-04 | S | ☐ | Lista completa |
-| P4-05.2 | Nombres en Header/WorkspaceSwitcher | `layout/*.jsx` | P4-05.1 | S | ☐ | `aria-label` |
-| P4-05.3 | Nombres en Changelog (acciones, búsqueda, paginación) | `views/Changelog*` | P4-05.1 | S | ☐ | `aria-label` |
-| P4-05.4 | Nombres en modales y toasts | `modals/*`, `ui/Toast.jsx` | P4-05.1 | S | ☐ | `aria-label` |
-| P4-05.5 | Ocultar iconos decorativos | `ui/Icons.jsx` | P4-05.2–4 | S | ☐ | `aria-hidden="true"` |
+| P4-05.1 | Inventariar botones de solo icono | `docs/audits/2026-11-10-accessible-names.md` | P4-04 | S | ✅ | 25 botones de solo icono inventariados en `layout/*`, `views/Changelog*`/`Version*`, `modals/*` y `ui/Toast.jsx` (+ cierre de `Modal`, ya resuelto en P4-03.3) |
+| P4-05.2 | Nombres en Header/WorkspaceSwitcher | `layout/*.jsx` | P4-05.1 | S | ✅ | «Vista changelog», «Vista lista», «Cambiar a tema …», «Eliminar workspace X», «Cancelar creación de workspace» |
+| P4-05.3 | Nombres en Changelog (acciones, búsqueda, paginación) | `views/Changelog*`, `views/Version*` | P4-05.1 | S | ✅ | Acciones por versión con nombre concreto; «Limpiar búsqueda»; «Vista cuadrícula/lista»; «Página anterior/siguiente» |
+| P4-05.4 | Nombres en modales y toasts | `modals/*`, `ui/Toast.jsx` | P4-05.1 | S | ✅ | `+`/`×` de `CommentsModal`, eliminar cambio de `ChangelogEntriesModal`, «Cerrar notificación» en `Toast` |
+| P4-05.5 | Ocultar iconos decorativos | `ui/Icons.jsx` | P4-05.2–4 | S | ✅ | Wrapper `withIconA11y`: `aria-hidden="true"` + `focusable="false"` por defecto; anunciable con `aria-label`/`role="img"`; `Info` conserva `fill="white"`; T-10 |
 | P4-06.1 | Asociar label/id en `Input` | `ui/Input.jsx` | P4-04 | S | ☐ | `htmlFor` + `id` |
 | P4-06.2 | Asociar label/id en `Select` | `ui/Select.jsx` | P4-04 | S | ☐ | idem |
 | P4-06.3 | Asociar los dos campos de `DateQuickEditor` | `views/DateQuickEditor.jsx` | P4-04 | S | ☐ | idem |
@@ -436,14 +436,14 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 
 | ID | Caso | Archivo | Dep. | Esf. | Estado |
 |---|---|---|---|---|---|
-| P6-04.1 | T-01/T-02/T-03 Modal | `ui/__tests__/Modal.test.jsx` | P6-01.4, P4-03.4 | M | ☐ |
+| P6-04.1 | T-01/T-02/T-03 Modal | `ui/__tests__/Modal.test.jsx` | P6-01.4, P4-03.4 | M | ✅ |
 | P6-04.2 | T-04 Toast | `ui/__tests__/Toast.test.jsx` | P6-01.4, P4-09.4 | S | ☐ |
 | P6-04.3 | T-05 Button | `ui/__tests__/Button.test.jsx` | P6-01.4 | S | ✅ | Cubierto por el smoke test de P6-01.3: `type="button"` por defecto y `type="submit"` explícito |
 | P6-04.4 | T-06 Input | `ui/__tests__/Input.test.jsx` | P6-01.4, P4-06.6 | S | ☐ |
-| P6-04.5 | T-07 ChangelogCard | `views/__tests__/ChangelogCard.test.jsx` | P6-01.4, P4-04.1 | S | ☐ |
-| P6-04.6 | T-08 VersionCard/Row | `views/__tests__/VersionCard.test.jsx` | P6-01.4, P4-04.2–3 | S | ☐ |
-| P6-04.7 | T-09 ExportModal | `modals/__tests__/ExportModal.test.jsx` | P6-01.4, P4-04.4 | M | ☐ |
-| P6-04.8 | T-10 iconos con nombre | `scripts/check-a11y-icons.mjs` o axe | P6-03.1, P4-05.5 | S | ☐ |
+| P6-04.5 | T-07 ChangelogCard | `views/__tests__/ChangelogCard.test.jsx` | P6-01.4, P4-04.1 | S | ✅ |
+| P6-04.6 | T-08 VersionCard/Row | `views/__tests__/VersionCard.test.jsx`, `views/__tests__/VersionRow.test.jsx` | P6-01.4, P4-04.2–3 | S | ✅ |
+| P6-04.7 | T-09 ExportModal | `modals/__tests__/ExportModal.test.jsx` | P6-01.4, P4-04.4 | M | ✅ |
+| P6-04.8 | T-10 iconos con nombre | `ui/__tests__/Icons.test.jsx` + nombres en tests de vistas | P6-03.1, P4-05.5 | S | ✅ |
 | P6-04.9 | T-11 contraste | `scripts/check-contrast.mjs` | P4-08.6 | S | ☐ |
 | P6-04.10 | T-12 axe en vistas | tests de vistas | P6-01.4, P4-11 | M | ☐ |
 | P6-04.11 | T-13 reduced motion | test CSS/manual | P5-05.3 | XS | ☐ |
@@ -581,6 +581,7 @@ spec-001(P2-03.1): migrar estilos inline de ChangelogCard
 | 2026-11-10 | P3-05.1/2/4 y P3-06.1/2/3 aplicadas (solo CSS, sin JSX) + M-27 como P3-03.8: `pointer: coarse` con 44×44 en botones, cierre de modal, switcher, acciones de tarjeta/lista e inputs; `hover: none`/`:focus-within` revelan `.changelog-card-actions` y `.ws-item-delete`; `pointer: fine` fija 24×24 en `.btn-historial`, `.btn-toggle-pasos` y `.paso-check`, con separación ≥ 8 px entre acciones. Tablas: `#versions-list-container` pasa a `overflow-x: auto` (M-20), sombras con `background-attachment` en tabla y lista (sin JS), columnas 4/5 ocultas a 600 en la tabla de CDUs y columna 5 en la lista, `.cdu-actions` en wrap. No se reduce el `min-width: 1600px` de la tabla (R-RESP-03) y el script queda sin cambios: las 3 altas son falsos positivos justificados. Audit: 856→895 reglas, 73 hallazgos sin altas nuevas, hojas sin `@media` 11→7. Build verde (95.59 kB CSS). P3-05.3 y P3-06.4 quedan ⛔/◐ por P0-04. |
 | 2026-11-10 | P6-01.1–4 adelantadas (infraestructura de tests): Vitest 3.2.7 (pin `^3` porque la 5.x exige Vite ≥ 6), jsdom 29.1.1, RTL 16.3.3 + dom 10.4.2, user-event 14.6.9, jest-dom 7.0.1 y jest-axe 11.0.0. `vitest.config.js` (jsdom, globals, setup, `css:false`) y `src/test/setup.js` con stubs de `matchMedia`/`ResizeObserver`. `Button.test.jsx` con 4 tests (type por defecto, children/variante, onClick y submit) → P6-04.3 ✅. Sin coverage ni `verify` (P6-05). `npm test` 4/4, build verde, audits sin cambios. Documentado en `docs/audits/2026-11-10-testing-setup.md`; `globals: true` anotado para ESLint (P6-02). |
 | 2026-11-10 | P4-01/P4-02/P4-03 aplicadas en el `Modal` base: hooks (`useId`, `useRef`, `useFocusTrap`) antes del `return`; nuevo `src/hooks/useFocusTrap.js` con foco inicial, ciclo Tab/Shift+Tab, Escape, restauración de foco y `body.style.overflow` (único `style`, R-DS-03). ARIA: `role="dialog"` + `aria-modal` en `.modal`, `aria-labelledby` con `useId` (fallback `aria-label="Diálogo"`), cierre con `aria-label="Cerrar"`. `Modal.test.jsx` con 8 tests (T-01, T-02, T-03, scroll, fallback de título y `jest-axe`); total 12/12 con `Button`. Build verde (95.59 kB CSS) y audits sin cambios (`inline` 0 porque el hook queda fuera de `src/components`). P4-02.7 ⛔ P0-04. |
+| 2026-11-10 | P4-04.1–6 y P4-05.1–5 aplicadas (R-A11Y-02/03). Regla: cero controles anidados; el `onClick` de ratón de los contenedores (`div.changelog-card-header`, `div.version-card`, `tr.version-list-row`) se mantiene sin `role`/`tabIndex` y el teclado va por un control específico (`.changelog-card-toggle` con `aria-expanded`+`aria-controls`; `button.version-card-number` «Abrir detalle de la versión X»; `.version-list-open` en la 1.ª celda). `ExportModal`: `role="radiogroup"` + `role="radio"`/`aria-checked` con roving tabindex y flechas/Home/End/Enter/Espacio. `ProgressModal`: `.chart-toggle` es `<button>` con `aria-expanded` y los hooks (2 `useId`) pasan antes de los returns (R-CODE-01). `Icons.jsx` con `RAW_ICONS`+`withIconA11y`: decorativo por defecto (`aria-hidden`/`focusable="false"`), anunciable con `aria-label`/`role="img"`; `Info` conserva `fill="white"`. 25 botones de solo icono con `aria-label` en español conservando `title`. Nuevo `scripts/audit-nested-controls.mjs`: 0 violaciones en 40 archivos (la regla `div`/`tr` onClick+tabIndex exime roles ARIA interactivos, patrón exigido por P4-04.4); validado con fixture (2 violaciones, exit 1). Tests nuevos T-07/T-08/T-09/T-10 + `ProgressModal`: suite **28/28**. Build verde (122 módulos, 96.23 kB CSS), `audit-inline-styles` 0 y selectores 505/483/21. Documentado en `docs/audits/2026-11-10-accessible-names.md`. P4-04.7 queda ◐ (sin navegador, P0-04); `CduRow`/`StepsEditor` fuera del alcance de P4-05. |
 
 
 
