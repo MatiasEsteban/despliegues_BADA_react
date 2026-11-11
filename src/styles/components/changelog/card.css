@@ -481,3 +481,43 @@
         padding-right: 12px;
     }
 }
+
+/* ============================================
+   P3-05.2 — R-RESP-02: acciones visibles sin hover (M-16)
+   ============================================
+   Con teclado, el foco dentro de la cabecera revela las acciones (R-A11Y-02).
+   En táctil (`hover: none`) no existe el hover que las muestra: pasan a ser
+   siempre visibles. Se mantiene `opacity` (no `display`) para no alterar el
+   layout que P3-02.2 ya ajustó. */
+.changelog-card-header:focus-within .changelog-card-actions {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .changelog-card-actions {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   P3-05.1 — R-RESP-02: objetivos táctiles en puntero grueso
+   ============================================
+   `.btn-cl-action` mide 28×28: por debajo de 44 en táctil. Crece sin mover el
+   icono (16 px) gracias al centrado que ya aporta el flex base. */
+@media (pointer: coarse) {
+    .btn-cl-action {
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/* ============================================
+   P3-05.4 — R-RESP-02: separación entre controles adyacentes
+   ============================================
+   Las 5 acciones de la cabecera estaban a 4 px; a 8 px se cumple el mínimo de
+   separación sin tocar el layout (el flex ya envuelve desde P3-02.2). */
+@media (pointer: fine) {
+    .changelog-card-actions {
+        gap: 8px;
+    }
+}

@@ -220,3 +220,19 @@
     }
 }
 
+/* ============================================
+   P3-05.1 — R-RESP-02: cierre del modal en puntero grueso
+   ============================================
+   P3-03.2 ya fija 44×44 a ≤600. En tablet táctil (>600) el botón base mide
+   ~36 px, así que el mínimo táctil se aplica por tipo de puntero, no por ancho. */
+@media (pointer: coarse) {
+    .modal-close-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0;
+    }
+}
+

@@ -61,3 +61,17 @@
     font-size: 1rem;
     padding: 0.75rem;
 }
+
+/* ============================================
+   P3-03.8 — R-RESP-01: M-27, login a 320
+   ============================================
+   `min-width: 300px` gana al `max-width: 90vw` de `.modal` (288 px a 320) y deja
+   el modal pegado a los bordes. Se anula solo en pantalla estrecha; el
+   `max-width: 400px !important` base se recalcula para no superar el viewport. */
+@media (max-width: 600px) {
+    .modal-login {
+        min-width: 0;
+        width: 100%;
+        max-width: calc(100vw - 2 * var(--space-4)) !important;
+    }
+}

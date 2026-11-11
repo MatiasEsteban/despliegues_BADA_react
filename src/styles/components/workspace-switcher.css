@@ -334,3 +334,48 @@
         overflow-y: auto;
     }
 }
+
+/* ============================================
+   P3-05.2 — R-RESP-02: eliminar visible sin hover
+   ============================================
+   Mismos dos disparadores que en `changelog/card.css`: foco de teclado y
+   punteros sin hover. En táctil el botón de borrado deja de ser invisible. */
+.ws-item-wrap:focus-within .ws-item-delete {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .ws-item-delete {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   P3-05.1 — R-RESP-02: objetivos táctiles en puntero grueso
+   ============================================
+   `.ws-item` y `.ws-new-btn` miden ~33 px de alto; `.ws-item-delete`, 26×26. */
+@media (pointer: coarse) {
+    .ws-item {
+        min-height: 44px;
+    }
+
+    .ws-new-btn {
+        min-height: 44px;
+    }
+
+    .ws-item-delete {
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/* ============================================
+   P3-05.4 — R-RESP-02: separación entre controles adyacentes
+   ============================================
+   `.ws-item` y `.ws-item-delete` estaban a 2 px; con 8 px se cumple el mínimo
+   entre objetivos sin cambiar la estructura del dropdown. */
+@media (pointer: fine) {
+    .ws-item-wrap {
+        gap: 8px;
+    }
+}

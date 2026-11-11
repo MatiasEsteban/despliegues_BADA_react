@@ -519,3 +519,100 @@
     padding: 0 0.25rem;
     margin: 0 10px;
 }
+
+/* ============================================
+   P3-06.1 — R-RESP-03: scroll horizontal contenido
+   ============================================
+   M-20: `#versions-list-container` recortaba con `overflow: hidden` y no había
+   wrapper desplazable. Se cambia a `overflow-x: auto` conservando `overflow-y:
+   hidden` para no perder el recorte de las esquinas redondeadas. Solo ≤900:
+   en escritorio el comportamiento no cambia. */
+@media (max-width: 900px) {
+    #versions-list-container {
+        max-width: 100%;
+        min-width: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Indicio visual de scroll (mismo patrón que `table.css`, P3-06.2). */
+    #versions-list-container {
+        background-color: var(--bg-primary);
+        background-image:
+            linear-gradient(to right, var(--bg-primary) 40%, transparent),
+            linear-gradient(to left, var(--bg-primary) 40%, transparent),
+            linear-gradient(to right, rgba(0, 0, 0, 0.18), transparent),
+            linear-gradient(to left, rgba(0, 0, 0, 0.18), transparent);
+        background-position: left center, right center, left center, right center;
+        background-size: 48px 100%, 48px 100%, 16px 100%, 16px 100%;
+        background-repeat: no-repeat;
+        background-attachment: local, local, scroll, scroll;
+    }
+}
+
+/* ============================================
+   P3-06.3 — R-RESP-03: columnas secundarias a 600
+   ============================================
+   Columnas: 1 Versión · 2 CDUs · 3 Fuente · 4 Creada · 5 Despliegue · 6 Info ·
+   7 Acciones. A 900 ya se oculta Fuente y a 768 Creada; a 600 se oculta Despliegue,
+   que queda accesible en la vista de detalle. Se mantienen Versión, CDUs, el
+   botón de informe y las acciones.
+   M-17/M-18/M-19: cabeceras y celdas dejan de forzar `nowrap` para que el texto
+   refluya en vez de recortarse contra el borde. */
+@media (max-width: 600px) {
+    .versions-list-table th:nth-child(5),
+    .versions-list-table td:nth-child(5) {
+        display: none;
+    }
+
+    .versions-list-table th {
+        white-space: normal;
+    }
+
+    .version-list-row td {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .version-list-cell-cdus {
+        flex-wrap: wrap;
+        white-space: normal;
+        overflow: visible;
+    }
+
+    .versions-list-table th:nth-child(1),
+    .versions-list-table td:nth-child(1) {
+        width: 24%;
+    }
+
+    .versions-list-table th:nth-child(2),
+    .versions-list-table td:nth-child(2) {
+        width: 40%;
+    }
+
+    .versions-list-table th:nth-child(6),
+    .versions-list-table td:nth-child(6) {
+        width: 16%;
+    }
+
+    .versions-list-table th:nth-child(7),
+    .versions-list-table td:nth-child(7) {
+        width: 20%;
+    }
+}
+
+/* ============================================
+   P3-05.1 — R-RESP-02: objetivos táctiles en puntero grueso
+   ============================================
+   `.btn-action-list` mide 32×32 y los de paginación ~38 px de alto. */
+@media (pointer: coarse) {
+    .btn-action-list {
+        width: 44px;
+        height: 44px;
+    }
+
+    .pagination-btn {
+        min-height: 44px;
+    }
+}

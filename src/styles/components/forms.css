@@ -112,3 +112,32 @@
 .filter-input.filter-input--with-icon {
     padding-right: 2.5rem;
 }
+
+/* ============================================
+   P3-05.1 — R-RESP-02: controles de formulario en puntero grueso
+   ============================================
+   Solo inputs de texto/fecha/hora: un control de 44 px de alto es cómodo.
+   Los checkbox/radio NO se tocan aquí (no hay ninguno en esta hoja); el único
+   checkbox del proyecto (`.paso-check`, en `table.css`) vive dentro de un `<div>`
+   sin `<label>`, así que su área de toque no se puede ampliar solo con CSS y
+   permanece en 16×16: deuda que requiere JSX. */
+@media (pointer: coarse) {
+    .version-date-input,
+    .version-time-input,
+    .version-source-input {
+        min-height: 44px;
+    }
+}
+
+/* ============================================
+   P3-05.4 — R-RESP-02: mínimo 24×24 en puntero fino
+   ============================================
+   Los tres inputs miden ~36 px de alto con la fuente base. La regla deja el
+   mínimo explícito para fuentes de sistema más compactas. */
+@media (pointer: fine) {
+    .version-date-input,
+    .version-time-input,
+    .version-source-input {
+        min-height: 24px;
+    }
+}

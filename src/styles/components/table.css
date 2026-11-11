@@ -473,3 +473,107 @@
     padding: var(--space-7);
     color: var(--text-secondary);
 }
+
+/* ============================================
+   P3-06.1 — R-RESP-03: scroll horizontal contenido
+   ============================================
+   `.table-wrapper` ya tiene `overflow-x: auto` (base). Lo que faltaba era
+   garantizar que ningún ancestro flex/grid con `min-width: auto` impida que el
+   contenedor encoja: sin eso el wrapper nunca llega a desbordar y el scroll no
+   aparece. NO se reduce el `min-width` de `.tabla-despliegues` (1600 px): el
+   patrón pedido por R-RESP-03 es desplazamiento contenido, no comprimir celdas. */
+@media (max-width: 900px) {
+    .table-container {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .table-wrapper {
+        max-width: 100%;
+        min-width: 0;
+    }
+}
+
+/* ============================================
+   P3-06.2 — R-RESP-03: indicio visual de desplazamiento
+   ============================================
+   Sin JS: sombras laterales con `background-attachment: local` (las cubiertas que
+   viajan con el contenido ocultan la sombra cuando ya no queda nada que desplazar).
+   Funciona en cualquier contenedor con scroll; a ≤900 hay overflow garantizado
+   (1000 px de tabla en ≤900 de viewport). Las sombras se pintan detrás de la
+   tabla: se ven en el cuerpo (celdas transparentes), no sobre el `thead` azul. */
+@media (max-width: 900px) {
+    .table-wrapper {
+        background-image:
+            linear-gradient(to right, var(--bg-primary) 40%, transparent),
+            linear-gradient(to left, var(--bg-primary) 40%, transparent),
+            linear-gradient(to right, rgba(0, 0, 0, 0.18), transparent),
+            linear-gradient(to left, rgba(0, 0, 0, 0.18), transparent);
+        background-position: left center, right center, left center, right center;
+        background-size: 48px 100%, 48px 100%, 16px 100%, 16px 100%;
+        background-repeat: no-repeat;
+        background-attachment: local, local, scroll, scroll;
+    }
+}
+
+/* ============================================
+   P3-06.3 — R-RESP-03: columnas secundarias a 600
+   ============================================
+   Columnas: 1 CDU · 2 Descripción · 3 Estado · 4 Métrica BADA · 5 Versión Miró ·
+   6 Pasos · 7 Responsables · 8 Observaciones · 9 Acciones.
+   Se ocultan 4 y 5 (metadatos de versiones), que siguen editables a partir de
+   600 px. El `min-width: 1600px` se conserva: la tabla sigue desplazándose.
+   La fila de estado vacío usa `colSpan="9"` (DetailView.jsx:181); con columnas
+   ocultas el navegador recorta el colspan al número de columnas visibles, así que
+   la celda sigue cubriendo el ancho disponible. Limitación: en ≤600 no se pueden
+   editar Métrica BADA ni Versión Miró. */
+@media (max-width: 600px) {
+    .tabla-despliegues th:nth-child(4),
+    .tabla-despliegues td:nth-child(4),
+    .tabla-despliegues th:nth-child(5),
+    .tabla-despliegues td:nth-child(5) {
+        display: none;
+    }
+
+    /* M-29: las acciones por fila envuelven en vez de comprimirse. */
+    .cdu-actions {
+        flex-wrap: wrap;
+    }
+
+    .table-empty-cell {
+        padding: var(--space-5);
+    }
+}
+
+/* ============================================
+   P3-05.1 / P3-05.4 — R-RESP-02: controles de la tabla
+   ============================================
+   Puntero grueso: acordeón de pasos y botones de paso a 44. Puntero fino: el
+   acordeón (~20 px) y el checkbox de paso (16×16) suben al mínimo de 24. El
+   checkbox no crece a 44 en táctil: no tiene `<label>` que amplíe el área y
+   agrandarlo rompería la fila (deuda JSX). */
+@media (pointer: coarse) {
+    .btn-toggle-pasos {
+        min-width: 44px;
+        min-height: 44px;
+        justify-content: center;
+    }
+
+    .btn-paso {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+@media (pointer: fine) {
+    .btn-toggle-pasos {
+        min-width: 24px;
+        min-height: 24px;
+        justify-content: center;
+    }
+
+    .paso-check {
+        min-width: 24px;
+        min-height: 24px;
+    }
+}

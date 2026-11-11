@@ -622,4 +622,105 @@ que se limitó a `modal-base.css`).
 6. El corte visual de `pre-wrap` en el resumen (48 columnas en 288 px).
 7. **200 % de zoom** (R-A11Y-08 → P3-07.1).
 
+## 9. Ejecución P3-05 / P3-06 — interacción y tablas (2026-11-10)
+
+P3-05.1, P3-05.2, P3-05.4, P3-06.1, P3-06.2, P3-06.3 y M-27. P3-05.3 y P3-06.4
+quedan sin verificación de render. Solo CSS: 0 cambios de JSX. Los bloques de
+interacción usan `@media (pointer: coarse)`, `(pointer: fine)` y `(hover: none)`;
+los de tabla siguen el patrón desktop-first con `max-width`.
+
+### 9.1 Reglas por hallazgo
+
+| Hallazgo | Archivo | Media | Regla aplicada | Riesgo residual |
+|---|---|---|---|---|
+| P3-05.1 (objetivos táctiles) | `buttons.css` | `pointer: coarse` | `.btn`, `.btn-danger`, `.btn-historial`, `.btn-responsable`, `.btn-observacion`, `.btn-comentario-cat`, `.theme-toggle` a `min-width/min-height: 44px` con `inline-flex` centrado; `.btn-marcar-produccion` y `.btn-version-info` a `44×44` | botones circulares 8 px mayores; `.btn-icon` no existe en el codebase |
+| P3-05.1 | `forms.css` | `pointer: coarse` | inputs de fecha/hora/fuente `min-height: 44px` | los checkbox/radio no se tocan (no hay en esta hoja) |
+| P3-05.1 | `changelog/card.css` | `pointer: coarse` | `.btn-cl-action` (28×28) a `44×44` | 5 acciones ocupan 236 px en táctil; la cabecera ya envuelve (P3-02.2) |
+| P3-05.1 | `workspace-switcher.css` | `pointer: coarse` | `.ws-item` y `.ws-new-btn` con `min-height: 44px`; `.ws-item-delete` (26×26) a `44×44` | el dropdown gana altura por fila |
+| P3-05.1 | `modals/modal-base.css` | `pointer: coarse` | `.modal-close-btn` a 44×44 fuera de ≤600 (donde ya lo fija P3-03.2) | — |
+| P3-05.1 | `table.css` | `pointer: coarse` | `.btn-toggle-pasos` y `.btn-paso` a 44 | — |
+| P3-05.1 | `list-view.css` | `pointer: coarse` | `.btn-action-list` (32×32) a `44×44`; `.pagination-btn` con `min-height: 44px` | 3 acciones por fila = 132 px; la tabla ya desplaza |
+| M-16 | `changelog/card.css` | `hover: none` + `:focus-within` | `.changelog-card-actions { opacity: 1 }`; `.changelog-card-header:focus-within .changelog-card-actions { opacity: 1 }` | en táctil las 5 acciones siempre visibles (más densidad) |
+| P3-05.2 | `workspace-switcher.css` | `hover: none` + `:focus-within` | `.ws-item-delete { opacity: 1 }`; `.ws-item-wrap:focus-within .ws-item-delete { opacity: 1 }` | — |
+| P3-05.2 | `list-view.css` | — | **sin cambios**: el informe confirma que no hay acciones ocultas (los botones de `VersionRow` son visibles) | — |
+| P3-05.4 | `buttons.css` | `pointer: fine` | `.btn-historial` con `min-width/min-height: 24px` | — |
+| P3-05.4 | `forms.css` | `pointer: fine` | inputs con `min-height: 24px` (ya medían ~36) | — |
+| P3-05.4 | `changelog/card.css` | `pointer: fine` | `.changelog-card-actions` con `gap: 8px` (antes 4) | la cabecera ocupa 16 px más |
+| P3-05.4 | `workspace-switcher.css` | `pointer: fine` | `.ws-item-wrap` con `gap: 8px` (antes 2) | el nombre del workspace pierde 6 px |
+| P3-05.4 | `table.css` | `pointer: fine` | `.btn-toggle-pasos` a 24; `.paso-check` con `min-width/min-height: 24px` | el checkbox crece de 16 a 24 solo en puntero fino |
+| A-02 / A-03 | `table.css` | `max-width: 900px` | `.table-container` y `.table-wrapper` con `max-width: 100%; min-width: 0` (el `overflow-x:auto` ya era base); **se conserva** `min-width: 1600px` de la tabla | la tabla sigue recorriendo 1600 px (patrón R-RESP-03) |
+| P3-06.2 | `table.css` | `max-width: 900px` | sombras laterales con 4 capas `linear-gradient` + `background-attachment: local, local, scroll, scroll` | las sombras se pintan detrás de la tabla: no se ven sobre el `thead` azul |
+| M-20 | `list-view.css` | `max-width: 900px` | `#versions-list-container` pasa de `overflow: hidden` a `overflow-x: auto; overflow-y: hidden` + `-webkit-overflow-scrolling: touch` y el mismo indicio de scroll | conserva el recorte de esquinas (`overflow-y: hidden`) |
+| M-17 / M-18 / M-19 | `list-view.css` | `max-width: 600px` | cabeceras y celdas sin `nowrap`; `.version-list-cell-cdus` con `flex-wrap` y `overflow: visible` | los textos largos ocupan más alto |
+| P3-06.3 | `list-view.css` | `max-width: 600px` | se oculta la columna 5 (Despliegue); anchos 24/40/16/20 % para Versión/CDUs/Info/Acciones | la fecha de despliegue solo se ve en detalle |
+| P3-06.3 | `table.css` | `max-width: 600px` | se ocultan las columnas 4 (Métrica BADA) y 5 (Versión Miró); `.cdu-actions` con `flex-wrap` (M-29); `.table-empty-cell` con padding menor | esas dos columnas no se pueden editar en ≤600 (siguen guardadas) |
+| M-27 | `modals/modal-login.css` | `max-width: 600px` | `min-width: 0; width: 100%; max-width: calc(100vw - 2 * var(--space-4)) !important` | el login deja de medir 300 px fijos; a 320 queda en 288 |
+
+### 9.2 Decisiones
+
+1. **P3-06.3 y `colSpan="9"`.** `DetailView.jsx:181` mantiene `colSpan="9"`; al ocultar
+   dos columnas el navegador recorta el colspan al número de columnas visibles, así que
+   `.table-empty-cell` sigue cubriendo la fila. No se toca JSX.
+2. **No se reduce el `min-width` de `.tabla-despliegues`.** P3-06.1 pide scroll
+   contenido, no compresión: se mantienen 1600 px (y 1000 px en `grid.css`). Ocultar
+   columnas es una medida de densidad, no de ancho; el desplazamiento sigue existiendo.
+   Por eso el script se deja **sin cambios**: las 3 altas (A-02, A-03 y `.toast`) siguen
+   contando como falsos positivos justificados.
+3. **`.btn-icon` no existe.** La búsqueda en `src/components` y `src/styles` da 0
+   resultados; la regla de P3-05.1 no tiene destino y se documenta en vez de inventar
+   una clase.
+4. **Checkbox de pasos.** `StepsEditor.jsx:62` envuelve el input en `<div
+   class="paso-check-container">`, no en `<label>`: ampliar el área de toque no es
+   posible solo con CSS. Se sube a 24×24 en puntero fino y se deja en 16×16 en táctil
+   (no debe crecer a 44). Deuda JSX fuera de F3.
+5. **Indicio de scroll en la lista.** El informe pedía tratar tabla y lista «de forma
+   consistente»; se replica el patrón de degradados de `table.css` en
+   `#versions-list-container` a ≤900, no solo en la tabla.
+6. **M-27 se trazó como `P3-03.8`** en `modal-login.css` para no reabrir P3-03.2, ya
+   cerrada.
+
+### 9.3 Verificación
+
+```text
+antes    node scripts/audit-responsive.mjs
+         856 reglas · 73 hallazgos (alta 3 · media 29 · baja 41)
+         11 hojas de layout sin @media (changelog/* + modals/*: 3)
+
+después  node scripts/audit-responsive.mjs
+         895 reglas · 73 hallazgos (alta 3 · media 29 · baja 41)
+          7 hojas de layout sin @media (changelog/* + modals/*: 2)
+
+npm run build              ✓ 121 módulos · dist/assets/index-*.css 95.59 kB · exit 0
+llaves/@media            8/8 hojas tocadas con llaves balanceadas y @media cerrados
+audit-selectors          muertas 1 · dinámicas 21 · clases 502 · consumidas 480
+dev server               GET /src/styles/main.css → 200 (184 kB) con pointer: coarse,
+                         pointer: fine, hover: none y overflow-x: auto
+```
+
+Sin altas nuevas: las 3 siguen siendo `.tabla-despliegues` (A-02/A-03, scroll
+contenido) y `.toast` (falso positivo, `grid.css @600`). Las 2 hojas de `modals/`
+que aún no tienen `@media` son `modal-evolution` y `modal-history` (sin hallazgos).
+`audit-selectors` no cambia porque no se añadieron ni retiraron clases.
+
+### 9.4 P3-06.4 — tabla de CDUs (estado `◐`)
+
+No verificable sin navegador. Al abrir la vista de detalle hay que comprobar:
+
+1. Que el `.table-wrapper` desplace horizontalmente y que el indicio aparezca solo
+   cuando queda contenido a la izquierda/derecha.
+2. Que a 600 las columnas Métrica BADA y Versión Miró desaparezcan sin desalinear el
+   `thead` respecto al `tbody`.
+3. Que la fila vacía (`colSpan="9"` → 7 columnas visibles) siga ocupando todo el ancho.
+4. Que `.cdu-actions` envuelva (M-29) y que los controles de 44 px en táctil no
+   aplasten la fila.
+
+### 9.5 Lo que sigue necesitando navegador
+
+1. P3-05.3: emulación táctil real (Chrome DevTools) y que las acciones de tarjeta/
+   switcher se vean sin hover.
+2. Que `pointer: coarse` se evalúe como se espera en tablets híbridas (Surface).
+3. El scroll real y las sombras del indicio en la tabla y en la lista.
+4. Que las columnas ocultas y los textos con wrap no generen filas rotas con datos reales.
+5. **200 % de zoom** (R-A11Y-08 → P3-07.1).
+
 
