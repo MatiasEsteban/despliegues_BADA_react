@@ -418,10 +418,10 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 
 | ID | Tarea | Archivos | Dep. | Esf. | Estado | Criterio |
 |---|---|---|---|---|---|---|
-| P6-01.1 | Instalar Vitest, RTL, user-event, jest-axe y jsdom | `package.json` | G5 | M | ☐ | `npm ci` reproducible |
-| P6-01.2 | Configurar `vitest.config.js` y setup | `vitest.config.js`, `src/test/setup.js` | P6-01.1 | S | ☐ | `npm test` arranca |
-| P6-01.3 | Crear smoke test de `Button` | `ui/__tests__/Button.test.jsx` | P6-01.2 | XS | ☐ | 1 test verde |
-| P6-01.4 | Añadir script `test` | `package.json` | P6-01.2 | XS | ☐ | Ejecutable |
+| P6-01.1 | Instalar Vitest, RTL, user-event, jest-axe y jsdom | `package.json` | G5 | M | ✅ | `vitest 3.2.7` (pin `^3`; la 5.x exige Vite ≥ 6), `jsdom 29.1.1`, `@testing-library/react 16.3.3`, `@testing-library/dom 10.4.2`, `@testing-library/user-event 14.6.9`, `@testing-library/jest-dom 7.0.1`, `jest-axe 11.0.0`. `npm run build` sigue en verde |
+| P6-01.2 | Configurar `vitest.config.js` y setup | `vitest.config.js`, `src/test/setup.js` | P6-01.1 | S | ✅ | `vitest.config.js` con `jsdom`, `globals`, `setupFiles`, `css: false` y `restoreMocks`; `setup.js` con jest-dom/vitest, `toHaveNoViolations` y stubs de `matchMedia`/`ResizeObserver`. Sin coverage |
+| P6-01.3 | Crear smoke test de `Button` | `ui/__tests__/Button.test.jsx` | P6-01.2 | XS | ✅ | 4 tests sin snapshots: `<button>`, `type="button"` por defecto, children/variante y `onClick`. `npm test` → 4/4 |
+| P6-01.4 | Añadir script `test` | `package.json` | P6-01.2 | XS | ✅ | `test: vitest run` y `test:watch: vitest`; `verify` queda para P6-05 |
 | P6-02.1 | Instalar ESLint y plugins JS/React | `package.json` | G5 | M | ☐ | Incluye `eslint`, `globals`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh` |
 | P6-02.2 | Corregir `eslint.config.js` para JSX | `eslint.config.js` | P6-02.1 | S | ☐ | Lint sobre `.jsx` |
 | P6-02.3 | Instalar y configurar Stylelint | `package.json`, `stylelint.config.js` | G5 | M | ☐ | `npm run lint:css` |
@@ -438,7 +438,7 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 |---|---|---|---|---|---|
 | P6-04.1 | T-01/T-02/T-03 Modal | `ui/__tests__/Modal.test.jsx` | P6-01.4, P4-03.4 | M | ☐ |
 | P6-04.2 | T-04 Toast | `ui/__tests__/Toast.test.jsx` | P6-01.4, P4-09.4 | S | ☐ |
-| P6-04.3 | T-05 Button | `ui/__tests__/Button.test.jsx` | P6-01.4 | S | ☐ |
+| P6-04.3 | T-05 Button | `ui/__tests__/Button.test.jsx` | P6-01.4 | S | ✅ | Cubierto por el smoke test de P6-01.3: `type="button"` por defecto y `type="submit"` explícito |
 | P6-04.4 | T-06 Input | `ui/__tests__/Input.test.jsx` | P6-01.4, P4-06.6 | S | ☐ |
 | P6-04.5 | T-07 ChangelogCard | `views/__tests__/ChangelogCard.test.jsx` | P6-01.4, P4-04.1 | S | ☐ |
 | P6-04.6 | T-08 VersionCard/Row | `views/__tests__/VersionCard.test.jsx` | P6-01.4, P4-04.2–3 | S | ☐ |
@@ -579,6 +579,7 @@ spec-001(P2-03.1): migrar estilos inline de ChangelogCard
 | 2026-11-10 | P3-02.1–8 aplicadas (solo CSS, sin JSX): 8 hojas con breakpoints 900/768/600 (+480 justificado solo en `cards.css`); todos los bloques al final de cada hoja, 0 cambios de escritorio salvo `repeat(4, 1fr)` → `repeat(4, minmax(0,1fr))` en `cards.css` (A-01, causa raíz). Audit: 74→73 hallazgos (alta 4→3; quedan `.toast` —falso positivo— y las 2 altas de tabla de P3-06.1), hojas de layout sin `@media` 26→18 (`changelog/*`+`modals/*` 14→10), selectores `muertas 1`/`dinámicas 21` intactos. P3-02.6 sigue ⛔ P0-04: sin build no se mide el scroll real. |
 | 2026-11-10 | P3-03.1–7 y P3-04.1 aplicadas (solo CSS, sin JSX): 7 hojas de `modals/` con @media 768/600 (`full-summary`, `base`, `progress`, `export-modal`, `deployment-info`, `comentarios`, `deployment-report`); `.modal-message--full`, `.chart-card` y `.legend-item` sin tocar. P3-04.1 sin reglas nuevas: A-05 ya cubierto por P3-02.8 en `layouts/header.css`. Verificado que `.deployment-report` no existe en el DOM (clase muerta de `audit-selectors`) y que `PieChart` usa `viewBox="0 0 100 100"` sin `width`/`height`. Audit: 809→856 reglas, 73 hallazgos sin altas nuevas (alta 3/media 29/baja 41), hojas sin `@media` 18→11. Build verde (`vite 5.4.21`, 91.76 kB CSS) y selectores `muertas 1`/`dinámicas 21`. M-27 (`.modal-login min-width`) queda fuera del lote; P3-04.2 sigue ⛔ P0-04. |
 | 2026-11-10 | P3-05.1/2/4 y P3-06.1/2/3 aplicadas (solo CSS, sin JSX) + M-27 como P3-03.8: `pointer: coarse` con 44×44 en botones, cierre de modal, switcher, acciones de tarjeta/lista e inputs; `hover: none`/`:focus-within` revelan `.changelog-card-actions` y `.ws-item-delete`; `pointer: fine` fija 24×24 en `.btn-historial`, `.btn-toggle-pasos` y `.paso-check`, con separación ≥ 8 px entre acciones. Tablas: `#versions-list-container` pasa a `overflow-x: auto` (M-20), sombras con `background-attachment` en tabla y lista (sin JS), columnas 4/5 ocultas a 600 en la tabla de CDUs y columna 5 en la lista, `.cdu-actions` en wrap. No se reduce el `min-width: 1600px` de la tabla (R-RESP-03) y el script queda sin cambios: las 3 altas son falsos positivos justificados. Audit: 856→895 reglas, 73 hallazgos sin altas nuevas, hojas sin `@media` 11→7. Build verde (95.59 kB CSS). P3-05.3 y P3-06.4 quedan ⛔/◐ por P0-04. |
+| 2026-11-10 | P6-01.1–4 adelantadas (infraestructura de tests): Vitest 3.2.7 (pin `^3` porque la 5.x exige Vite ≥ 6), jsdom 29.1.1, RTL 16.3.3 + dom 10.4.2, user-event 14.6.9, jest-dom 7.0.1 y jest-axe 11.0.0. `vitest.config.js` (jsdom, globals, setup, `css:false`) y `src/test/setup.js` con stubs de `matchMedia`/`ResizeObserver`. `Button.test.jsx` con 4 tests (type por defecto, children/variante, onClick y submit) → P6-04.3 ✅. Sin coverage ni `verify` (P6-05). `npm test` 4/4, build verde, audits sin cambios. Documentado en `docs/audits/2026-11-10-testing-setup.md`; `globals: true` anotado para ESLint (P6-02). |
 
 
 
