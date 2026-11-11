@@ -87,7 +87,6 @@
     resize: vertical;
 }
 .comentario-textarea:focus {
-    outline: none;
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.1);
 }

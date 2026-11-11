@@ -23,7 +23,6 @@
 
 .login-input:focus {
     border-color: var(--accent-color);
-    outline: none;
 }
 
 .login-error {

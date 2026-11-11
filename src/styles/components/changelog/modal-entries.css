@@ -326,7 +326,6 @@
     background: transparent;
     color: var(--text-primary);
     font-size: 0.83rem;
-    outline: none;
     width: 100%;
     font-family: inherit;
 }
@@ -341,7 +340,6 @@
     background: transparent;
     color: var(--text-primary);
     font-size: 0.83rem;
-    outline: none;
     width: 100%;
     font-family: inherit;
 }
@@ -361,7 +359,6 @@
     font-size: 0.875rem;
     line-height: 1.5;
     resize: vertical;
-    outline: none;
     font-family: inherit;
     min-height: 48px;
     transition: border-color 0.15s;

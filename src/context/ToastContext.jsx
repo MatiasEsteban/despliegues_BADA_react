@@ -27,7 +27,10 @@ export function ToastProvider({ children }) {
     return (
         <ToastContext.Provider value={{ showToast }}>
             {children}
-            <div className="toast-container">
+            {/* P4-09.1 / R-A11Y-07: el contenedor es la región viva. Los toasts
+                insertados se anuncian; `aria-atomic="false"` evita releer toda
+                la lista cada vez que se añade uno. */}
+            <div className="toast-container" role="status" aria-live="polite" aria-atomic="false">
                 {toasts.map((toast) => (
                     <Toast
                         key={toast.id}

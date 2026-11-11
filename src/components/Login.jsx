@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Icons } from './ui/Icons';
 import { Button } from './ui/Button';
@@ -10,6 +10,8 @@ export default function Login() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
+    // P4-06.5: id estable para que los campos apunten al mensaje de error.
+    const errorId = useId();
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -47,6 +49,8 @@ export default function Login() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
+                            aria-invalid={error ? 'true' : undefined}
+                            aria-describedby={error ? errorId : undefined}
                         />
 
                         <Input
@@ -58,10 +62,12 @@ export default function Login() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
+                            aria-invalid={error ? 'true' : undefined}
+                            aria-describedby={error ? errorId : undefined}
                         />
 
                         {error && (
-                            <div className="login-error login-error--visible">
+                            <div id={errorId} className="login-error login-error--visible" role="alert">
                                 {error}
                             </div>
                         )}

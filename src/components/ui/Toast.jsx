@@ -9,7 +9,10 @@ export function Toast({ message, type = 'info', onClose }) {
     if (type === 'warning') Icon = Icons.Warning;
 
     return (
-        <div className={clsx("toast", `toast-${type}`, "toast-show")}>
+        <div
+            className={clsx("toast", `toast-${type}`, "toast-show")}
+            role={type === 'error' ? 'alert' : 'status'}
+        >
             <div className="toast-icon">
                 <Icon />
             </div>

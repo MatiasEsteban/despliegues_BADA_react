@@ -43,7 +43,6 @@
 .version-date-input:focus,
 .version-time-input:focus,
 .version-source-input:focus {
-    outline: none;
     border-color: var(--accent-color); /* Usar accent-color normal */
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent); /* Sombra de foco sutil */
 }

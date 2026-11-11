@@ -13,6 +13,32 @@ body {
     transition: background 0.3s ease;
 }
 
+/* === FOCO VISIBLE (P4-07.1 / R-A11Y-05) ===
+   Anillo global de 2 px con separación de 2 px. Token elegido: --text-primary
+   porque --accent-color no alcanza 3:1 contra el fondo en ninguno de los dos
+   temas (#B6BECA sobre #FDFDFD ≈ 1,84:1; #0C0C0C sobre #050505 ≈ 1,05:1).
+   --text-primary rinde ≈ 11,4:1 en claro y ≈ 16,5:1 en oscuro. */
+:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 2px;
+}
+
+/* === CONTENIDO SOLO PARA LECTORES DE PANTALLA (P4-09.3) ===
+   Región viva de anuncios: oculta visualmente sin `display: none` ni
+   `visibility: hidden`, que la sacarían del árbol de accesibilidad. */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
 h1 {
     font-size: 1.75rem;
     color: var(--text-primary);

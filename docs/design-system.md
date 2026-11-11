@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Estado | Vivo — Fase 1 completada (`P1-02`, `P1-03`, `P1-04`) |
-| Última actualización | 2026-11-09 |
+| Última actualización | 2026-11-10 |
 | Spec | [`SPEC-001`](../specs/SPEC-001-endurecimiento-diseno-accesibilidad.md) |
 | Plan | [`plan.md`](../plan.md) |
 | Fuente de verdad | `despliegues-bada-react/src/styles/base/variables.css` |
@@ -284,3 +284,36 @@ El `overflow` es el único `style` que escribe el hook: R-DS-03 lo admite como m
 | `.modal-close-btn` | `aria-label="Cerrar"`; el `×` va en `<span aria-hidden="true">` |
 
 El overlay no lleva rol: el diálogo es `.modal`. Un modal sin `title` conserva el `<h2>` vacío para no alterar el layout del header, pero su nombre accesible es `Diálogo`. Los modales reales siempre pasan título.
+
+### 10.3 Foco visible global (P4-07 / R-A11Y-05)
+
+`base/reset.css` define una única regla para todo elemento enfocado por teclado:
+
+```css
+:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 2px;
+}
+```
+
+| Token | Claro | Oscuro | Contraste (claro / oscuro) |
+|---|---|---:|---:|
+| `--text-primary` (elegido) | `#38393A` | `#E2E8F0` | **11,4:1 / 16,5:1** |
+| `--accent-color` (descartado) | `#B6BECA` | `#0C0C0C` | 1,84:1 / 1,05:1 |
+| `--color-focus-ring` (descartado) | `#696969` | `#4D545F` | 5,4:1 / 2,7:1 |
+
+`--accent-color` no alcanza el mínimo de 3:1 en ningún tema y `--color-focus-ring` falla en oscuro; `--text-primary` garantiza el anillo en ambos. El offset de 2 px separa el anillo del borde del control, de modo que el contraste se mide contra el fondo de la página y no contra el relleno del botón.
+
+Los 11 `outline: none` existentes se eliminaron: eran supresiones del aro del navegador en `:focus` sin una alternativa con contraste y grosor suficientes. No se añadió `:focus:not(:focus-visible)` para no borrar el indicador nativo de los campos de texto al enfocarlos con ratón. La verificación con Tab en ambos temas y en los 5 modales queda pendiente de navegador (`P4-07.3 ⛔ P0-04`).
+
+### 10.4 Anuncios para lectores de pantalla (P4-09 / R-A11Y-07)
+
+| Región | Implementación | Anuncio |
+|---|---|---|
+| Toasts | `.toast-container` con `role="status"`, `aria-live="polite"` y `aria-atomic="false"` | Cada toast insertado se anuncia sin releer toda la lista |
+| Toast de error | `Toast` con `role="alert"` cuando `type === 'error'` | Inmediato; el `alert` hijo mantiene prioridad sobre el `polite` del contenedor |
+| Toast informativo | `Toast` con `role="status"` | Cortés |
+| Cambio de vista | `Dashboard` renderiza `.visually-hidden` con `role="status"`; `useRef` compara la vista anterior y solo actualiza el texto cuando cambia | «Vista: Changelog», «Vista: Lista» o «Vista: Detalle»; no anuncia en el montaje inicial |
+| Carga global | `LoadingOverlay` con `role="status"` y `aria-live="polite"`; incluye «Cargando…» oculto + mensaje visible | «Cargando… Sincronizando datos…» |
+
+`.visually-hidden` (`base/reset.css`) usa `clip` + `clip-path` en lugar de `display: none` o `visibility: hidden`, que sacarían la región del árbol de accesibilidad.

@@ -5,7 +5,7 @@
 | Spec | [`SPEC-001-endurecimiento-diseno-accesibilidad.md`](SPEC-001-endurecimiento-diseno-accesibilidad.md) |
 | Plan | [`../plan.md`](../plan.md) |
 | Fecha de auditoría | 2026-11-10 |
-| Estado global | F0 parcial · F1 casi cerrada · F2 código cerrado (verificación visual pendiente) · F3 auditoría estática cerrada, correcciones pendientes · F4–F7 pendientes |
+| Estado global | F0 parcial · F1 casi cerrada · F2 código cerrado (verificación visual pendiente) · F3 auditoría estática cerrada, correcciones pendientes · F4 en curso (P4-06/P4-07/P4-09 cerradas en código; verificación visual pendiente) · F5–F7 pendientes |
 | Rama | `feat/spec-001-design-hardening` |
 
 Este archivo divide cada tarea del plan en subtareas de **una sola sesión de revisión**. Una subtarea se cierra únicamente con evidencia reproducible. El plan conserva la visión por fases; este tablero es la unidad de ejecución.
@@ -335,20 +335,20 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P4-05.3 | Nombres en Changelog (acciones, búsqueda, paginación) | `views/Changelog*`, `views/Version*` | P4-05.1 | S | ✅ | Acciones por versión con nombre concreto; «Limpiar búsqueda»; «Vista cuadrícula/lista»; «Página anterior/siguiente» |
 | P4-05.4 | Nombres en modales y toasts | `modals/*`, `ui/Toast.jsx` | P4-05.1 | S | ✅ | `+`/`×` de `CommentsModal`, eliminar cambio de `ChangelogEntriesModal`, «Cerrar notificación» en `Toast` |
 | P4-05.5 | Ocultar iconos decorativos | `ui/Icons.jsx` | P4-05.2–4 | S | ✅ | Wrapper `withIconA11y`: `aria-hidden="true"` + `focusable="false"` por defecto; anunciable con `aria-label`/`role="img"`; `Info` conserva `fill="white"`; T-10 |
-| P4-06.1 | Asociar label/id en `Input` | `ui/Input.jsx` | P4-04 | S | ☐ | `htmlFor` + `id` |
-| P4-06.2 | Asociar label/id en `Select` | `ui/Select.jsx` | P4-04 | S | ☐ | idem |
-| P4-06.3 | Asociar los dos campos de `DateQuickEditor` | `views/DateQuickEditor.jsx` | P4-04 | S | ☐ | idem |
-| P4-06.4 | Añadir `required`/`aria-required` | formularios | P4-06.1–3 | S | ☐ | Campos obligatorios |
-| P4-06.5 | Asociar errores con `aria-describedby` | formularios | P4-06.4 | S | ☐ | Error no solo por color |
-| P4-06.6 | Añadir test T-06 | `Input.test.jsx` | P6-01.4 | S | ☐ | Test pasa |
+| P4-06.1 | Asociar label/id en `Input` | `ui/Input.jsx` | P4-04 | S | ✅ | `useId()` como fallback: si el consumidor pasa `id` se respeta; si no, el `<label htmlFor>` se asocia a un id generado. Cubre los consumidores que no pasaban `id` (EvolutionModal, DetailHeader…) |
+| P4-06.2 | Asociar label/id en `Select` | `ui/Select.jsx` | P4-04 | S | ✅ | Mismo fallback `useId()`; `required` y `aria-*` siguen fluyendo por props |
+| P4-06.3 | Asociar los dos campos de `DateQuickEditor` | `views/DateQuickEditor.jsx` | P4-04 | S | ✅ | Dos `useId()` distintos; `<label htmlFor>` e `id` en los `input[type=date]` y `[type=time]` |
+| P4-06.4 | Añadir `required`/`aria-required` | formularios | P4-06.1–3 | S | ✅ | Solo Login: correo y contraseña ya tenían `required` nativo (el submit no procede vacío). EvolutionModal no valida en `handleSave`; CommentsModal y ChangelogEntriesModal filtran entradas vacías al guardar; los editores inline guardan en cada cambio → no se inventa obligatoriedad |
+| P4-06.5 | Asociar errores con `aria-describedby` | formularios | P4-06.4 | S | ✅ | Login: `useId()` para el bloque de error, `aria-invalid` y `aria-describedby` en correo/contraseña, `role="alert"` en el mensaje (texto descriptivo, no solo color). `Input`/`Select` asocian su prop `error` con id propio |
+| P4-06.6 | Añadir test T-06 | `Input.test.jsx` | P6-01.4 | S | ✅ | 7 tests: label/id, id generado y respetado, `required`, error con `aria-invalid`/`aria-describedby`, ausencia sin error y `jest-axe` |
 
 ### 8.4 Foco, contraste y anuncios
 
 | ID | Tarea | Archivos | Dep. | Esf. | Estado | Criterio |
 |---|---|---|---|---|---|---|
-| P4-07.1 | Regla global `:focus-visible` | `reset.css` o `animations.css` | P4-04 | S | ☐ | 2 px + offset |
-| P4-07.2 | Eliminar `outline: none` sin reemplazo | CSS global | P4-07.1 | S | ☐ | 0 casos sin foco visible |
-| P4-07.3 | Verificar foco en claro/oscuro | — | P4-07.1–2 | S | ☐ | Captura |
+| P4-07.1 | Regla global `:focus-visible` | `reset.css` o `animations.css` | P4-04 | S | ✅ | `outline: 2px solid var(--text-primary)` + `outline-offset: 2px`. `--accent-color` falla 3:1 en ambos temas (1,84:1 claro / 1,05:1 oscuro); `--text-primary` da 11,4:1 y 16,5:1 |
+| P4-07.2 | Eliminar `outline: none` sin reemplazo | CSS global | P4-07.1 | S | ✅ | 11/11 eliminados (forms, date-editor, modal-entries ×3, workspace-switcher, timeline ×2, table, modal-comentarios, modal-login). Ninguno tenía un foco propio con contraste/grosor suficiente; la regla global cubre el teclado |
+| P4-07.3 | Verificar foco en claro/oscuro | — | P4-07.1–2 | S | ⛔ P0-04 | Sin navegador: falta recorrido con Tab en ambos temas y en los 5 modales de negocio, más captura comparada con baseline |
 | P4-08.1 | Contraste de producción | `estados.css`, `cards.css` | P1-03.1 | S | ☐ | `#047857`/`#388114` |
 | P4-08.2 | Badge de producción sobre blanco | `cards.css` | P4-08.1 | XS | ☐ | `#388114` |
 | P4-08.3 | Puntos de estado | `estados.css` | P4-08.1 | S | ☐ | ≥ 3:1 |
@@ -356,10 +356,10 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P4-08.5 | Violeta solo acento/borde | CSS | P4-08.1 | XS | ☐ | No texto pequeño |
 | P4-08.6 | Script de contraste T-11 | `scripts/check-contrast.mjs` | P6-03.1 | M | ☐ | Pares críticos ≥ AA |
 | P4-08.7 | Contraste de `.tab-badge` (blanco sobre fondos de categoría) | `changelog/modal-entries.css` | P4-08.2 | S | ☐ | Pares actuales 2,80–4,23:1; usar `--estado-*-bg`/`--estado-*-color` existentes |
-| P4-09.1 | `aria-live="polite"` y `role="status"` en toasts | `ui/Toast.jsx`, `context/ToastContext.jsx` | P4-04 | S | ☐ | Contenedor anunciable |
-| P4-09.2 | `role="alert"` en toasts de error | `ui/Toast.jsx` | P4-09.1 | XS | ☐ | Errores anunciados |
-| P4-09.3 | Anunciar cambio de vista y carga | `Dashboard.jsx`, contexto | P4-09.1 | S | ☐ | Estado anunciable |
-| P4-09.4 | Añadir test T-04 | `Toast.test.jsx` | P6-01.4 | S | ☐ | Test pasa |
+| P4-09.1 | `aria-live="polite"` y `role="status"` en toasts | `ui/Toast.jsx`, `context/ToastContext.jsx` | P4-04 | S | ✅ | `.toast-container` con `role="status"`, `aria-live="polite"` y `aria-atomic="false"`; sin `tabIndex` |
+| P4-09.2 | `role="alert"` en toasts de error | `ui/Toast.jsx` | P4-09.1 | XS | ✅ | `role="alert"` si `type="error"`, `role="status"` en el resto. El hijo `alert` dentro del contenedor `polite` conserva prioridad asertiva |
+| P4-09.3 | Anunciar cambio de vista y carga | `Dashboard.jsx`, contexto | P4-09.1 | S | ✅ | `.visually-hidden` en `reset.css`; `Dashboard` anuncia «Vista: Changelog/Lista/Detalle» solo al cambiar (sin ruido en el montaje); `LoadingOverlay` es `role="status"` con «Cargando…» + mensaje |
+| P4-09.4 | Añadir test T-04 | `Toast.test.jsx` | P6-01.4 | S | ✅ | 5 tests: región viva, `role="status"` informativo, `role="alert"` en error, cierre con `onClose` y `jest-axe` |
 
 ### 8.5 Verificación manual
 
@@ -437,9 +437,9 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | ID | Caso | Archivo | Dep. | Esf. | Estado |
 |---|---|---|---|---|---|
 | P6-04.1 | T-01/T-02/T-03 Modal | `ui/__tests__/Modal.test.jsx` | P6-01.4, P4-03.4 | M | ✅ |
-| P6-04.2 | T-04 Toast | `ui/__tests__/Toast.test.jsx` | P6-01.4, P4-09.4 | S | ☐ |
+| P6-04.2 | T-04 Toast | `ui/__tests__/Toast.test.jsx` | P6-01.4, P4-09.4 | S | ✅ |
 | P6-04.3 | T-05 Button | `ui/__tests__/Button.test.jsx` | P6-01.4 | S | ✅ | Cubierto por el smoke test de P6-01.3: `type="button"` por defecto y `type="submit"` explícito |
-| P6-04.4 | T-06 Input | `ui/__tests__/Input.test.jsx` | P6-01.4, P4-06.6 | S | ☐ |
+| P6-04.4 | T-06 Input | `ui/__tests__/Input.test.jsx` | P6-01.4, P4-06.6 | S | ✅ |
 | P6-04.5 | T-07 ChangelogCard | `views/__tests__/ChangelogCard.test.jsx` | P6-01.4, P4-04.1 | S | ✅ |
 | P6-04.6 | T-08 VersionCard/Row | `views/__tests__/VersionCard.test.jsx`, `views/__tests__/VersionRow.test.jsx` | P6-01.4, P4-04.2–3 | S | ✅ |
 | P6-04.7 | T-09 ExportModal | `modals/__tests__/ExportModal.test.jsx` | P6-01.4, P4-04.4 | M | ✅ |

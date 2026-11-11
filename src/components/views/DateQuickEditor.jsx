@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { Icons } from '../ui/Icons';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
@@ -25,6 +25,10 @@ export default function DateQuickEditor({
     const [isOpen, setIsOpen] = useState(false);
     const [tempDate, setTempDate] = useState(dateValue || '');
     const [tempTime, setTempTime] = useState(timeValue || '');
+
+    // P4-06.3 / R-A11Y-04: ids estables para asociar cada <label> con su campo.
+    const dateFieldId = useId();
+    const timeFieldId = useId();
 
     // Sincronizar cuando cambian las props externas
     useEffect(() => {
@@ -106,8 +110,9 @@ export default function DateQuickEditor({
 
                     <div className="date-modal-fields">
                         <div className="date-modal-field">
-                            <label className="date-modal-label">Fecha</label>
+                            <label htmlFor={dateFieldId} className="date-modal-label">Fecha</label>
                             <input
+                                id={dateFieldId}
                                 type="date"
                                 className="date-modal-input"
                                 value={tempDate}
@@ -116,8 +121,9 @@ export default function DateQuickEditor({
                         </div>
 
                         <div className="date-modal-field">
-                            <label className="date-modal-label">Hora</label>
+                            <label htmlFor={timeFieldId} className="date-modal-label">Hora</label>
                             <input
+                                id={timeFieldId}
                                 type="time"
                                 className="date-modal-input"
                                 value={tempTime}
