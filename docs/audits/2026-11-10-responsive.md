@@ -531,4 +531,95 @@ No verificable sin build ni baseline (P0-04): no se afirma nada sobre el render.
 6. El ancho útil del `input[type="date"]` nativo en una columna a 320.
 7. **200 % de zoom y reflow** (R-A11Y-08) → P3-07.1.
 
+## 8. Ejecución P3-03 / P3-04 — modales y detalle (2026-11-10)
+
+P3-03.1 … P3-03.7 (7 hojas de `modals/`) y P3-04.1. Mismo método que el §7: solo
+CSS dentro de `@media` al final de cada hoja, `max-width`, breakpoints 900/768/600,
+sin 480. **Build disponible** (`vite 5.4.21`) pero **sin navegador**: no se miden
+píxeles ni se toman capturas.
+
+### 8.1 Reglas por hallazgo
+
+| Hallazgo | Archivo | Breakpoint | Regla aplicada | Riesgo residual |
+|---|---|---|---|---|
+| — (ancho 860 px) | `modals/modal-full-summary.css` | 768 | modal `width: 100%; max-width: calc(100vw - 2 * var(--space-4))`; layout con padding 12/14 | el modal deja de ser «ancho» en tablet |
+| M-24 / M-25 | `modals/modal-full-summary.css` | 768 | `.full-summary-meta { flex-wrap: wrap; gap: 4px 8px }` | la barra de metadatos puede ocupar 2 líneas |
+| M-26 | `modals/modal-full-summary.css` | 600 | `.full-summary-text { white-space: pre-wrap; overflow-wrap: anywhere; min-height: 180px; max-height: 50vh }` | el «cuadro» monoespaciado de 48 columnas pierde la alineación visual |
+| — (acciones) | `modals/modal-full-summary.css` | 600 | `.modal-full-summary .modal-actions { padding: 12px; gap: 8px }` (el apilado lo aporta `grid.css @600`) | — |
+| M-21 | `modals/modal-base.css` | 600 | `.modal-header { flex-wrap: wrap; gap: .5rem; padding: .75rem 3rem .75rem 1rem }` | el título puede ocupar 2 líneas |
+| — (cierre) | `modals/modal-base.css` | 600 | `.modal-close-btn { min-width: 44px; min-height: 44px; padding: 0 }` + hueco de 3 rem en la cabecera | el botón gana 15 px de ancho |
+| — (título) | `modals/modal-base.css` | 600 | `.modal-title { font-size: 1.1rem; overflow-wrap: anywhere }` | palabras largas se parten |
+| — (alto/ancho) | `modals/modal-base.css` | 600 | `.modal { max-width: calc(100vw - 2 * var(--space-4)); max-height: min(90vh, calc(100dvh - var(--space-4))) }` | `dvh` no soportado ⇒ cae al `90vh` base |
+| — (icono) | `modals/modal-base.css` | 600 | `.modal-content-container { flex-direction: column; gap: 1rem }` | icono arriba del mensaje en pantallas pequeñas |
+| — (charts) | `modals/modal-progress.css` | 768 | `.charts-grid { grid-template-columns: 1fr }` | una tarjeta por fila |
+| — (detalles) | `modals/modal-progress.css` | 768 | `.chart-details { column-width: auto; column-count: 1; height: auto; max-height: 45vh; overflow-x: hidden; overflow-y: auto }` sin borde ni padding izquierdo | se pierde el carril lateral del escritorio |
+| — (progreso) | `modals/modal-progress.css` | 600 | `.modal-progress-content { padding: 1rem }`; `.progress-big-text` a 2.75rem; `.pie-chart-container { flex-wrap: wrap }` | — |
+| — (expandido) | `modals/modal-progress.css` | 600 | `.chart-content-wrapper.expanded { flex-direction: column }`; tarta ampliada a 96px; `.status-column { width: 100% }` | la tarta ampliada es menor que en escritorio |
+| — (expanded) | `modals/modal-progress.css` | 600 | `.modal-progress.modal-expanded { width: 100%; max-width: calc(100vw - 2 * var(--space-4)) }` | deja 16 px por lado a 320 |
+| B-20 | `modals/export-modal.css` | 600 | `.export-option-card { gap: 10px; padding: 12px }`; `.export-option-info { min-width: 0 }`; título/subtítulo `overflow-wrap: anywhere`; icono con padding 6 | — |
+| B-19 (contenido) | `modals/deployment-info.css` | 600 | header `padding: 12px`; meta alineada a la izquierda; `.dep-info-cat-item { overflow-wrap: anywhere }`; body `max-height: 50vh` | — |
+| M-28 | `modals/modal-comentarios.css` | 600 | `.modal-comentarios-categorized { width: 100% }`; cabecera de categoría con wrap; contenido `max-width: none` | el modal pasa de 51 % a todo el ancho |
+| M-22 | `modals/modal-deployment-report.css` | 600 | `.deployment-report-header-center { flex-shrink: 1; flex-wrap: wrap }`; header y bloque izquierdo con wrap | fecha y hora en dos líneas |
+| M-23 | `modals/modal-deployment-report.css` | 600 | `.deployment-report-body { flex-direction: column; overflow-x: hidden; overflow-y: auto }`; `.deployment-report-column { flex: 1 1 auto; min-width: 0; max-width: none; overflow-y: visible }` | una sola columna con scroll del cuerpo |
+| A-05 | `layouts/header.css` | 768 / 600 | **sin reglas nuevas**: ya cubierto en P3-02.8 (`flex-wrap` y campos a 40 % → 100 %, separadores ocultos) | ninguno nuevo |
+
+### 8.2 Decisiones
+
+1. **P3-03.7 — qué queda vivo antes de tocar.** `DeploymentReportModal.jsx` no pasa
+   `className` al `Modal`, así que `.deployment-report` **no existe en el DOM**: la
+   regla `.deployment-report .modal-actions` es la clase muerta que deja
+   `audit-selectors` en 1 y **no se ha tocado**. Sí están vivas las clases
+   `.deployment-report-*`, que son las que se adaptan.
+2. **P3-03.5 — no se «resucita» `.dep-info-item-text`.** `DeploymentInfoModal.jsx:149`
+   usa esa clase, pero P1-10.4 eliminó su regla y aparece como «JSX sin regla». En vez
+   de devolverle una regla (alteraría el contador de `audit-selectors`), se aplica
+   `overflow-wrap: anywhere` sobre `.dep-info-cat-item`, que **es heredado**.
+3. **P3-03.1 — `pre` → `pre-wrap` solo a ≤600.** Es la única forma de eliminar el
+   scroll horizontal interno que describe M-26 sin tocar el texto exportado ni el
+   escritorio, donde el bloque de 48 columnas se sigue leyendo alineado.
+4. **P3-03.2 — `dvh` con degradación.** `max-height: min(90vh, calc(100dvh - 1rem))`
+   descuenta la barra del navegador móvil; si el navegador no soporta `dvh`, la
+   declaración se descarta y queda el `90vh` base. `.modal-message--full` (P2-02.3)
+   queda intacta.
+5. **P3-03.3 — `.chart-card` y `.legend-item` no se tocan** (FR-12/FR-15 en revisión):
+   la tarta escala por `viewBox="0 0 100 100"` y sin `width`/`height` en JSX
+   (`ProgressModal.jsx:33,47`), verificado; el tamaño lo fija el CSS.
+6. **P3-04.1 — sin duplicar.** El hallazgo A-05 ya está corregido en `layouts/header.css`
+   con las reglas de P3-02.8; `detail-header.css` sigue sin importarse (P1-06.2).
+
+### 8.3 Verificación
+
+```text
+antes    node scripts/audit-responsive.mjs
+         809 reglas · 73 hallazgos (alta 3 · media 29 · baja 41)
+         18 hojas de layout sin @media (changelog/* + modals/*: 10)
+
+después  node scripts/audit-responsive.mjs
+         856 reglas · 73 hallazgos (alta 3 · media 29 · baja 41)
+         11 hojas de layout sin @media (changelog/* + modals/*: 3)
+
+npm run build              ✓ 121 módulos · dist/assets/index-*.css 91.76 kB · exit 0
+llaves/@media            7/7 hojas nuevas con llaves balanceadas y @media cerrados
+audit-selectors          muertas 1 · dinámicas 21 · clases 502 · consumidas 480
+dev server               GET /src/styles/main.css → 200 (170 kB) con las reglas nuevas
+```
+
+Sin altas nuevas. Las 3 altas siguen siendo A-04 (falso positivo, `grid.css @600`) y
+A-02/A-03 (P3-06.1). Las 3 hojas de `modals/` que aún no tienen `@media` son
+`modal-evolution` (sin hallazgos), `modal-history` (columna con scroll) y `modal-login`
+(M-27: `min-width: 300px`; esa hoja **no estaba en el alcance de P3-03.2 en este lote**,
+que se limitó a `modal-base.css`).
+
+### 8.4 Lo que sigue necesitando navegador
+
+1. Que el modal de resumen a 320 **no tenga scroll horizontal** y las acciones queden
+   visibles sin desplazar (P3-04.2 y el cierre de P3-03.1).
+2. Que el botón de cierre de 44×44 no **solape** el título en modales con títulos largos.
+3. Que la tarta y su leyenda no se solapen al envolver (`flex-wrap`).
+4. Que en `modal-progress` expandido el carril de detalles a `max-height: 45vh` deje ver
+   el final de la lista con scroll propio.
+5. Que `min(90vh, 100dvh - 1rem)` se comporte en Safari/Chrome móvil.
+6. El corte visual de `pre-wrap` en el resumen (48 columnas en 288 px).
+7. **200 % de zoom** (R-A11Y-08 → P3-07.1).
+
 

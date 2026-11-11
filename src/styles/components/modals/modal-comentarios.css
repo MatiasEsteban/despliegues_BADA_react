@@ -106,3 +106,37 @@
 .modal-comentarios-categorized .modal-close-btn {
     margin-left: auto;
 }
+
+/* ============================================
+   P3-03.6 — R-RESP-01: modal de comentarios a 320
+   ============================================
+   M-28: `width: 51%` deja 163 px a 320. `max-width: 900px !important` no es el
+   problema (`.modal` ya limita a 90vw), así que solo se corrige el ancho. */
+@media (max-width: 600px) {
+    .modal-comentarios-categorized {
+        width: 100%;
+    }
+
+    .comentario-categoria-header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.75rem;
+    }
+
+    .comentario-categoria-titulo {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .comentario-categoria-items {
+        padding: 0.75rem;
+    }
+
+    .comentario-cat-item {
+        gap: 0.375rem;
+    }
+
+    .modal-comentarios-categorized-content {
+        max-width: none;
+    }
+}

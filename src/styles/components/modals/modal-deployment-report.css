@@ -164,3 +164,54 @@ flex: 0 0 auto; /* 👈 No crecer, no encoger, tamaño automático */
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
 }
+
+/* ============================================
+   P3-03.7 — R-RESP-01: reporte de despliegue a 320
+   ============================================
+   M-22 / M-23. Verificado en JSX: `DeploymentReportModal` no pasa `className` al
+   `Modal`, así que `.deployment-report` no existe en el DOM (es la clase muerta que
+   deja `audit-selectors` en 1) y su regla de footer sigue inerte; no se toca. Las
+   clases vivas son las de este bloque. */
+@media (max-width: 600px) {
+    .deployment-report-header-compact {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.75rem;
+    }
+
+    .deployment-report-header-left {
+        padding: 0;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* M-22: el bloque de fecha/hora deja de ser intocable. */
+    .deployment-report-header-center {
+        flex-shrink: 1;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    /* M-23: una sola columna; el cuerpo pasa a scroll vertical. */
+    .deployment-report-body {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .deployment-report-column {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: none;
+        padding: 0.75rem;
+        /* Sin scroll propio: el desplazamiento lo lleva el cuerpo. */
+        overflow-y: visible;
+    }
+
+    .deployment-report-empty {
+        padding: 1.5rem 1rem;
+    }
+}

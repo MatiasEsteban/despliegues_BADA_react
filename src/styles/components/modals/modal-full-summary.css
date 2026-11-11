@@ -84,3 +84,47 @@
     color: var(--text-secondary);
     font-size: 0.9rem;
 }
+
+/* ============================================
+   P3-03.1 — R-RESP-01: resumen global en pantalla estrecha
+   ============================================ */
+@media (max-width: 768px) {
+    /* El ancho fijo de 860 px queda siempre por debajo del viewport. */
+    .modal-full-summary {
+        width: 100%;
+        max-width: calc(100vw - 2 * var(--space-4));
+    }
+
+    .full-summary-layout {
+        padding: 12px 14px;
+    }
+
+    /* M-24 / M-25: la barra de metadatos envuelve en vez de desbordar. */
+    .full-summary-meta {
+        flex-wrap: wrap;
+        gap: 4px 8px;
+    }
+}
+
+@media (max-width: 600px) {
+    /* M-26: el resumen son 48 columnas de texto preformateado. `pre` no refluye y
+       fuerza scroll-x; `pre-wrap` conserva los saltos y el monoespaciado sin
+       obligar a desplazar el modal. */
+    .full-summary-text {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        padding: 12px;
+        min-height: 180px;
+        max-height: 50vh;
+    }
+
+    /* Acciones visibles: grid.css @600 ya las apila; aquí solo el espaciado. */
+    .modal-full-summary .modal-actions {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .full-summary-empty {
+        padding: 32px 12px;
+    }
+}

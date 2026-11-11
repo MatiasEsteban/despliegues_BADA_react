@@ -376,3 +376,69 @@
 .legend-label {
     color: var(--text-primary);
 }
+
+/* ============================================
+   P3-03.3 — R-RESP-01: gráficos sin recorte a 320
+   ============================================
+   `.chart-card` y `.legend-item` no se tocan (deltas FR-12/FR-15 en revisión). */
+@media (max-width: 768px) {
+    /* Una columna: `auto-fit/minmax(200px)` ya rendía 2 a 375, no 3 tarjetas
+       comprimidas. */
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* El carril de detalles deja de ser una columna de 300 px y de tener 70vh
+       fijos: pasa a flujo normal con scroll vertical propio. */
+    .chart-details {
+        column-width: auto;
+        column-count: 1;
+        height: auto;
+        max-height: 45vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        border-left: none;
+        padding-left: 0;
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .modal-progress-content {
+        padding: 1rem;
+        gap: 1.25rem;
+    }
+
+    .modal-progress.modal-expanded {
+        width: 100%;
+        max-width: calc(100vw - 2 * var(--space-4));
+    }
+
+    .progress-big-text {
+        font-size: 2.75rem;
+    }
+
+    .progress-note {
+        max-width: 100%;
+    }
+
+    /* La tarta y su leyenda dejan de competir por la misma fila. */
+    .pie-chart-container {
+        flex-wrap: wrap;
+        row-gap: 0.5rem;
+    }
+
+    .chart-content-wrapper.expanded {
+        flex-direction: column;
+    }
+
+    .chart-content-wrapper.expanded .pie-chart {
+        width: 96px;
+        height: 96px;
+    }
+
+    .status-column {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}

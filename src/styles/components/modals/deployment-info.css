@@ -190,3 +190,43 @@
     color: var(--text-secondary);
     font-size: 0.875rem;
 }
+
+/* ============================================
+   P3-03.5 — R-RESP-01: contenido sin recorte a 320
+   ============================================
+   `.dep-info-item-text` perdió su regla en P1-10.4 y hoy es un span sin estilos
+   (aparece como «JSX sin regla» en `audit-selectors`). `overflow-wrap` es
+   heredado, así que se aplica al contenedor vivo en lugar de resucitar la clase. */
+@media (max-width: 600px) {
+    .dep-info-header {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    /* La meta (fechas) deja de empujar a la derecha en una columna estrecha. */
+    .dep-info-meta {
+        align-items: flex-start;
+        text-align: left;
+        font-size: 0.75rem;
+    }
+
+    .dep-info-body {
+        max-height: 50vh;
+    }
+
+    .dep-info-cat {
+        padding: 10px 12px;
+    }
+
+    .dep-info-cat-item {
+        overflow-wrap: anywhere;
+    }
+
+    .dep-info-cdu-item {
+        padding: 6px 8px;
+    }
+
+    .dep-info-empty {
+        padding: 1.5rem 1rem;
+    }
+}

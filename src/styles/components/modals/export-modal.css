@@ -122,3 +122,33 @@
     margin: 0;
     line-height: 1.4;
 }
+
+/* ============================================
+   P3-03.4 — R-RESP-01: opciones legibles y seleccionables a 320
+   ============================================
+   No hay anchos mínimos en la hoja; el riesgo es el texto sin punto de corte
+   («Exportar a Excel (.xlsx)») dentro de una fila flex con icono fijo. */
+@media (max-width: 600px) {
+    .export-options-grid {
+        gap: 8px;
+    }
+
+    /* Padding 12 + dos líneas de texto mantiene el objetivo táctil > 44 px. */
+    .export-option-card {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .export-option-info {
+        min-width: 0;
+    }
+
+    .export-option-title,
+    .export-option-subtitle {
+        overflow-wrap: anywhere;
+    }
+
+    .export-option-icon {
+        padding: 6px;
+    }
+}
