@@ -1,18 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useId, useRef } from 'react';
 import { clsx } from 'clsx';
 import { Icons } from './Icons';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 export function Modal({ isOpen, onClose, title, children, type = 'info', actions, showIcon = true, className }) {
-    if (!isOpen) return null;
+    // R-CODE-01: todos los hooks van antes del `return` condicional.
+    const titleId = useId();
+    const modalRef = useRef(null);
 
-    // Manejo de ESC para cerrar
-    useEffect(() => {
-        const handleEsc = (e) => {
-            if (e.key === 'Escape') onClose();
-        };
-        document.addEventListener('keydown', handleEsc);
-        return () => document.removeEventListener('keydown', handleEsc);
-    }, [onClose]);
+    // P4-02 / R-A11Y-01: foco inicial, ciclo de Tab, Escape, restauración de foco
+    // y bloqueo del scroll. Es el único listener de Escape del modal.
+    useFocusTrap({
+        isActive: isOpen,
+        onClose,
+        containerRef: modalRef,
+    });
+
+    if (!isOpen) return null;
 
     // Icono según tipo
     let IconComponent = Icons.Info;
@@ -23,11 +27,25 @@ export function Modal({ isOpen, onClose, title, children, type = 'info', actions
     return (
         <div className={clsx("modal-overlay", isOpen && "modal-show")}>
             {/* AQUI EL CAMBIO: Agregamos 'className' para permitir personalización externa */}
-            <div className={clsx("modal", `modal-${type}`, className)}>
+            <div
+                ref={modalRef}
+                className={clsx("modal", `modal-${type}`, className)}
+                role="dialog"
+                aria-modal="true"
+                {...(title ? { 'aria-labelledby': titleId } : { 'aria-label': 'Diálogo' })}
+                tabIndex={-1}
+            >
                 {/* Header */}
                 <div className="modal-header">
-                    <h2 className="modal-title">{title}</h2>
-                    <button type="button" className="modal-close-btn" onClick={onClose}>×</button>
+                    <h2 className="modal-title" id={titleId}>{title}</h2>
+                    <button
+                        type="button"
+                        className="modal-close-btn"
+                        onClick={onClose}
+                        aria-label="Cerrar"
+                    >
+                        <span aria-hidden="true">×</span>
+                    </button>
                 </div>
 
                 {/* Body */}

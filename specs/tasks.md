@@ -299,20 +299,20 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 
 | ID | Tarea | Archivos | Dep. | Esf. | Estado | Criterio |
 |---|---|---|---|---|---|---|
-| P4-01.1 | Mover `useEffect` antes del `return` condicional | `ui/Modal.jsx` | G3 | XS | ☐ | Orden de hooks constante |
-| P4-01.2 | Verificar apertura/cierre dos veces sin warning | `ui/Modal.jsx` | P4-01.1 | XS | ☐ | Consola limpia |
-| P4-01.3 | Añadir test de regresión T-01 | `ui/__tests__/Modal.test.jsx` | P6-01.4 | S | ☐ | Test pasa |
-| P4-02.1 | Crear `useFocusTrap` con foco inicial | `src/hooks/useFocusTrap.js` | P4-01.1 | S | ☐ | Hook aislado |
-| P4-02.2 | Atrapar Tab/Shift+Tab | `useFocusTrap.js` | P4-02.1 | S | ☐ | Ciclo cerrado |
-| P4-02.3 | Cerrar con Escape | `useFocusTrap.js` | P4-02.1 | XS | ☐ | `onClose` invocado |
-| P4-02.4 | Restaurar foco al disparador | `useFocusTrap.js` | P4-02.1 | S | ☐ | Foco vuelve al botón |
-| P4-02.5 | Bloquear scroll del body | `useFocusTrap.js` | P4-02.1 | XS | ☐ | `overflow` restaurado |
-| P4-02.6 | Integrar el hook en `Modal` | `ui/Modal.jsx` | P4-02.2–5 | S | ☐ | Todos los modales cubiertos |
-| P4-02.7 | Verificar manualmente 5 modales | — | P4-02.6 | S | ☐ | Tab, Escape y restauración |
-| P4-03.1 | Añadir `role="dialog"` y `aria-modal` | `ui/Modal.jsx` | P4-02.6 | XS | ☐ | Atributos presentes |
-| P4-03.2 | Asociar `aria-labelledby` al título | `ui/Modal.jsx` | P4-03.1 | S | ☐ | ID único |
-| P4-03.3 | Etiquetar botón de cierre | `ui/Modal.jsx` | P4-03.1 | XS | ☐ | `aria-label="Cerrar"` |
-| P4-03.4 | Añadir test T-03 | `Modal.test.jsx` | P6-01.4 | S | ☐ | Test pasa |
+| P4-01.1 | Mover `useEffect` antes del `return` condicional | `ui/Modal.jsx` | G3 | XS | ✅ | `useId`, `useRef` y `useFocusTrap` se ejecutan siempre; el `useEffect` de Escape pasa al hook y queda un único listener |
+| P4-01.2 | Verificar apertura/cierre dos veces sin warning | `ui/Modal.jsx` | P4-01.1 | XS | ✅ | Ciclo abrir/cerrar ×2 sin `console.error`; verificado con T-01 |
+| P4-01.3 | Añadir test de regresión T-01 | `ui/__tests__/Modal.test.jsx` | P6-01.4 | S | ✅ | `rerender` false→true→false ×2 con espía de `console.error`: falla con el `Modal` anterior (error interno de orden de hooks) y pasa con el actual |
+| P4-02.1 | Crear `useFocusTrap` con foco inicial | `src/hooks/useFocusTrap.js` | P4-01.1 | S | ✅ | Primer enfocable del contenedor o el contenedor (`tabIndex={-1}`) si no hay |
+| P4-02.2 | Atrapar Tab/Shift+Tab | `useFocusTrap.js` | P4-02.1 | S | ✅ | Primer/último enfocable recalculados en cada `keydown`; ciclo cerrado y `preventDefault` solo en los bordes |
+| P4-02.3 | Cerrar con Escape | `useFocusTrap.js` | P4-02.1 | XS | ✅ | `onClose` vía ref (identidad estable); un solo listener. Test: 1 llamada |
+| P4-02.4 | Restaurar foco al disparador | `useFocusTrap.js` | P4-02.1 | S | ✅ | Guarda `document.activeElement` al activarse y lo enfoca en el cleanup si sigue conectado |
+| P4-02.5 | Bloquear scroll del body | `useFocusTrap.js` | P4-02.1 | XS | ✅ | `body.style.overflow = 'hidden'` y restaura el valor previo; único `style` del hook (R-DS-03) |
+| P4-02.6 | Integrar el hook en `Modal` | `ui/Modal.jsx` | P4-02.2–5 | S | ✅ | `useFocusTrap({ isActive: isOpen, onClose, containerRef })`; `isOpen=false` no deja listeners ni overflow |
+| P4-02.7 | Verificar manualmente 5 modales | — | P4-02.6 | S | ⛔ P0-04 | Sin navegador: falta comprobar Tab/Escape/restauración en los modales de negocio y en iOS |
+| P4-03.1 | Añadir `role="dialog"` y `aria-modal` | `ui/Modal.jsx` | P4-02.6 | XS | ✅ | En `.modal` (no en el overlay); el botón de cierre ya no depende del texto `×` |
+| P4-03.2 | Asociar `aria-labelledby` al título | `ui/Modal.jsx` | P4-03.1 | S | ✅ | `useId()` aplicado al `<h2>`; sin `title` se usa `aria-label="Diálogo"` |
+| P4-03.3 | Etiquetar botón de cierre | `ui/Modal.jsx` | P4-03.1 | XS | ✅ | `aria-label="Cerrar"` y `×` dentro de `<span aria-hidden="true">` |
+| P4-03.4 | Añadir test T-03 | `Modal.test.jsx` | P6-01.4 | S | ✅ | T-03 (rol, `aria-modal`, `aria-labelledby` → título, cierre "Cerrar"), T-02 (foco, Tab, Escape, restauración, scroll) y `jest-axe` sin violaciones |
 
 ### 8.2 Semántica de interacción
 
@@ -580,6 +580,7 @@ spec-001(P2-03.1): migrar estilos inline de ChangelogCard
 | 2026-11-10 | P3-03.1–7 y P3-04.1 aplicadas (solo CSS, sin JSX): 7 hojas de `modals/` con @media 768/600 (`full-summary`, `base`, `progress`, `export-modal`, `deployment-info`, `comentarios`, `deployment-report`); `.modal-message--full`, `.chart-card` y `.legend-item` sin tocar. P3-04.1 sin reglas nuevas: A-05 ya cubierto por P3-02.8 en `layouts/header.css`. Verificado que `.deployment-report` no existe en el DOM (clase muerta de `audit-selectors`) y que `PieChart` usa `viewBox="0 0 100 100"` sin `width`/`height`. Audit: 809→856 reglas, 73 hallazgos sin altas nuevas (alta 3/media 29/baja 41), hojas sin `@media` 18→11. Build verde (`vite 5.4.21`, 91.76 kB CSS) y selectores `muertas 1`/`dinámicas 21`. M-27 (`.modal-login min-width`) queda fuera del lote; P3-04.2 sigue ⛔ P0-04. |
 | 2026-11-10 | P3-05.1/2/4 y P3-06.1/2/3 aplicadas (solo CSS, sin JSX) + M-27 como P3-03.8: `pointer: coarse` con 44×44 en botones, cierre de modal, switcher, acciones de tarjeta/lista e inputs; `hover: none`/`:focus-within` revelan `.changelog-card-actions` y `.ws-item-delete`; `pointer: fine` fija 24×24 en `.btn-historial`, `.btn-toggle-pasos` y `.paso-check`, con separación ≥ 8 px entre acciones. Tablas: `#versions-list-container` pasa a `overflow-x: auto` (M-20), sombras con `background-attachment` en tabla y lista (sin JS), columnas 4/5 ocultas a 600 en la tabla de CDUs y columna 5 en la lista, `.cdu-actions` en wrap. No se reduce el `min-width: 1600px` de la tabla (R-RESP-03) y el script queda sin cambios: las 3 altas son falsos positivos justificados. Audit: 856→895 reglas, 73 hallazgos sin altas nuevas, hojas sin `@media` 11→7. Build verde (95.59 kB CSS). P3-05.3 y P3-06.4 quedan ⛔/◐ por P0-04. |
 | 2026-11-10 | P6-01.1–4 adelantadas (infraestructura de tests): Vitest 3.2.7 (pin `^3` porque la 5.x exige Vite ≥ 6), jsdom 29.1.1, RTL 16.3.3 + dom 10.4.2, user-event 14.6.9, jest-dom 7.0.1 y jest-axe 11.0.0. `vitest.config.js` (jsdom, globals, setup, `css:false`) y `src/test/setup.js` con stubs de `matchMedia`/`ResizeObserver`. `Button.test.jsx` con 4 tests (type por defecto, children/variante, onClick y submit) → P6-04.3 ✅. Sin coverage ni `verify` (P6-05). `npm test` 4/4, build verde, audits sin cambios. Documentado en `docs/audits/2026-11-10-testing-setup.md`; `globals: true` anotado para ESLint (P6-02). |
+| 2026-11-10 | P4-01/P4-02/P4-03 aplicadas en el `Modal` base: hooks (`useId`, `useRef`, `useFocusTrap`) antes del `return`; nuevo `src/hooks/useFocusTrap.js` con foco inicial, ciclo Tab/Shift+Tab, Escape, restauración de foco y `body.style.overflow` (único `style`, R-DS-03). ARIA: `role="dialog"` + `aria-modal` en `.modal`, `aria-labelledby` con `useId` (fallback `aria-label="Diálogo"`), cierre con `aria-label="Cerrar"`. `Modal.test.jsx` con 8 tests (T-01, T-02, T-03, scroll, fallback de título y `jest-axe`); total 12/12 con `Button`. Build verde (95.59 kB CSS) y audits sin cambios (`inline` 0 porque el hook queda fuera de `src/components`). P4-02.7 ⛔ P0-04. |
 
 
 

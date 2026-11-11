@@ -242,3 +242,45 @@ Medición del 2026-11-10 sobre `src/styles/**/*.css` excluyendo `variables.css` 
 | **Total** | — | **487** |
 
 Quedan fuera de esta tabla los 147 `font-size` con literal, que pertenecen a `P5-04.2–4` (escala tipográfica). `P5-04.9` cierra el grupo cuando el recuento de las cuatro filas sea 0.
+
+---
+
+## 10. Foco y diálogos
+
+R-A11Y-01 / R-CODE-01. Todo modal del proyecto pasa por `src/components/ui/Modal.jsx`; los modales de negocio (`src/components/modals/*`) solo lo configuran con props y no gestionan foco por su cuenta.
+
+### 10.1 API de `useFocusTrap`
+
+```js
+import { useFocusTrap } from '../../hooks/useFocusTrap';
+
+const modalRef = useRef(null);
+
+useFocusTrap({
+  isActive: isOpen,       // activa foco, ciclo de Tab y bloqueo de scroll
+  onClose,                // se invoca al pulsar Escape (una vez)
+  containerRef: modalRef, // elemento que recibe el foco y contiene el ciclo
+});
+```
+
+| Comportamiento | Implementación |
+|---|---|
+| Foco inicial | primer elemento de `a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])`; si no hay, el contenedor (debe tener `tabIndex={-1}`) |
+| Tab / Shift+Tab | primer y último enfocable recalculados en cada `keydown`; en los bordes se cicla con `preventDefault` |
+| Sin enfocables | el foco se mantiene en el contenedor y se cancela el Tab |
+| Escape | `onClose` a través de un ref (identidad estable) y un único listener |
+| Restauración | guarda `document.activeElement` al activarse y lo enfoca en el `cleanup` si sigue en el DOM |
+| Scroll | `document.body.style.overflow = 'hidden'` y restaura el valor previo en el `cleanup` |
+
+El `overflow` es el único `style` que escribe el hook: R-DS-03 lo admite como manipulación directa del DOM para bloquear el scroll del documento, no como estilo de componente. El hook no aplica estilos a elementos del modal.
+
+### 10.2 Atributos que impone `Modal`
+
+| Elemento | Atributo |
+|---|---|
+| `.modal` | `role="dialog"`, `aria-modal="true"`, `tabIndex={-1}` |
+| `<h2 class="modal-title">` | `id` generado con `useId()` |
+| `.modal` | `aria-labelledby` → id del título; si `title` es falsy, `aria-label="Diálogo"` |
+| `.modal-close-btn` | `aria-label="Cerrar"`; el `×` va en `<span aria-hidden="true">` |
+
+El overlay no lleva rol: el diálogo es `.modal`. Un modal sin `title` conserva el `<h2>` vacío para no alterar el layout del header, pero su nombre accesible es `Diálogo`. Los modales reales siempre pasan título.
