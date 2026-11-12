@@ -1,6 +1,6 @@
 ---
 description: SDD - implementa UNA tarea de un plan aprobado, con tests primero
-mode: all
+mode: subagent
 permissions:
   - action: shell
     resource: "*"
