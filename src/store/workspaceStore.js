@@ -9,7 +9,15 @@ import {
 const STORAGE_KEY = 'bada_last_workspace_id';
 const DEFAULT_ID = 'ventas-b2c';
 
+// A-08.1: mismo switch que dataStore. En el build de producción queda en
+// `false`, por lo que ni el import() dinámico ni el workspace de captura
+// entran en el bundle.
+const FIXTURES_ENABLED = import.meta.env.VITE_APP_FIXTURES === '1';
+
 const getInitialWorkspaceId = () => {
+    // En captura no se lee un id real de localStorage: el workspace del
+    // fixture se aplica en initialize().
+    if (FIXTURES_ENABLED) return DEFAULT_ID;
     try {
         return localStorage.getItem(STORAGE_KEY) || DEFAULT_ID;
     } catch {
@@ -28,6 +36,29 @@ export const useWorkspaceStore = create((set, get) => ({
         const prev = get().unsubscribe;
         if (prev) prev();
 
+        // Modo fixtures: workspace fijo de captura, sin Firestore.
+        if (FIXTURES_ENABLED) {
+            let cancelled = false;
+
+            import('../test/fixtures/appState.js')
+                .then(({ createFixtureState }) => {
+                    if (cancelled) return;
+                    const { workspace } = createFixtureState();
+                    set({
+                        workspaces: [workspace],
+                        activeWorkspaceId: workspace.id,
+                        isDropdownOpen: false,
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error cargando el workspace de fixtures:', error);
+                });
+
+            const fixtureUnsubscribe = () => { cancelled = true; };
+            set({ unsubscribe: fixtureUnsubscribe });
+            return fixtureUnsubscribe;
+        }
+
         const unsub = subscribeToWorkspaces((workspaces) => {
             set({ workspaces });
 
@@ -45,7 +76,11 @@ export const useWorkspaceStore = create((set, get) => ({
 
     /** Cambia el workspace activo y persiste en localStorage */
     setActiveWorkspace: (id) => {
-        try { localStorage.setItem(STORAGE_KEY, id); } catch { /* noop */ }
+        // En captura no se persiste: un id de fixture en localStorage
+        // contaminaría el arranque real de la app.
+        if (!FIXTURES_ENABLED) {
+            try { localStorage.setItem(STORAGE_KEY, id); } catch { /* noop */ }
+        }
         set({ activeWorkspaceId: id, isDropdownOpen: false });
     },
 

@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Estado | Vivo — Fase 1 completada (`P1-02`, `P1-03`, `P1-04`) |
-| Última actualización | 2026-11-10 |
+| Última actualización | 2026-11-12 |
 | Spec | [`SPEC-001`](../specs/SPEC-001-endurecimiento-diseno-accesibilidad.md) |
 | Plan | [`plan.md`](../plan.md) |
 | Fuente de verdad | `despliegues-bada-react/src/styles/base/variables.css` |
@@ -185,7 +185,7 @@ Los seis valores cubren exactamente los z-index en uso.
 
 > `P1-05` reemplazó 144 hex por `var(--palette-*)` en 14 hojas. Verificación de ida y vuelta: al expandir cada token a su valor, el archivo es idéntico al de `HEAD`. El CSS compilado crece de 84,20 kB a 88,92 kB porque `var(--palette-…)` es más largo que el hex; es costo de mantenibilidad, no de ejecución.
 >
-> `P1-07` y `P1-08` dejaron **32 hojas**, con 30 imports desde `main.css`. El único archivo no alcanzable es `detail-header.css`. `changelog.css` (1.526 líneas) se dividió en `changelog/timeline.css`, `changelog/card.css`, `changelog/modal-entries.css`, `changelog/date-editor.css`, `modals/export-modal.css` y `modals/deployment-info.css`, sin selectores duplicados.
+> `P1-07` y `P1-08` dejaron **32 hojas**; desde `P1-06.2` (2026-11-12) las **32 son alcanzables** con 31 imports desde `main.css`. `changelog.css` (1.526 líneas) se dividió en `changelog/timeline.css`, `changelog/card.css`, `changelog/modal-entries.css`, `changelog/date-editor.css`, `modals/export-modal.css` y `modals/deployment-info.css`, sin selectores duplicados.
 
 | Capa | Tokens | Consumidores externos |
 |---|---:|---:|
@@ -218,12 +218,11 @@ Es una corrección de defecto, no una regresión, pero **debe verificarse contra
 | Deuda | Resolución |
 |---|---|
 | 11 grupos de colores casi idénticos | Spec posterior con diff visual aprobado |
-| `--state-*` como alias temporal | `P1-05` migra consumidores |
-| 3 variables indefinidas en `modal-history.css` (`--bg-card`, `--primary-color`, `--text-tertiary`) | `P1-06`, con verificación visual |
-| 30 tamaños de fuente en uso frente a 9 de la escala | `P1-05` mapea intermedios con verificación visual |
-| 14 radios en uso frente a 8 de la escala | `P1-05` mapea intermedios con verificación visual |
-| 31 variantes de `box-shadow` | `P1-05`; requiere revisión caso a caso |
-| `detail-header.css` sin importar | `P1-06`, bloqueado por `P0-04` |
+| `--state-*` como alias temporal sin consumidores | Adoptar o retirar en una tarea nueva; P1-05 cerró sin migrarlos |
+| 30 tamaños de fuente en uso frente a 9 de la escala | `P5-04.2–4` mapea intermedios con verificación visual |
+| 14 radios en uso frente a 8 de la escala | `P5-04.7` mapea intermedios con verificación visual |
+| 31 variantes de `box-shadow` | `P5-04.8`; requiere revisión caso a caso |
+| ~~`detail-header.css` sin importar~~ | **Cerrado en P1-06.2** (2026-11-12): 31 imports, 32 hojas; deltas visuales en `docs/audits/2026-11-12-p1-06.md` |
 
 ---
 

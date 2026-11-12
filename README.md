@@ -2,6 +2,26 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
+## Modo fixtures de captura (SPEC-001 / A-08.1)
+
+`.env.capture` define `VITE_APP_FIXTURES=1` y se carga únicamente con un mode
+explícito de Vite:
+
+```bash
+npm run dev -- --mode capture
+npm run build -- --mode capture
+```
+
+Con el flag activo, `dataStore` se hidrata desde
+`src/test/fixtures/appState.js` (workspace fijo «Workspace de captura», cuatro
+versiones sintéticas, CDUs con pasos y las cinco categorías de comentarios) y no
+llama a `subscribeToAppState`, `saveAppState` ni al `Debouncer`.
+`workspaceStore` usa ese workspace como activo y no escribe ids de captura en
+`localStorage`. El fixture se carga con `import()` dinámico: `npm run build`
+sin `--mode capture` no lo incluye en `dist/assets/*.js`. No usar el mode
+`capture` para producción.
+
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh

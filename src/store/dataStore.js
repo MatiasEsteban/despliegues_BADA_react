@@ -4,8 +4,15 @@ import { subscribeToAppState, saveAppState } from '../services/firebaseData';
 import { generateStats } from './statsCalculator';
 import { Debouncer } from '../utils/debouncer';
 
+// A-08.1: modo fixtures determinista. Solo se activa con un build/mode
+// explícito (`vite build --mode capture`, que carga `.env.capture`). En el
+// build de producción la constante queda en `false` y el import() dinámico del
+// fixture se elimina del bundle.
+const FIXTURES_ENABLED = import.meta.env.VITE_APP_FIXTURES === '1';
+
 // El debouncer necesita saber el workspaceId en el momento de guardar
 const debouncedSave = Debouncer.debounce((state) => {
+    if (FIXTURES_ENABLED) return;
     saveAppState(state.workspaceId, {
         versions: state.versions,
         versionEnProduccionId: state.versionEnProduccionId,
@@ -81,6 +88,43 @@ export const useDataStore = create((set, get) => ({
 
         set({ loading: true, error: null, workspaceId });
 
+        // Modo fixtures: hidratación local y determinista, sin Firestore.
+        // El import() dinámico mantiene el fixture fuera del bundle de producción.
+        if (FIXTURES_ENABLED) {
+            let cancelled = false;
+
+            import('../test/fixtures/appState.js')
+                .then(({ createFixtureState }) => {
+                    if (cancelled) return;
+
+                    const { workspace, versions, versionEnProduccionId } = createFixtureState();
+
+                    set({
+                        versions,
+                        versionEnProduccionId,
+                        versionStats: generateStats(versions),
+                        filteredVersions: get()._applyFilter(versions, get().filterText),
+                        loading: false,
+                        error: null,
+                        workspaceId: workspace.id,
+                    });
+
+                    const selectedId = get().selectedVersionId;
+                    if (selectedId) get().selectVersion(selectedId, versions);
+                })
+                .catch((err) => {
+                    console.error('Error cargando los fixtures de captura:', err);
+                    set({
+                        loading: false,
+                        error: 'No se pudieron cargar los fixtures de captura.',
+                    });
+                });
+
+            const fixtureUnsubscribe = () => { cancelled = true; };
+            set({ unsubscribe: fixtureUnsubscribe });
+            return fixtureUnsubscribe;
+        }
+
         const newUnsubscribe = subscribeToAppState(workspaceId, (data) => {
             const { versions, versionEnProduccionId } = data;
             const stats = generateStats(versions);
@@ -114,6 +158,8 @@ export const useDataStore = create((set, get) => ({
     },
 
     _scheduleSave: () => {
+        // A-08.1: en captura no se programa el Debouncer ni se toca Firestore.
+        if (FIXTURES_ENABLED) return;
         set({ isSaving: true });
         debouncedSave(get());
         setTimeout(() => set({ isSaving: false }), 2000);
@@ -127,10 +173,12 @@ export const useDataStore = create((set, get) => ({
                 versionEnProduccionId: newProdId,
                 filteredVersions: get()._applyFilter(newVersions, get().filterText),
             });
-            await saveAppState(get().workspaceId, {
-                versions: newVersions,
-                versionEnProduccionId: newProdId,
-            });
+            if (!FIXTURES_ENABLED) {
+                await saveAppState(get().workspaceId, {
+                    versions: newVersions,
+                    versionEnProduccionId: newProdId,
+                });
+            }
             set({ loading: false });
             return true;
         } catch (e) {

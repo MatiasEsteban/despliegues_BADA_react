@@ -4,7 +4,13 @@ Protocolo de captura para la tarea `P0-04` del [`plan.md`](../../../plan.md).
 
 ## Estado
 
-**Pendiente de ejecución manual.** No se capturaron imágenes automatizadas: el proyecto no tiene herramienta de navegador headless instalada y `F0` no autoriza añadir dependencias de ese tipo.
+**Ejecutado el 2026-11-12** con Playwright headless sobre el build de captura
+(`vite build --mode capture` + `vite preview`). Son **24 capturas** del estado
+actual; no es un baseline retroactivo.
+
+- Capturas: [`captures/`](captures/)
+- Manifiesto (commit, fecha, SO, Node, Playwright, Chromium, tema y datos):
+  [`MANIFEST.md`](MANIFEST.md)
 
 ## Convención de nombres
 
@@ -12,29 +18,44 @@ Protocolo de captura para la tarea `P0-04` del [`plan.md`](../../../plan.md).
 [ancho]-[vista]-[tema]-[estado].png
 ```
 
-Ejemplo: `320-changelog-dark-expanded.png`
+Ejemplo: `320-changelog-dark-default.png`.
 
-## Matriz mínima
+## Matriz real (24 capturas)
 
-| Vista | Estados | Anchos | Temas |
-|---|---|---|---|
-| Changelog | Colapsado, expandido, búsqueda activa, sin resultados | 320, 768, 1440 | Claro, oscuro |
-| Lista | Grid y lista | 320, 768, 1440 | Claro, oscuro |
-| Detalle CDU | Cabecera, pasos, responsables, gráfico BADA | 320, 768, 1440 | Claro, oscuro |
-| Modales | Entradas, exportación, progreso, resumen global, comentarios | 320, 768, 1440 | Claro, oscuro |
-| Workspace switcher | Cerrado, abierto | 320, 768 | Claro, oscuro |
+| Grupo | Anchos y temas | Estado capturado | Total |
+|---|---|---|---:|
+| Changelog | 320 y 1440 × claro/oscuro; 768 claro | `default` | 5 |
+| Lista/Grid | 320 y 1440 × claro/oscuro | `grid` | 4 |
+| Detalle CDU | 320 y 1440 × claro/oscuro; 768 claro | `default` | 5 |
+| Modales de exportación, progreso y entradas | 320 y 1440 × claro | `default` | 6 |
+| Resumen global e Info Despliegue | 320 claro | `default` | 2 |
+| Workspace switcher abierto | 320 y 1440 claro | `abierto` | 2 |
+| **Total** | | | **24** |
 
-Total mínimo: **36 capturas**.
+Notas de la matriz:
 
-## Procedimiento
+- La vista Lista/Grid se captura en modo **grid** de `VersionList`; la tabla
+  lista comparte los mismos breakpoints.
+- El hueco «comentarios» se cubre con `320-modal-info-light-default.png`
+  (`DeploymentInfoModal`): `CommentsModal.jsx` no tiene consumidor en la UI
+  actual. No se deja hueco.
+- 768 solo se captura en Changelog y Detalle, donde cambia el layout.
 
-1. `npm run dev` en `despliegues-bada-react/`.
-2. Fijar el viewport exacto (DevTools → dispositivo personalizado).
-3. Forzar el tema correspondiente desde el control de la aplicación, no desde el sistema operativo.
-4. Capturar la ventana completa, sin recortes manuales.
-5. Guardar en este directorio con la convención de nombres.
-6. Registrar la fecha y el commit en `MANIFEST.md`.
+## Procedimiento automatizado
+
+1. `npm run capture` en `despliegues-bada-react/`.
+2. El script compila con `--mode capture` (`.env.capture` activa
+   `VITE_APP_FIXTURES=1`), levanta `vite preview` en el puerto 4173 con
+   `--strictPort` y recorre la matriz con Chromium headless.
+3. Fija `localStorage.theme` antes de navegar (lo lee `Header.jsx`) y
+   `page.emulateMedia({ reducedMotion: 'reduce' })` para capturas estables.
+4. Escribe los PNG en `captures/` y regenera `MANIFEST.md` con commit, fecha,
+   SO, versiones, tema y estado de datos.
+5. Cierra el navegador y el servidor en `finally`.
 
 ## Uso posterior
 
-Cada gate de fase (`G1`–`G5`) compara el estado actual contra estas capturas. Cualquier diferencia perceptible en color, espaciado o jerarquía bloquea el gate hasta justificarse.
+Las capturas del **2026-11-12** son la referencia del estado actual. Sirven para
+verificar `P4-08`, F5 y `P5-04`; **no** se usan para atribuir cambios
+retroactivos a F1–F3. Cualquier diferencia perceptible en color, espaciado o
+jerarquía debe justificarse contra el `MANIFEST.md`.

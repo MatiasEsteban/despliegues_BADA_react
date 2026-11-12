@@ -8,6 +8,9 @@
 /* === LAYOUTS === */
 @import './layouts/container.css';
 @import './layouts/header.css';
+/* P1-06.2: tras header.css (su `.version-detail-meta` responsive manda) y
+   antes de los componentes (forms.css es la fuente de verdad de los anchos). */
+@import './layouts/detail-header.css';
 @import './layouts/grid.css';
 
 /* === COMPONENTS === */

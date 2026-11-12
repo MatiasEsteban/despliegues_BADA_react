@@ -4,8 +4,8 @@
 |---|---|
 | Spec | [`SPEC-001-endurecimiento-diseno-accesibilidad.md`](SPEC-001-endurecimiento-diseno-accesibilidad.md) |
 | Plan | [`../plan.md`](../plan.md) |
-| Fecha de auditoría | 2026-11-10 |
-| Estado global | F0 parcial · F1 casi cerrada · F2 código cerrado (verificación visual pendiente) · F3 auditoría estática cerrada, correcciones pendientes · F4 en curso (P4-06/P4-07/P4-09 cerradas en código; verificación visual pendiente) · F5–F7 pendientes |
+| Fecha de auditoría | 2026-11-12 |
+| Estado global | F0 cerrada (G0, línea base de estado actual) · F1 solo P1-06.4 · F2 cerrada en código, verificación visual pendiente · F3 aplicada, verificación pendiente · F4 cerrada en código salvo P4-08 (en rojo) y verificación manual · F5 parcial autorizada · F6 P6-01 cerrada y P6-02/03/05 adelantadas · F7 pendiente |
 | Rama | `feat/spec-001-design-hardening` |
 
 Este archivo divide cada tarea del plan en subtareas de **una sola sesión de revisión**. Una subtarea se cierra únicamente con evidencia reproducible. El plan conserva la visión por fases; este tablero es la unidad de ejecución.
@@ -20,6 +20,8 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 4. **Sin baseline no hay cierre visual.** Las tareas marcadas `⛔ P0-04` no se cierran hasta tener capturas.
 5. **Checkpoint por lote.** Al final de cada lote: build, greps de control, revisión visual y actualización del estado.
 6. **Un commit por lote revisado.** Mensaje: `spec-001(<ID>): <resumen>`.
+
+> **Excepción de secuencia aprobada el 2026-11-12.** Se autoriza ejecutar **P6-02, P6-03 y P6-05** (lint, `check-design-rules` y `verify`) y el **F5 parcial** (P5-01, P5-02, P5-03 y P5-05) antes de que F1–F4 cierren sus gates. `P5-04` **no** se adelanta: exige la línea base y tiene 487 literales de escala + 147 `font-size`. El resto mantiene el orden de fases.
 
 ### Leyenda
 
@@ -55,15 +57,15 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 |---|---|---|---|
 | P0-01 | ✅ | `SPEC_TEMPLATE.md` en raíz, 117 líneas | Correcto |
 | P0-02 | ✅ | Spec `Aprobada`; Anexo C con 5 decisiones | Correcto |
-| P0-03 | ✅ | Rama `feat/spec-001-design-hardening` activa | Sin commits propios: todo el trabajo está en working tree |
-| P0-04 | ◐ | Protocolo en `docs/audits/baseline-2026-11-08/README.md` | Sin imágenes ni `MANIFEST.md`; matriz y total de 36 no cuadran |
+| P0-03 | ✅ | Rama `feat/spec-001-design-hardening` activa con commits propios (`b68406b`, `e6c3a78`, `d904ae1`, `c9fd686`, `0689319`, `5ece225`) | Actualizado 2026-11-12: la rama ya no vive solo del working tree |
+| P0-04 | ✅ | `docs/audits/baseline-2026-11-08/` con 24 PNG + `MANIFEST.md` + README actualizado | Cerrada el 2026-11-12 (G0): matriz de 24 sin huecos, commit `5ece225`, Playwright 1.65.0/Chromium 158.0.8127.18 |
 | P0-05 | ✅ | Baseline con métricas reproducibles | 79 inline, 209 hex, 85 únicos, 6 hojas no alcanzables, 4+1 variables |
 | P1-01 | ✅ | Inventario: 85 únicos, 11 exclusivos de huérfanos, 74 supervivientes | Cifras reproducidas |
 | P1-02 | ✅ | 74 tokens `--palette-*`, 74 valores únicos | Sin colores nuevos |
 | P1-03 | ✅ | 35 tokens semánticos, 0 consumidores externos | Correcto |
 | P1-04 | ✅ | 35 tokens de escala; `--radius-md: 8px` | Correcto |
 | P1-05 | ✅ | 144 ocurrencias resueltas, 0 diferencias contra `HEAD`; 0 hex fuera de `variables.css` | Round-trip reproducido |
-| P1-06 | ☐ | `main.css` no importa `detail-header.css` | Alcance ya reducido: huérfanos y `modal-history.css` los resolvió P1-07 |
+| P1-06 | ✅ | `main.css` importa `detail-header.css`; 0 hojas sin alcanzar | Cerrada el 2026-11-12 (P1-06.2/6.3); informe `docs/audits/2026-11-12-p1-06.md` |
 | P1-07 | ✅ | 6 hojas eliminadas; 0 imports; sin selectores muertos citados | Correcto |
 | P1-08 | ✅ con matices | 209 bloques: 208 en 6 archivos + `.header-view-toggle` en `view-toggle.css`; 24 hex exactos; 0 duplicados | 2 bloques reordenados (`.changelog-empty`, `.changelog-entry-autor-badge`); no hay conflicto de cascada, pero «round-trip exacto» es impreciso |
 
@@ -94,9 +96,31 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | Tokens semánticos | 35 |
 | Tokens de escala | 35 |
 | Variables indefinidas | 3 reales + `--tab-color` con fallback |
-| Hojas no importadas | `detail-header.css` |
+| Hojas no importadas | 0 (2026-11-12: P1-06.2 importa `detail-header.css`) |
 | Imports de CSS desde componentes | 0 (solo `main.jsx` → `main.css`) |
 | Selectores duplicados en el split de changelog | 0 |
+
+### 2.4 Verificación 2026-11-12 (evidencia usada para las decisiones)
+
+No se re-audita desde cero: esta tabla fija el estado real que alinean `plan.md`, este tablero y `MEMORY.md`.
+
+| Control | Resultado |
+|---|---|
+| `style={{` en `src` | 0 |
+| Hex fuera de `variables.css` | 0 (2 hex citados en un comentario de `base/reset.css`) |
+| `outline: none` | 0 |
+| `useFocusTrap` / ARIA de `Modal` | Existe `src/hooks/useFocusTrap.js`; `role="dialog"`, `aria-modal`, `aria-labelledby`, cierre «Cerrar» |
+| Tests | 10 archivos en `__tests__`; `npm test` 40/40 |
+| `package.json` | Sin ESLint/Stylelint/globals/plugins ni scripts de lint/`verify`; con vitest 3.2.7, jsdom, RTL y jest-axe |
+| `prefers-reduced-motion` | 0 ocurrencias |
+| Colores fijos en iconos | `Icons.jsx:19` con `fill="white"` |
+| Emojis funcionales | 8: `ChangelogCard:127`, `DateQuickEditor:148`, `DeploymentReportModal:12/15`, `ChangelogView:110/113/127/141` |
+| Fecha visible | `VersionRow:70/74` pinta la fecha cruda; `excelImporter.parseExcelDate` devuelve ISO `YYYY-MM-DD` (línea 220) |
+| `main.css` | 31 imports (32 hojas); importa `layouts/detail-header.css` desde P1-06.2 (2026-11-12) |
+| `scripts/` | `audit-selectors`, `audit-responsive`, `audit-nested-controls`, `audit-inline-styles`, `check-contrast`; **no** existe `check-design-rules.mjs` |
+| `check-contrast.mjs` | **39/54 PASS, 15 FAIL**: 12 pares con consumidores reales (`card.css`, `modal-entries.css`) y 3 latentes sin consumidores (`--color-danger-text`, `--color-success-text`, `--color-success-strong`) |
+| Baseline visual | Solo `README.md`; sin `MANIFEST.md` ni PNG. El README dice 36 capturas y su matriz implica ~98 |
+| Entorno | `node_modules` operativo (`vitest 3.2.7`); rama con commits propios desde `0560aa9` hasta `5ece225` |
 
 ---
 
@@ -108,11 +132,14 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | A-02 | Corregir enlaces relativos | `plan.md`, `docs/audits/baseline-2026-11-08/README.md` | A-01 | XS | ✅ | 0 enlaces rotos |
 | A-03 | Crear este tablero | `specs/tasks.md` | A-01 | S | ✅ | Este archivo |
 | A-04 | Registrar auditoría y tareas nuevas en el plan | `plan.md` | A-03 | XS | ✅ | `P1-09`, `P3-06`, fila de auditoría |
-| A-05 | Restaurar dependencias y build | `package-lock.json`, `node_modules/` | — | S | ☐ | `npm ci` y `npm run build` exitosos; anotar salida |
-| A-06 | Definir lista exacta de capturas baseline | `docs/audits/baseline-2026-11-08/README.md` | — | S | ☐ | Tabla con capturas mínimas, total coherente y `MANIFEST.md` |
-| A-07 | Commit del lote F0/F1 auditado | — | A-05 | S | ☐ | 1–3 commits con mensaje `spec-001(...)`; `git status` limpio |
+| A-05 | Restaurar dependencias y build | `package-lock.json`, `node_modules/` | — | S | ✅ | `node_modules` operativo (verificado 2026-11-12: `vitest 3.2.7` instalado). Falta re-ejecutar `npm run build` en esta sesión: la última salida verde registrada es de 2026-11-10 (122 módulos, 96,32 kB CSS) |
+| A-06 | Definir lista exacta de capturas baseline | `docs/audits/baseline-2026-11-08/README.md` | — | S | ✅ | Matriz final de **24 capturas**: 320/1440 px × claro/oscuro en Changelog, Lista/Grid, Detalle CDU, modales y workspace switcher; 768 px solo en Changelog y Detalle. README con matriz real, convención y enlaces a `MANIFEST.md` y `captures/` |
+| A-07 | Commit del lote F0/F1 auditado | — | A-05 | S | ✅ | Commits propios verificados en `.git/logs/HEAD`: de `0560aa9` (F0/F1) a `5ece225`, pasando por `b68406b`, `e6c3a78`, `d904ae1`, `c9fd686` y `0689319`. Queda comprobar `git status` limpio antes del siguiente lote |
+| A-08 | Crear el harness de captura visual | `scripts/capture-baseline.mjs`, `package.json`, `docs/audits/baseline-2026-11-08/MANIFEST.md` | A-06 | M | ✅ | `playwright` como devDependency (permitida por C-08) + `vite preview`; `MANIFEST.md` con commit, fecha, versión, SO, tema y estado de datos (si la app exige Firebase, registrar qué se ve). Las capturas son del **estado actual (2026-11-12)**, no un baseline retroactivo. Desbloquea `P0-04.1–7` |
+| A-08.2 | Instalar Playwright, crear el harness y generar la línea base visual | `scripts/capture-baseline.mjs`, `package.json`, `src/test/__tests__/capture-matrix.test.js`, `docs/audits/baseline-2026-11-08/README.md`, `docs/audits/baseline-2026-11-08/MANIFEST.md`, `docs/audits/baseline-2026-11-08/captures/*.png` | A-08.1 | M | ✅ | Playwright 1.65.0 + Chromium 158.0.8127.18; 24 PNG de la matriz aprobada (320/768/1440 × claro/oscuro); build `--mode capture` + `vite preview` 4173 `--strictPort`; fixtures sin Firestore; `CommentsModal` sin consumidor se sustituye por `DeploymentInfoModal` en el hueco «comentarios»; `npm test` 47/47 y `npm run build` verde |
+| A-08.1 | Crear el modo fixtures determinista para captura | `.env.capture`, `src/test/fixtures/appState.js`, `src/store/dataStore.js`, `src/store/workspaceStore.js`, `src/store/__tests__/fixtures.test.js`, `README.md` | A-06 | S | ✅ | `VITE_APP_FIXTURES=1` solo con `--mode capture`; workspace fijo, 4 versiones sintéticas con CDUs/pasos y las 5 categorías; sin `subscribeToAppState`, `saveAppState` ni `Debouncer`. `npm test` 44/44 (4 nuevos); build de producción sin fixture (`grep` en `dist/assets/*.js` = 0) y build capture emite `appState-*.js` |
 
-> `A-05` desbloquea la verificación de todas las tareas que citan build. `A-07` protege el trabajo ya hecho: hoy solo existe en disco.
+> `A-05` y `A-07` cerradas el 2026-11-12: el entorno está operativo y el trabajo F0/F1 ya está en la rama. `A-08` sustituye la captura manual: sin harness no hay G0.
 
 ---
 
@@ -123,16 +150,16 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P0-01 | Crear `SPEC_TEMPLATE.md` | `SPEC_TEMPLATE.md` | — | S | ✅ | Existe en raíz |
 | P0-02 | Aprobar spec y Anexo C | `specs/SPEC-001...md` | — | S | ✅ | Estado `Aprobada`; 5 decisiones |
 | P0-03 | Crear rama de trabajo | — | P0-02 | XS | ✅ | Rama activa |
-| P0-04.1 | Preparar entorno y `MANIFEST.md` de capturas | `docs/audits/baseline-2026-11-08/MANIFEST.md` | A-06 | S | ☐ | Commit, navegador, SO, fechas y control de tema |
-| P0-04.2 | Capturar Changelog (4 estados × 3 anchos × 2 temas) | `docs/audits/baseline-2026-11-08/` | P0-04.1 | M | ☐ | Nombres `[ancho]-changelog-[tema]-[estado].png` |
-| P0-04.3 | Capturar Lista/Grid (3 anchos × 2 temas) | idem | P0-04.1 | S | ☐ | Grid y lista |
-| P0-04.4 | Capturar Detalle CDU (cabecera, pasos, responsables, gráfico) | idem | P0-04.1 | M | ☐ | 3 anchos × 2 temas |
-| P0-04.5 | Capturar modales (entradas, exportación, progreso, resumen, comentarios) | idem | P0-04.1 | M | ☐ | 3 anchos × 2 temas |
-| P0-04.6 | Capturar workspace switcher (cerrado/abierto) | idem | P0-04.1 | S | ☐ | 320/768 × claro/oscuro |
-| P0-04.7 | Validar matriz y cerrar G0 | `README.md`, `MANIFEST.md` | P0-04.2–6 | XS | ☐ | Conteo real, checklist G0 completo |
+| P0-04.1 | Preparar entorno y `MANIFEST.md` de capturas | `docs/audits/baseline-2026-11-08/MANIFEST.md` | A-08 | S | ✅ | `MANIFEST.md`: commit `5ece225`, 2026-11-12T17:08:29Z, Windows_NT 10.0.26300, Node v24.12.0, Playwright 1.65.0, Chromium 158.0.8127.18, build `--mode capture`, fixtures sin Firestore |
+| P0-04.2 | Capturar Changelog (4 estados × 320/1440 × 2 temas) | `docs/audits/baseline-2026-11-08/` | P0-04.1 | M | ✅ | 5 capturas: 320/1440 × claro/oscuro + 768 claro; nombres `[ancho]-changelog-[tema]-default.png` |
+| P0-04.3 | Capturar Lista/Grid (320/1440 × 2 temas) | idem | P0-04.1 | S | ✅ | 4 capturas `*-lista-*-grid.png` (320/1440 × claro/oscuro); modo grid de `VersionList` |
+| P0-04.4 | Capturar Detalle CDU (cabecera, pasos, responsables, gráfico) | idem | P0-04.1 | M | ✅ | 5 capturas `*-detalle-*-default.png`: 320/1440 × claro/oscuro + 768 claro |
+| P0-04.5 | Capturar modales (entradas, exportación, progreso, resumen, comentarios) | idem | P0-04.1 | M | ✅ | 8 capturas: exportación/progreso/entradas a 320 y 1440 claro, resumen 320 claro e info 320 claro (sustituye «comentarios», sin consumidor) |
+| P0-04.6 | Capturar workspace switcher (cerrado/abierto) | idem | P0-04.1 | S | ✅ | 2 capturas `*-workspace-light-abierto.png` a 320/1440 |
+| P0-04.7 | Validar matriz y cerrar G0 | `README.md`, `MANIFEST.md` | P0-04.2–6 | XS | ✅ | 24 PNG con la convención `[ancho]-[vista]-[tema]-[estado].png`, sin huecos; README y MANIFEST coherentes; capturas del **estado actual (2026-11-12)**, no retroactivas |
 | P0-05 | Auditoría baseline | `docs/audits/2026-11-08-baseline.md` | P0-03 | S | ✅ | Métricas reproducidas |
 
-**Gate G0:** se cierra con P0-04.7. Hasta entonces, todo cambio visual queda bloqueado.
+**Gate G0:** **cerrado** con P0-04.7 el 2026-11-12. La línea base es la del **estado actual (2026-11-12)** capturada con Playwright: sirve para verificar F4.08, F5, P5-04 y P1-06.3, y **no** atribuye cambios retroactivos a F1–F3.
 
 ---
 
@@ -154,9 +181,9 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P1-05.2 | Round-trip de valores contra `HEAD` | script temporal | P1-05.1 | S | ✅ | 0 diferencias |
 | P1-05.3 | Verificar 0 hex fuera de `variables.css` | — | P1-05.1 | XS | ✅ | `grep` global |
 | P1-06.1 | Confirmar que no quedan imports huérfanos ni CSS en componentes | `main.css` | P1-07 | XS | ✅ | Cubierto por P1-07 |
-| P1-06.2 | Importar `layouts/detail-header.css` en `main.css` | `main.css` | P0-04.7 | XS | ⛔ P0-04 | Activa reglas nunca cargadas |
-| P1-06.3 | Verificar `DetailHeader` en claro/oscuro y 320/768/1440 | — | P1-06.2, P0-04.2–4 | S | ⛔ P0-04 | Diff visual contra baseline |
-| P1-06.4 | Cerrar la parte CSS de G1 | `plan.md` | P1-06.3, P1-09.5 | XS | ☐ | Checklist G1 completo |
+| P1-06.2 | Importar `layouts/detail-header.css` en `main.css` | `main.css`, `layouts/detail-header.css`, `scripts/capture-baseline.mjs` | P0-04.7 | XS | ✅ | Import en `main.css` tras `header.css` y antes de componentes; `--out`/`--only` en el harness no alteran la salida por defecto. Retiradas las reglas duplicadas de `header.css`/`forms.css` y la regla sin SVG. Informe `docs/audits/2026-11-12-p1-06.md` |
+| P1-06.3 | Verificar `DetailHeader` en claro/oscuro y 320/768/1440 | — | P1-06.2, P0-04.2–4 | S | ✅ | `antes/` idéntico byte a byte a la línea base (5/5 SHA-256); `despues/` con 3 cambios justificados (etiquetas 0,75 rem, apilado etiqueta/input a 320/768 y −1 px de alto a 1440) |
+| P1-06.4 | Cerrar la parte CSS de G1 | `plan.md` | P1-06.3, P1-09.5 | XS | ☐ | Checklist G1 completo (único punto pendiente de F1) |
 | P1-07.1 | Eliminar 6 hojas muertas | 6 archivos | P1-05.1 | S | ✅ | Archivos fuera del árbol |
 | P1-07.2 | Verificar 0 imports y 0 consumidores | — | P1-07.1 | S | ✅ | `grep` sin referencias |
 | P1-07.3 | Eliminar selectores sin consumidor citados | CSS de modales | P1-07.1 | XS | ✅ | La afirmación «ausentes» se refería a consumidores en JSX, no a las reglas: `.modal.deployment-report` (desde `8dd12c4`) y `.modal-deployment-info .modal-box` (desde `6b8e447`, movida en `0560aa9`) seguían en `HEAD`; ambas eliminadas en P1-10.4. Ver informe §9.6 |
@@ -354,12 +381,14 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P4-08.3 | Puntos de estado | `estados.css` | P4-08.1 | S | ☐ | ≥ 3:1 |
 | P4-08.4 | Errores de texto | `notifications.css`, `forms.css` | P4-08.1 | S | ☐ | `#c53030` |
 | P4-08.5 | Violeta solo acento/borde | CSS | P4-08.1 | XS | ☐ | No texto pequeño |
-| P4-08.6 | Script de contraste T-11 | `scripts/check-contrast.mjs` | P6-03.1 | M | ☐ | Pares críticos ≥ AA |
+| P4-08.6 | Script de contraste T-11 | `scripts/check-contrast.mjs` | — | M | ◐ | **Script ya existente** (eliminada la dependencia falsa de `P6-03.1`). Estado de partida: **39/54 PASS, 15 FAIL**. Cierra cuando sale 0 en los 12 pares con consumidores; los 3 latentes (`--color-danger-text`, `--color-success-text`, `--color-success-strong`) son aviso |
 | P4-08.7 | Contraste de `.tab-badge` (blanco sobre fondos de categoría) | `changelog/modal-entries.css` | P4-08.2 | S | ☐ | Pares actuales 2,80–4,23:1; usar `--estado-*-bg`/`--estado-*-color` existentes |
 | P4-09.1 | `aria-live="polite"` y `role="status"` en toasts | `ui/Toast.jsx`, `context/ToastContext.jsx` | P4-04 | S | ✅ | `.toast-container` con `role="status"`, `aria-live="polite"` y `aria-atomic="false"`; sin `tabIndex` |
 | P4-09.2 | `role="alert"` en toasts de error | `ui/Toast.jsx` | P4-09.1 | XS | ✅ | `role="alert"` si `type="error"`, `role="status"` en el resto. El hijo `alert` dentro del contenedor `polite` conserva prioridad asertiva |
 | P4-09.3 | Anunciar cambio de vista y carga | `Dashboard.jsx`, contexto | P4-09.1 | S | ✅ | `.visually-hidden` en `reset.css`; `Dashboard` anuncia «Vista: Changelog/Lista/Detalle» solo al cambiar (sin ruido en el montaje); `LoadingOverlay` es `role="status"` con «Cargando…» + mensaje |
 | P4-09.4 | Añadir test T-04 | `Toast.test.jsx` | P6-01.4 | S | ✅ | 5 tests: región viva, `role="status"` informativo, `role="alert"` en error, cierre con `onClose` y `jest-axe` |
+
+> **Regla de P4-08 (aprobada 2026-11-12):** si un par no alcanza AA, se remapea la superficie, el tamaño o el peso tipográfico con tokens existentes; **prohibido introducir color nuevo** (C-01/C-02). `scripts/check-contrast.mjs` es el gate: exit 0 obligatorio en los 12 pares con consumidores reales; los 3 latentes se registran como aviso.
 
 ### 8.5 Verificación manual
 
@@ -410,6 +439,8 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 
 **Gate G5:** 0 emojis como icono único, 0 fechas ISO, una familia tipográfica, `prefers-reduced-motion` respetado y paleta intacta.
 
+> **Adelanto autorizado (2026-11-12):** `P5-01`, `P5-02`, `P5-03` y `P5-05` pueden ejecutarse antes de cerrar G4. `P5-04` **no** se adelanta: depende de la línea base (A-08/P0-04) y acumula 487 literales de escala + 147 `font-size`.
+
 ---
 
 ## 10. F6 — Testing y enforcement
@@ -422,15 +453,17 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 | P6-01.2 | Configurar `vitest.config.js` y setup | `vitest.config.js`, `src/test/setup.js` | P6-01.1 | S | ✅ | `vitest.config.js` con `jsdom`, `globals`, `setupFiles`, `css: false` y `restoreMocks`; `setup.js` con jest-dom/vitest, `toHaveNoViolations` y stubs de `matchMedia`/`ResizeObserver`. Sin coverage |
 | P6-01.3 | Crear smoke test de `Button` | `ui/__tests__/Button.test.jsx` | P6-01.2 | XS | ✅ | 4 tests sin snapshots: `<button>`, `type="button"` por defecto, children/variante y `onClick`. `npm test` → 4/4 |
 | P6-01.4 | Añadir script `test` | `package.json` | P6-01.2 | XS | ✅ | `test: vitest run` y `test:watch: vitest`; `verify` queda para P6-05 |
-| P6-02.1 | Instalar ESLint y plugins JS/React | `package.json` | G5 | M | ☐ | Incluye `eslint`, `globals`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh` |
+| P6-02.1 | Instalar ESLint y plugins JS/React | `package.json` | A-05 | M | ☐ | **Adelantada (2026-11-12).** Incluye `eslint`, `globals`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`; `globals.vitest` por `globals: true` |
 | P6-02.2 | Corregir `eslint.config.js` para JSX | `eslint.config.js` | P6-02.1 | S | ☐ | Lint sobre `.jsx` |
-| P6-02.3 | Instalar y configurar Stylelint | `package.json`, `stylelint.config.js` | G5 | M | ☐ | `npm run lint:css` |
+| P6-02.3 | Instalar y configurar Stylelint | `package.json`, `stylelint.config.js` | A-05 | M | ☐ | **Adelantada (2026-11-12).** `npm run lint:css` |
 | P6-02.4 | Añadir scripts de lint | `package.json` | P6-02.2–3 | XS | ☐ | Ejecutables |
 | P6-03.1 | Esqueleto `check-design-rules.mjs` | `scripts/check-design-rules.mjs` | P6-02.1 | S | ☐ | Sale con código 0/1 |
 | P6-03.2 | Chequeo de `style={{` | idem | P6-03.1 | XS | ☐ | Detecta violación |
 | P6-03.3 | Chequeo de hex fuera de `variables.css` | idem | P6-03.1 | S | ☐ | Detecta violación |
 | P6-03.4 | Chequeo de variables indefinidas | idem | P6-03.1 | S | ☐ | Detecta violación |
 | P6-03.5 | Prueba negativa de los 3 chequeos | idem | P6-03.2–4 | S | ☐ | Fallan al introducir violación |
+
+> **Excepción 2026-11-12:** `P6-02`, `P6-03` y `P6-05` se ejecutan sin esperar a G5. `scripts/check-design-rules.mjs` no existe aún: lo crea `P6-03.1` (no confundirlo con `check-contrast.mjs`, que sí existe desde F4).
 
 ### 10.2 Casos T-01…T-16
 
@@ -492,13 +525,13 @@ Este archivo divide cada tarea del plan en subtareas de **una sola sesión de re
 
 | Lote | Contenido | Criterio de revisión | Estado |
 |---|---|---|---|
-| C-00 | Regularización A-01…A-07 | Build restaurado, enlaces correctos, baseline definido | ◐ |
-| C-01 | F0 + F1 auditado | G0/G1, capturas o bloqueo explícito, commit | ☐ |
-| C-02 | F2 por grupos (UI, vistas, modales, gráficos) | 0 `style={{`, diff visual. Commits `6a9fc14`, `1301831`, `34def04`, `5a1fdd0`; abiertas P2-03.11, P2-04.6 y P2-05.6 (P2-06.2 cerrada) | ◐ |
-| C-03 | F3 responsive | 320/768/1440 + táctil | ☐ |
-| C-04 | F4 accesibilidad | Teclado, axe, contraste | ☐ |
-| C-05 | F5 consistencia | Iconos, fechas, tipografía, motion | ☐ |
-| C-06 | F6 enforcement | `npm run verify` + prueba negativa | ☐ |
+| C-00 | Regularización A-01…A-08 | A-05/A-07 cerradas; A-06 define 24–30 capturas; A-08 crea el harness Playwright | ◐ |
+| C-01 | F0 + F1 auditado | G0 cerrado (línea base 2026-11-12); F1 cerrada salvo P1-06.4 | ◐ |
+| C-02 | F2 por grupos (UI, vistas, modales, gráficos) | 0 `style={{`; commits `6a9fc14`, `1301831`, `34def04`, `5a1fdd0`; verificación visual pendiente | ◐ |
+| C-03 | F3 responsive | CSS aplicado (`b68406b`, `e6c3a78`, `d904ae1`); falta verificación visual, táctil y 200 % | ◐ |
+| C-04 | F4 accesibilidad | Código cerrado salvo P4-08 (15 FAIL) y P4-10/P4-11 | ◐ |
+| C-05 | F5 parcial adelantada | P5-01/02/03/05; P5-04 bloqueada por baseline | ◐ |
+| C-06 | F6 enforcement adelantado | P6-01 cerrada; P6-02/P6-03/P6-05 autorizadas | ◐ |
 | C-07 | F7 cierre | DoD, MEMORY, plan cerrado | ☐ |
 
 ### Plantilla de commit
@@ -513,24 +546,36 @@ spec-001(P2-03.1): migrar estilos inline de ChangelogCard
 
 ---
 
-## 13. Orden recomendado de las próximas 12 subtareas
+## 13. Orden de ejecución vigente (2026-11-12)
 
-> **Nota de secuenciación:** los tests de F4 dependen de `P6-01.4` (infraestructura de test). Para no invertir el orden, conviene adelantar `P6-01` y `P6-02` como lote `C-01.5` antes de cerrar F4. Si se prefiere respetar la secuencia F2→F5, los tests de F4 se escriben al llegar a F6 y F4 no se cierra hasta entonces.
+> La secuencia la fijó la auditoría del 2026-11-12 con las decisiones del usuario. Sustituye al orden anterior, que asumía capturas manuales y P1-09/P1-10 abiertas.
 
-1. `A-05` — restaurar `node_modules` y build.
-2. `A-06` — fijar lista exacta de capturas.
-3. `A-07` — commit del trabajo F0/F1 ya auditado.
-4. `P0-04.1` — `MANIFEST.md` y entorno de captura.
-5. `P0-04.4` — capturas de Detalle (desbloquea P1-06).
-6. `P1-09.1` — `--bg-card`.
-7. `P1-09.2` — `--primary-color`.
-8. `P1-09.3` — `--text-tertiary`.
-9. `P1-09.4` — `--tab-color`.
-10. `P1-09.5` — verificación de variables indefinidas.
-11. `P1-06.2` — importar `detail-header.css`.
-12. `P1-06.3` — verificar `DetailHeader` con baseline.
+1. `A-08` — harness Playwright (`scripts/capture-baseline.mjs`, devDependency, `MANIFEST.md`).
+2. `P0-04.1` — entorno de captura y manifiesto con commit/fecha/versión/SO/tema/estado de datos.
+3. `P0-04.2` — capturas de Changelog (24–30 en total, 320/1440 × claro/oscuro; 768 solo si cambia el layout).
+4. `P0-04.3` — Lista/Grid.
+5. `P0-04.4` — Detalle CDU (desbloquea P1-06.2/6.3).
+6. `P0-04.5` — modales.
+7. `P0-04.6` — workspace switcher.
+8. `P0-04.7` — validar matriz y cerrar `G0` con la línea base del estado actual.
+9. `P1-06.2` — importar `layouts/detail-header.css` en `main.css`.
+10. `P1-06.3` — verificar `DetailHeader` a 320/768/1440 en claro/oscuro.
+11. `P4-08.1–8.5` y `P4-08.7` — remapear contraste con tokens existentes (sin color nuevo).
+12. `P4-08.6` — `check-contrast.mjs` en exit 0 sobre los 12 pares con consumidores (3 latentes = aviso).
+13. `P5-01` — `Icons.Info` a `currentColor` y auditoría de `fill` fijos.
+14. `P5-02` — 8 emojis funcionales a SVG/texto.
+15. `P5-03` — fechas visibles a `DD/MM/AAAA` (`VersionRow`).
+16. `P5-05` — `prefers-reduced-motion` y fin de las animaciones infinitas.
+17. `P6-02` — ESLint + Stylelint + scripts de lint.
+18. `P6-03` — `check-design-rules.mjs` con prueba negativa.
+19. `P6-05` — `npm run verify` documentado.
+20. `P4-10`/`P4-11` — teclado y axe en las cuatro superficies.
+21. `P3-02.6`, `P3-04.2`, `P3-05.3`, `P3-06.4` — verificaciones visuales/táctiles con la línea base.
+22. `P5-04` — escalas (487 + 147 literales), solo después de la línea base.
+23. `P6-04`/`P6-06` — casos restantes y matriz manual.
+24. `F7` — DoD, `MEMORY.md` y cierre del plan.
 
-> Si no se pueden hacer capturas todavía, el orden alternativo es `P1-09.*` → `P2-01.*` → `P2-02.*` (trabajo sin impacto visual pendiente de baseline).
+> `A-05` y `A-07` quedaron cerradas el 2026-11-12. `P1-09`/`P1-10` también: no vuelven a la cola.
 
 ---
 
@@ -582,6 +627,16 @@ spec-001(P2-03.1): migrar estilos inline de ChangelogCard
 | 2026-11-10 | P6-01.1–4 adelantadas (infraestructura de tests): Vitest 3.2.7 (pin `^3` porque la 5.x exige Vite ≥ 6), jsdom 29.1.1, RTL 16.3.3 + dom 10.4.2, user-event 14.6.9, jest-dom 7.0.1 y jest-axe 11.0.0. `vitest.config.js` (jsdom, globals, setup, `css:false`) y `src/test/setup.js` con stubs de `matchMedia`/`ResizeObserver`. `Button.test.jsx` con 4 tests (type por defecto, children/variante, onClick y submit) → P6-04.3 ✅. Sin coverage ni `verify` (P6-05). `npm test` 4/4, build verde, audits sin cambios. Documentado en `docs/audits/2026-11-10-testing-setup.md`; `globals: true` anotado para ESLint (P6-02). |
 | 2026-11-10 | P4-01/P4-02/P4-03 aplicadas en el `Modal` base: hooks (`useId`, `useRef`, `useFocusTrap`) antes del `return`; nuevo `src/hooks/useFocusTrap.js` con foco inicial, ciclo Tab/Shift+Tab, Escape, restauración de foco y `body.style.overflow` (único `style`, R-DS-03). ARIA: `role="dialog"` + `aria-modal` en `.modal`, `aria-labelledby` con `useId` (fallback `aria-label="Diálogo"`), cierre con `aria-label="Cerrar"`. `Modal.test.jsx` con 8 tests (T-01, T-02, T-03, scroll, fallback de título y `jest-axe`); total 12/12 con `Button`. Build verde (95.59 kB CSS) y audits sin cambios (`inline` 0 porque el hook queda fuera de `src/components`). P4-02.7 ⛔ P0-04. |
 | 2026-11-10 | P4-04.1–6 y P4-05.1–5 aplicadas (R-A11Y-02/03). Regla: cero controles anidados; el `onClick` de ratón de los contenedores (`div.changelog-card-header`, `div.version-card`, `tr.version-list-row`) se mantiene sin `role`/`tabIndex` y el teclado va por un control específico (`.changelog-card-toggle` con `aria-expanded`+`aria-controls`; `button.version-card-number` «Abrir detalle de la versión X»; `.version-list-open` en la 1.ª celda). `ExportModal`: `role="radiogroup"` + `role="radio"`/`aria-checked` con roving tabindex y flechas/Home/End/Enter/Espacio. `ProgressModal`: `.chart-toggle` es `<button>` con `aria-expanded` y los hooks (2 `useId`) pasan antes de los returns (R-CODE-01). `Icons.jsx` con `RAW_ICONS`+`withIconA11y`: decorativo por defecto (`aria-hidden`/`focusable="false"`), anunciable con `aria-label`/`role="img"`; `Info` conserva `fill="white"`. 25 botones de solo icono con `aria-label` en español conservando `title`. Nuevo `scripts/audit-nested-controls.mjs`: 0 violaciones en 40 archivos (la regla `div`/`tr` onClick+tabIndex exime roles ARIA interactivos, patrón exigido por P4-04.4); validado con fixture (2 violaciones, exit 1). Tests nuevos T-07/T-08/T-09/T-10 + `ProgressModal`: suite **28/28**. Build verde (122 módulos, 96.23 kB CSS), `audit-inline-styles` 0 y selectores 505/483/21. Documentado en `docs/audits/2026-11-10-accessible-names.md`. P4-04.7 queda ◐ (sin navegador, P0-04); `CduRow`/`StepsEditor` fuera del alcance de P4-05. |
+| 2026-11-12 | **Alineación con la auditoría de @reviewer y las decisiones del usuario.** Cabecera de estado actualizada: F0 pendiente de capturas; F1 solo P1-06.2/6.3; F2 y F3 cerradas en código con verificación visual pendiente; F4 cerrada en código salvo P4-08 y verificación manual; F5 parcial autorizada; F6 con P6-01 cerrada y P6-02/03/05 adelantadas. A-05 y A-07 pasan a ✅ (node_modules con `vitest 3.2.7`; commits propios verificados en `.git/logs/HEAD`, de `0560aa9` a `5ece225`); falta re-ejecutar `npm run build`. A-06 fija la matriz mínima de 24–30 capturas. Nueva **A-08** (harness Playwright + `MANIFEST.md`), que desbloquea P0-04.1–7. P4-08.6 pasa a ◐ con el script ya existente y estado 39/54 PASS / 15 FAIL; se elimina su dependencia de P6-03.1. Se añade la excepción de secuencia (P6-02/03/05 y F5 parcial) y se reescribe §13. |
+| 2026-11-12 | A-08.1 cerrada: modo fixtures determinista para capturas y chequeos axe/overflow. `.env.capture` (`VITE_APP_FIXTURES=1`, no ignorado por `.gitignore`) solo con `--mode capture`; `src/test/fixtures/appState.js` con workspace fijo, 4 versiones sintéticas (una en producción), CDUs con pasos y las 5 categorías; `dataStore` hidrata con `import()` dinámico y omite `subscribeToAppState`/`saveAppState`/`Debouncer`; `workspaceStore` activa el workspace del fixture sin escribir `localStorage`. Evidencia: 4 tests nuevos (44/44), build de producción sin fixture en `dist/assets/*.js` y build capture con chunk `appState-*.js`. |
+| 2026-11-12 | A-08.2 cerrada y **G0 cerrado**: `scripts/capture-baseline.mjs` genera 24 PNG (`[ancho]-[vista]-[tema]-[estado].png`) en `docs/audits/baseline-2026-11-08/captures/` y `MANIFEST.md` con commit `5ece225`, fecha, SO, Node, Playwright 1.65.0, Chromium 158.0.8127.18, build `--mode capture`, fixtures sin Firestore. Matriz 24 sin huecos (el hueco «comentarios» lo cubre `320-modal-info-light-default.png`). P0-04.1–7 y A-06 ✅. Línea base del estado actual (2026-11-12), **no retroactiva**. `npm test` 47/47. |
+| 2026-11-12 | P1-06.2/6.3 cerradas: `main.css` importa `layouts/detail-header.css` tras `header.css` y antes de componentes; retiradas las reglas que duplicaban `header.css` (`.version-detail-meta`) y `forms.css` (min-width de inputs) y la regla `label svg.icon` sin SVG. Harness con `--out`/`--only` sin cambiar la salida por defecto. `antes/` idéntico byte a byte a la línea base (5/5); `despues/` con 3 cambios justificados. Evidencia en `docs/audits/2026-11-12-p1-06.md`; `npm test` 51/51 y build verde. G1 pendiente solo de P1-06.4. |
+
+---
+
+## 16. Aplicación pendiente fuera de `specs/`
+
+El agente planificador solo tiene permiso de escritura en `specs/`. Los parches exactos para `plan.md` (cabecera, excepción de secuencia, decisiones, F0 con A-08, F1, F2, F3, F4, F5, F6 y §12), el reemplazo completo de `MEMORY.md` (50 líneas) y la corrección de `docs/design-system.md` §8 están en [`maintenance-2026-11-12.md`](maintenance-2026-11-12.md). Misma fecha e IDs; aplicar antes del próximo commit de documentación.
 
 
 
